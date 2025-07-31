@@ -1,14 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Shield, Info } from 'lucide-react'
+import { Shield, Info, Target, Activity, Zap } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { Progress } from '@/components/ui/progress'
 import React from 'react';
 
 export function MatrizRiscoPsicossocial() {
   const [hoveredCell, setHoveredCell] = useState<{row: number, col: number} | null>(null)
   const [selectedCell, setSelectedCell] = useState<{row: number, col: number} | null>(null)
+  const [animatedValues, setAnimatedValues] = useState({ confidence: 0, coverage: 0, efficiency: 0 })
+  const [isVisible, setIsVisible] = useState(false)
 
   const riskMatrix = {
     severity: [
@@ -41,6 +44,28 @@ export function MatrizRiscoPsicossocial() {
     }
   }
 
+  const advancedMetrics = {
+    confidence: 92,
+    coverage: 78,
+    efficiency: 85,
+    totalRisks: 24,
+    mitigatedRisks: 18,
+    criticalRisks: 3,
+    lastUpdate: '2 horas atrás'
+  }
+
+  useEffect(() => {
+    setIsVisible(true)
+    const timer = setTimeout(() => {
+      setAnimatedValues({
+        confidence: advancedMetrics.confidence,
+        coverage: advancedMetrics.coverage,
+        efficiency: advancedMetrics.efficiency
+      })
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [])
+
   const getRiskCellColor = (riskLevel: string): string => {
     switch (riskLevel) {
       case 'TRIVIAL':
@@ -59,23 +84,83 @@ export function MatrizRiscoPsicossocial() {
   }
 
   return (
-    <Card className="w-full mx-auto shadow-2xl border-0 rounded-3xl overflow-hidden bg-gradient-to-br from-slate-50 to-white">
-        <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 text-white p-8 relative overflow-hidden">
-          <div className="absolute inset-0 bg-black/10"></div>
-          <div className="absolute -top-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
-          <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
-          <CardTitle className="flex items-center gap-4 text-3xl font-bold relative z-10">
-            <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm border border-white/30">
-              <Shield className="h-8 w-8" />
+    <Card className={`w-full mx-auto shadow-2xl border-0 rounded-2xl overflow-hidden transition-all duration-1000 ${isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-4'}`}>
+      <div className="bg-gradient-to-r from-blue-700 via-purple-600 to-indigo-700 text-white p-6">
+        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
+          <div className="flex-1">
+            <CardTitle className="flex items-center gap-3 text-xl sm:text-2xl font-bold">
+              <div className="p-2 bg-white/25 rounded-lg">
+                <Shield className="h-5 w-5 sm:h-6 sm:w-6" />
+              </div>
+              <span className="break-words">Matriz de Risco Psicossocial</span>
+            </CardTitle>
+            <CardDescription className="text-blue-200 mt-2 text-sm sm:text-base">
+              Análise detalhada dos riscos identificados por severidade e probabilidade com métricas avançadas
+            </CardDescription>
+          </div>
+          <div className="flex flex-col items-start lg:items-end gap-2">
+            <Badge className="bg-white/20 text-white border-white/30 px-3 py-1 sm:px-4 sm:py-2 text-sm font-semibold rounded-full shadow-lg">
+              <Activity className="h-4 w-4 mr-1" />
+              {advancedMetrics.lastUpdate}
+            </Badge>
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-blue-200">
+              <Target className="h-4 w-4" />
+              <span>{advancedMetrics.totalRisks} riscos identificados</span>
             </div>
-            <div>
-              <span className="block text-3xl font-black tracking-tight">MATRIZ QUANTITATIVA</span>
-              <span className="block text-xl font-medium opacity-90 mt-1">DE RISCOS</span>
-            </div>
-          </CardTitle>
+          </div>
         </div>
-      <CardContent className="w-full p-0">
-          <div className="overflow-x-auto">
+      </div>
+       
+       {/* SEÇÃO DE MÉTRICAS AVANÇADAS */}
+       <div className="bg-gray-50 p-4 sm:p-6">
+         <h3 className="text-lg sm:text-xl font-semibold text-gray-700 mb-4 flex items-center gap-2">
+           <Zap className="h-5 w-5 text-yellow-500" />
+           Métricas de Performance
+         </h3>
+         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+           <div className="bg-white p-4 rounded-xl shadow-md border border-green-200">
+             <div className="flex items-center justify-between mb-2">
+               <span className="text-sm font-medium text-green-700">Confiança da Análise</span>
+               <Target className="h-4 w-4 text-green-500" />
+             </div>
+             <div className="text-2xl font-bold text-green-800 mb-2">{Math.round(animatedValues.confidence)}%</div>
+             <Progress value={animatedValues.confidence} className="h-2" indicatorClassName="bg-green-500" />
+           </div>
+           <div className="bg-white p-4 rounded-xl shadow-md border border-blue-200">
+             <div className="flex items-center justify-between mb-2">
+               <span className="text-sm font-medium text-blue-700">Cobertura de Riscos</span>
+               <Activity className="h-4 w-4 text-blue-500" />
+             </div>
+             <div className="text-2xl font-bold text-blue-800 mb-2">{Math.round(animatedValues.coverage)}%</div>
+             <Progress value={animatedValues.coverage} className="h-2" indicatorClassName="bg-blue-500" />
+           </div>
+           <div className="bg-white p-4 rounded-xl shadow-md border border-purple-200">
+               <div className="flex items-center justify-between mb-2">
+                 <span className="text-sm font-medium text-purple-700">Eficiência de Mitigação</span>
+                 <Zap className="h-4 w-4 text-purple-500" />
+               </div>
+               <div className="text-2xl font-bold text-purple-800 mb-2">{Math.round(animatedValues.efficiency)}%</div>
+               <Progress value={animatedValues.efficiency} className="h-2" indicatorClassName="bg-purple-500" />
+             </div>
+         </div>
+         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+           <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 text-center">
+             <div className="text-lg font-bold text-gray-800">{advancedMetrics.mitigatedRisks}/{advancedMetrics.totalRisks}</div>
+             <div className="text-xs text-gray-600">Riscos Mitigados</div>
+           </div>
+           <div className="bg-white p-3 rounded-lg shadow-sm border border-red-200 text-center">
+             <div className="text-lg font-bold text-red-600">{advancedMetrics.criticalRisks}</div>
+             <div className="text-xs text-gray-600">Riscos Críticos</div>
+           </div>
+           <div className="bg-white p-3 rounded-lg shadow-sm border border-yellow-200 text-center">
+             <div className="text-lg font-bold text-yellow-600">{Math.round((advancedMetrics.mitigatedRisks / advancedMetrics.totalRisks) * 100)}%</div>
+             <div className="text-xs text-gray-600">Taxa de Sucesso</div>
+           </div>
+         </div>
+       </div>
+       
+       <CardContent className="w-full p-0">
+           <div className="overflow-x-auto">
             <div className="min-w-[900px]">
               {/* Cabeçalho da Matriz */}
               <div className="bg-gradient-to-r from-slate-100 to-gray-100 text-gray-800 p-6 border-b border-gray-200">
@@ -116,22 +201,29 @@ export function MatrizRiscoPsicossocial() {
                           <div
                             key={`${probIndex}-${severityIndex}`}
                             className={`
-                              h-12 flex items-center justify-center text-center font-bold text-xs cursor-pointer transition-all duration-200 relative border-b border-r border-gray-400 last:border-r-0
+                              h-12 flex items-center justify-center text-center font-bold text-xs cursor-pointer transition-all duration-300 ease-out relative border-b border-r border-gray-400 last:border-r-0
                               ${getRiskCellColor(cellValue)}
                               ${isCurrentRisk ? 'ring-2 ring-blue-600 ring-inset' : ''}
-                              ${hoveredCell?.row === originalProbIndex && hoveredCell?.col === severityIndex ? 'ring-1 ring-gray-600' : ''}
+                              ${hoveredCell?.row === originalProbIndex && hoveredCell?.col === severityIndex ? 'ring-2 ring-blue-400 scale-105 z-20 shadow-xl transform rotate-1' : ''}
+                              ${selectedCell?.row === originalProbIndex && selectedCell?.col === severityIndex ? 'ring-2 ring-purple-500 scale-105 z-20 shadow-xl' : ''}
+                              hover:shadow-lg hover:scale-102
                             `}
                             onMouseEnter={() => setHoveredCell({row: originalProbIndex, col: severityIndex})}
                             onMouseLeave={() => setHoveredCell(null)}
                             onClick={() => setSelectedCell({row: originalProbIndex, col: severityIndex})}
                           >
-                            <div className="leading-tight">
+                            <div className={`leading-tight transition-all duration-300 ${
+                              hoveredCell?.row === originalProbIndex && hoveredCell?.col === severityIndex ? 'scale-110 font-extrabold' : ''
+                            }`}>
                               {cellValue}
                             </div>
                             {isCurrentRisk && (
-                              <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-600 rounded-full">
+                              <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-600 rounded-full animate-pulse">
                                 <div className="w-1 h-1 bg-white rounded-full m-0.5"></div>
                               </div>
+                            )}
+                            {hoveredCell?.row === originalProbIndex && hoveredCell?.col === severityIndex && (
+                              <div className="absolute inset-0 bg-white/20 animate-pulse rounded"></div>
                             )}
                           </div>
                         );
