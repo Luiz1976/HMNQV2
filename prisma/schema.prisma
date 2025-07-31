@@ -1,0 +1,570 @@
+// HumaniQ AI - Complete Database Schema
+// SaaS Platform for Psychosocial Assessments
+
+generator client {
+    provider = "prisma-client-js"
+    binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+    provider = "sqlite"
+    url      = "file:./dev.db"
+}
+
+// ===== AUTHENTICATION & USER MANAGEMENT =====
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  firstName     String    @map("first_name")
+  lastName      String    @map("last_name")
+  password      String
+  userType      UserType  @default(EMPLOYEE) @map("user_type")
+  avatarUrl     String?   @map("avatar_url")
+  isActive      Boolean   @default(true) @map("is_active")
+  emailVerified DateTime? @map("email_verified")
+  lastLoginAt   DateTime? @map("last_login_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  // Relationships
+  company       Company?      @relation(fields: [companyId], references: [id])
+  companyId     String?       @map("company_id")
+  
+  // User permissions and roles
+  permissions   UserPermission[]
+  
+  // Test-related relationships
+  testSessions  TestSession[]
+  testResults   TestResult[]
+  invitations   Invitation[]
+  answers       Answer[]
+  
+  // Notifications
+  notifications UserNotification[]
+  
+  // Companies owned (for admin users)
+  ownedCompanies Company[] @relation("CompanyOwner")
+  
+  // ERP Integration
+  erpEmployee   ERPEmployee?
+  
+  // NextAuth
+  accounts      Account[]
+  sessions      Session[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model UserPermission {
+  id         String @id @default(cuid())
+  userId     String @map("user_id")
+  permission String
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, permission])
+  @@map("user_permissions")
+}
+
+// ===== COMPANY MANAGEMENT =====
+
+model Company {
+  id          String      @id @default(cuid())
+  name        String
+  cnpj        String?     @unique
+  industry    String?
+  size        CompanySize @default(SMALL)
+  website     String?
+  logoUrl     String?     @map("logo_url")
+  isActive    Boolean     @default(true) @map("is_active")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  // Address information
+  street      String?
+  city        String?
+  state       String?
+  zipCode     String?     @map("zip_code")
+  country     String?     @default("Brasil")
+
+  // Subscription information
+  subscriptionPlan   SubscriptionPlan   @default(BASIC) @map("subscription_plan")
+  subscriptionStatus SubscriptionStatus @default(TRIAL) @map("subscription_status")
+  subscriptionExpiry DateTime?          @map("subscription_expiry")
+
+  // Company settings (JSON field)
+  settings    Json?
+
+  // Relationships
+  owner       User?   @relation("CompanyOwner", fields: [ownerId], references: [id])
+  ownerId     String? @map("owner_id")
+  
+  employees   User[]
+  tests       Test[]
+  testSessions TestSession[]
+  invitations Invitation[]
+  notifications CompanyNotification[]
+  
+  // ERP Integration
+  erpConfigs  ERPConfig[]
+
+  @@map("companies")
+}
+
+model ERPConfig {
+  id                String           @id @default(cuid())
+  companyId         String           @map("company_id")
+  erpType           ERPType          @map("erp_type")
+  name              String           // Custom name for this integration
+  apiUrl            String           @map("api_url")
+  apiKey            String           @map("api_key")
+  username          String?
+  password          String?          // Encrypted password for some ERPs
+  clientId          String?          @map("client_id") // OAuth client ID
+  clientSecret      String?          @map("client_secret") // OAuth client secret
+  accessToken       String?          @map("access_token") // OAuth access token
+  refreshToken      String?          @map("refresh_token") // OAuth refresh token
+  tokenExpiresAt    DateTime?        @map("token_expires_at")
+  isActive          Boolean          @default(true) @map("is_active")
+  lastSync          DateTime?        @map("last_sync")
+  nextSync          DateTime?        @map("next_sync")
+  syncStatus        ERPSyncStatus    @default(IDLE) @map("sync_status")
+  syncFrequency     Int              @default(24) @map("sync_frequency") // hours
+  autoSync          Boolean          @default(false) @map("auto_sync")
+  lastError         String?          @map("last_error")
+  employeeCount     Int              @default(0) @map("employee_count")
+  
+  // ERP-specific configuration
+  config            Json?            // Additional ERP-specific settings
+  fieldMappings     Json?            @map("field_mappings") // Field mapping configuration
+  
+  createdAt         DateTime         @default(now()) @map("created_at")
+  updatedAt         DateTime         @updatedAt @map("updated_at")
+
+  // Relationships
+  company           Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  syncLogs          ERPSyncLog[]
+  employees         ERPEmployee[]
+
+  @@map("erp_configs")
+}
+
+model ERPSyncLog {
+  id            String        @id @default(cuid())
+  erpConfigId   String        @map("erp_config_id")
+  syncType      ERPSyncType   @map("sync_type")
+  status        ERPSyncStatus
+  startedAt     DateTime      @default(now()) @map("started_at")
+  completedAt   DateTime?     @map("completed_at")
+  duration      Int?          // seconds
+  recordsTotal  Int           @default(0) @map("records_total")
+  recordsNew    Int           @default(0) @map("records_new")
+  recordsUpdated Int          @default(0) @map("records_updated")
+  recordsErrors Int           @default(0) @map("records_errors")
+  errorMessage  String?       @map("error_message")
+  details       Json?         // Detailed sync information
+  
+  erpConfig     ERPConfig     @relation(fields: [erpConfigId], references: [id], onDelete: Cascade)
+
+  @@map("erp_sync_logs")
+}
+
+model ERPEmployee {
+  id            String      @id @default(cuid())
+  erpConfigId   String      @map("erp_config_id")
+  erpEmployeeId String      @map("erp_employee_id") // ID from ERP system
+  email         String
+  firstName     String      @map("first_name")
+  lastName      String      @map("last_name")
+  department    String?
+  position      String?
+  phone         String?
+  status        String?     // Active, Inactive, etc.
+  hireDate      DateTime?   @map("hire_date")
+  
+  // Mapping to local user
+  userId        String?     @unique @map("user_id")
+  user          User?       @relation(fields: [userId], references: [id])
+  
+  // ERP-specific data
+  erpData       Json?       @map("erp_data") // Raw data from ERP
+  
+  lastSyncAt    DateTime    @default(now()) @map("last_sync_at")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+
+  erpConfig     ERPConfig   @relation(fields: [erpConfigId], references: [id], onDelete: Cascade)
+
+  @@unique([erpConfigId, erpEmployeeId])
+  @@map("erp_employees")
+}
+
+// ===== TEST SYSTEM =====
+
+model TestCategory {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  icon        String?
+  color       String?
+  sortOrder   Int      @default(0) @map("sort_order")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  tests Test[]
+
+  @@map("test_categories")
+}
+
+model Test {
+  id                String      @id @default(cuid())
+  categoryId        String      @map("category_id")
+  name              String
+  description       String?
+  instructions      String?
+  testType          TestType    @default(PSYCHOSOCIAL) @map("test_type")
+  estimatedDuration Int         @default(30) @map("estimated_duration") // minutes
+  version           Int         @default(1)
+  isActive          Boolean     @default(true) @map("is_active")
+  isPublic          Boolean     @default(true) @map("is_public") // If false, company-specific
+  createdAt         DateTime    @default(now()) @map("created_at")
+  updatedAt         DateTime    @updatedAt @map("updated_at")
+
+  // Test configuration (JSON field)
+  configuration Json?
+
+  // Relationships
+  category      TestCategory  @relation(fields: [categoryId], references: [id])
+  company       Company?      @relation(fields: [companyId], references: [id])
+  companyId     String?       @map("company_id") // Null for public tests
+  
+  questions     Question[]
+  testSessions  TestSession[]
+  testResults   TestResult[]
+  invitations   Invitation[]
+
+  @@map("tests")
+}
+
+model Question {
+  id             String       @id @default(cuid())
+  testId         String       @map("test_id")
+  questionNumber Int          @map("question_number")
+  questionText   String       @map("question_text")
+  questionType   QuestionType @default(MULTIPLE_CHOICE) @map("question_type")
+  isRequired     Boolean      @default(true) @map("is_required")
+  
+  // Question configuration and options (JSON field)
+  options        Json?
+  metadata       Json?
+  
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  // Relationships
+  test    Test     @relation(fields: [testId], references: [id], onDelete: Cascade)
+  answers Answer[]
+
+  @@unique([testId, questionNumber])
+  @@map("questions")
+}
+
+model TestSession {
+  id              String            @id @default(cuid())
+  testId          String            @map("test_id")
+  userId          String            @map("user_id")
+  companyId       String?           @map("company_id")
+  status          TestSessionStatus @default(STARTED)
+  startedAt       DateTime          @default(now()) @map("started_at")
+  completedAt     DateTime?         @map("completed_at")
+  expiresAt       DateTime?         @map("expires_at")
+  currentQuestion Int               @default(1) @map("current_question")
+  totalQuestions  Int               @default(0) @map("total_questions")
+  timeSpent       Int               @default(0) @map("time_spent") // seconds
+  
+  // Session metadata (JSON field)
+  metadata        Json?
+  
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+
+  // Relationships
+  test     Test         @relation(fields: [testId], references: [id])
+  user     User         @relation(fields: [userId], references: [id])
+  company  Company?     @relation(fields: [companyId], references: [id])
+  answers  Answer[]
+  result   TestResult?
+
+  @@map("test_sessions")
+}
+
+model Answer {
+  id            String   @id @default(cuid())
+  sessionId     String   @map("session_id")
+  questionId    String   @map("question_id")
+  userId        String   @map("user_id")
+  answerValue   Json     @map("answer_value") // Flexible answer storage
+  timeSpent     Int      @default(0) @map("time_spent") // seconds on this question
+  isSkipped     Boolean  @default(false) @map("is_skipped")
+  
+  // Answer metadata (JSON field)
+  metadata      Json?
+  
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relationships
+  session  TestSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  question Question    @relation(fields: [questionId], references: [id])
+  user     User        @relation(fields: [userId], references: [id])
+
+  @@unique([sessionId, questionId])
+  @@map("answers")
+}
+
+model TestResult {
+  id            String   @id @default(cuid())
+  sessionId     String   @unique @map("session_id")
+  testId        String   @map("test_id")
+  userId        String   @map("user_id")
+  completedAt   DateTime @default(now()) @map("completed_at")
+  duration      Int      @map("duration") // Total time in seconds
+  overallScore  Float?   @map("overall_score")
+  
+  // Detailed scores and analysis (JSON fields)
+  dimensionScores Json?  @map("dimension_scores")
+  aiAnalysis      Json?  @map("ai_analysis")
+  
+  // Report generation
+  reportUrl       String?  @map("report_url")
+  reportGenerated Boolean  @default(false) @map("report_generated")
+  
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relationships
+  session TestSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  test    Test        @relation(fields: [testId], references: [id])
+  user    User        @relation(fields: [userId], references: [id])
+
+  @@map("test_results")
+}
+
+// ===== INVITATION SYSTEM =====
+
+model Invitation {
+  id          String           @id @default(cuid())
+  email       String
+  firstName   String?          @map("first_name")
+  lastName    String?          @map("last_name")
+  testId      String?          @map("test_id")
+  companyId   String           @map("company_id")
+  invitedBy   String           @map("invited_by")
+  status      InvitationStatus @default(PENDING)
+  token       String           @unique
+  expiresAt   DateTime         @map("expires_at")
+  sentAt      DateTime?        @map("sent_at")
+  acceptedAt  DateTime?        @map("accepted_at")
+  
+  // Invitation metadata
+  message     String?
+  metadata    Json?
+  
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  // Relationships
+  test      Test?   @relation(fields: [testId], references: [id])
+  company   Company @relation(fields: [companyId], references: [id])
+  inviter   User    @relation(fields: [invitedBy], references: [id])
+
+  @@map("invitations")
+}
+
+// ===== NOTIFICATION SYSTEM =====
+
+model UserNotification {
+  id        String             @id @default(cuid())
+  userId    String             @map("user_id")
+  type      NotificationType   @default(INFO)
+  title     String
+  message   String
+  actionUrl String?            @map("action_url")
+  isRead    Boolean            @default(false) @map("is_read")
+  readAt    DateTime?          @map("read_at")
+  createdAt DateTime           @default(now()) @map("created_at")
+  
+  // Notification metadata
+  metadata  Json?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_notifications")
+}
+
+model CompanyNotification {
+  id        String             @id @default(cuid())
+  companyId String             @map("company_id")
+  type      NotificationType   @default(INFO)
+  title     String
+  message   String
+  actionUrl String?            @map("action_url")
+  isRead    Boolean            @default(false) @map("is_read")
+  readAt    DateTime?          @map("read_at")
+  createdAt DateTime           @default(now()) @map("created_at")
+  
+  // Notification metadata
+  metadata  Json?
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@map("company_notifications")
+}
+
+// ===== ENUMS =====
+
+enum UserType {
+  ADMIN
+  COMPANY
+  EMPLOYEE
+  CANDIDATE
+}
+
+enum CompanySize {
+  STARTUP
+  SMALL
+  MEDIUM
+  LARGE
+  ENTERPRISE
+}
+
+enum SubscriptionPlan {
+  BASIC
+  PROFESSIONAL
+  ENTERPRISE
+}
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  SUSPENDED
+  CANCELLED
+  EXPIRED
+}
+
+enum ERPType {
+  SAP_SUCCESSFACTORS
+  TOTVS_PROTHEUS
+  TOTVS_RM
+  TOTVS_DATASUL
+  ORACLE_FUSION_HCM
+  ORACLE_PEOPLESOFT
+  ADP_GLOBALVIEW
+  ADP_VANTAGE_HCM
+  SENIOR_HCM
+  LG_LUGAR_DE_GENTE
+  SOLIDES_GESTAO
+  SOLIDES_RH
+  BENNER
+  OTHER
+}
+
+enum ERPSyncStatus {
+  IDLE
+  SYNCING
+  SUCCESS
+  ERROR
+  PARTIAL_SUCCESS
+}
+
+enum ERPSyncType {
+  MANUAL
+  SCHEDULED
+  REAL_TIME
+  INITIAL
+}
+
+enum TestType {
+  PSYCHOSOCIAL
+  PERSONALITY
+  GRAPHOLOGY
+  CORPORATE
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  SCALE
+  TEXT
+  IMAGE_SELECTION
+  DRAWING
+  RATING
+  BOOLEAN
+}
+
+enum TestSessionStatus {
+  STARTED
+  IN_PROGRESS
+  PAUSED
+  COMPLETED
+  EXPIRED
+  CANCELLED
+}
+
+enum InvitationStatus {
+  PENDING
+  SENT
+  ACCEPTED
+  EXPIRED
+  CANCELLED
+}
+
+enum NotificationType {
+  INFO
+  WARNING
+  ERROR
+  SUCCESS
+  TEST_COMPLETED
+  INVITATION_SENT
+  REPORT_READY
+}
