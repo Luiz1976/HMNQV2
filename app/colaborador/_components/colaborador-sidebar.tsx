@@ -7,15 +7,17 @@ import { usePathname } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
 import { 
   Brain, 
-  Heart, 
   User, 
-  PenTool, 
-  Building, 
   BarChart3, 
   LogOut, 
   Menu, 
   X,
-  UserCheck
+  UserCheck,
+  Heart,
+  Users,
+  Building2,
+  FileText,
+  TrendingUp
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -28,30 +30,35 @@ export function ColaboradorSidebar() {
 
   const menuItems = [
     {
+      name: 'Personalidade',
+      href: '/colaborador/personalidade',
+      icon: User,
+      description: 'Testes de personalidade'
+    },
+    {
       name: 'Testes Psicossociais',
       href: '/colaborador/psicossociais',
       icon: Heart,
-      description: 'Avaliações de riscos psicossociais'
+      description: 'Avaliações de saúde mental e bem-estar no trabalho'
     },
     {
-      name: 'Testes de Perfil',
-      href: '/colaborador/perfil',
-      icon: User,
-      description: 'Análise de personalidade e comportamento'
+      name: 'Testes Corporativos',
+      href: '/colaborador/corporativo',
+      icon: Building2,
+      description: 'Avaliações de liderança e competências'
     },
     {
-      name: 'Teste Grafológico',
-      href: '/colaborador/grafologico',
-      icon: PenTool,
-      description: 'Análise através da escrita'
+      name: 'Grafologia',
+      href: '/colaborador/grafologia',
+      icon: FileText,
+      description: 'Análise de personalidade através da escrita'
     },
-
     {
       name: 'Resultados',
       href: '/colaborador/resultados',
-      icon: BarChart3,
-      description: 'Visualizar resultados dos testes'
-    }
+      icon: TrendingUp,
+      description: 'Resultados recentes dos testes realizados'
+    },
   ]
 
   const isActive = (href: string) => pathname === href
@@ -127,15 +134,15 @@ export function ColaboradorSidebar() {
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center space-x-3">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={session?.user?.image || ''} />
+              <AvatarImage src={session?.user?.avatarUrl || ''} />
               <AvatarFallback className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-                {session?.user?.name?.charAt(0) || 'C'}
+                {session?.user?.firstName?.charAt(0) || 'C'}
               </AvatarFallback>
             </Avatar>
             {!isCollapsed && (
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">
-                  {session?.user?.name || getUserType()}
+                  {`${session?.user?.firstName || ''} ${session?.user?.lastName || ''}`.trim() || getUserType()}
                 </p>
                 <div className="flex items-center space-x-1">
                   <UserCheck className="h-3 w-3 text-purple-600" />

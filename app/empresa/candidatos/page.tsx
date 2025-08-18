@@ -10,18 +10,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { 
   Search, 
   Filter, 
-  Download, 
   UserPlus, 
   AlertTriangle, 
   CheckCircle, 
   Clock,
-  BarChart3,
-  TrendingUp,
-  TrendingDown,
-  Brain,
-  Heart,
-  Zap,
-  Target,
   Users,
   Calendar,
   Briefcase,
@@ -38,108 +30,9 @@ export default function CandidatosPage() {
   const [selectedCandidato, setSelectedCandidato] = useState<string | null>(null)
 
   // Mock data - em produção, estes dados viriam da API
-  const candidatos = [
-    {
-      id: '1',
-      name: 'Pedro Almeida',
-      email: 'pedro.almeida@email.com',
-      phone: '(11) 99999-1234',
-      position: 'Desenvolvedor Frontend',
-      experience: '3 anos',
-      status: 'completed', // completed, risk, pending
-      avatar: '',
-      appliedDate: '2024-01-20',
-      lastTest: '2024-01-22',
-      riskLevel: 'low',
-      testsCompleted: 5,
-      totalTests: 6,
-      source: 'LinkedIn'
-    },
-    {
-      id: '2',
-      name: 'Fernanda Costa',
-      email: 'fernanda.costa@email.com',
-      phone: '(11) 88888-5678',
-      position: 'Analista de Marketing',
-      experience: '5 anos',
-      status: 'risk',
-      avatar: '',
-      appliedDate: '2024-01-18',
-      lastTest: '2024-01-21',
-      riskLevel: 'high',
-      testsCompleted: 4,
-      totalTests: 6,
-      source: 'Site da Empresa'
-    },
-    {
-      id: '3',
-      name: 'Roberto Silva',
-      email: 'roberto.silva@email.com',
-      phone: '(11) 77777-9012',
-      position: 'Gerente de Projetos',
-      experience: '8 anos',
-      status: 'pending',
-      avatar: '',
-      appliedDate: '2024-01-25',
-      lastTest: null,
-      riskLevel: null,
-      testsCompleted: 0,
-      totalTests: 6,
-      source: 'Indicação'
-    },
-    {
-      id: '4',
-      name: 'Juliana Santos',
-      email: 'juliana.santos@email.com',
-      phone: '(11) 66666-3456',
-      position: 'UX Designer',
-      experience: '4 anos',
-      status: 'completed',
-      avatar: '',
-      appliedDate: '2024-01-19',
-      lastTest: '2024-01-23',
-      riskLevel: 'medium',
-      testsCompleted: 6,
-      totalTests: 6,
-      source: 'Glassdoor'
-    }
-  ]
+  const candidatos: any[] = []
 
-  const testResults = {
-    '1': {
-      stress: { completed: true, score: 78, status: 'good', date: '2024-01-22' },
-      burnout: { completed: true, score: 85, status: 'excellent', date: '2024-01-22' },
-      satisfaction: { completed: true, score: 82, status: 'good', date: '2024-01-22' },
-      worklife: { completed: true, score: 75, status: 'good', date: '2024-01-22' },
-      leadership: { completed: true, score: 70, status: 'good', date: '2024-01-22' },
-      teamwork: { completed: false }
-    },
-    '2': {
-      stress: { completed: true, score: 42, status: 'risk', date: '2024-01-21' },
-      burnout: { completed: true, score: 38, status: 'high-risk', date: '2024-01-21' },
-      satisfaction: { completed: true, score: 45, status: 'risk', date: '2024-01-21' },
-      worklife: { completed: true, score: 50, status: 'warning', date: '2024-01-21' },
-      leadership: { completed: false },
-      teamwork: { completed: false }
-    },
-    '4': {
-      stress: { completed: true, score: 68, status: 'warning', date: '2024-01-23' },
-      burnout: { completed: true, score: 80, status: 'good', date: '2024-01-23' },
-      satisfaction: { completed: true, score: 88, status: 'excellent', date: '2024-01-23' },
-      worklife: { completed: true, score: 75, status: 'good', date: '2024-01-23' },
-      leadership: { completed: true, score: 85, status: 'excellent', date: '2024-01-23' },
-      teamwork: { completed: true, score: 90, status: 'excellent', date: '2024-01-23' }
-    }
-  }
 
-  const testDefinitions = {
-    stress: { name: 'Teste de Estresse', icon: AlertTriangle, color: 'text-red-500' },
-    burnout: { name: 'Teste de Burnout', icon: Zap, color: 'text-orange-500' },
-    satisfaction: { name: 'Satisfação no Trabalho', icon: Heart, color: 'text-pink-500' },
-    worklife: { name: 'Work-life Balance', icon: Target, color: 'text-blue-500' },
-    leadership: { name: 'Liderança', icon: Users, color: 'text-purple-500' },
-    teamwork: { name: 'Trabalho em Equipe', icon: Brain, color: 'text-green-500' }
-  }
 
   const positions = [...new Set(candidatos.map(c => c.position))]
 
@@ -156,104 +49,35 @@ export default function CandidatosPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800'
-      case 'risk': return 'bg-red-100 text-red-800'
-      case 'pending': return 'bg-gray-100 text-gray-800'
+      case 'active': return 'bg-green-100 text-green-800'
+      case 'pending': return 'bg-yellow-100 text-yellow-800'
+      case 'inactive': return 'bg-gray-100 text-gray-800'
       default: return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'completed': return <CheckCircle className="h-4 w-4" />
-      case 'risk': return <AlertTriangle className="h-4 w-4" />
+      case 'active': return <CheckCircle className="h-4 w-4" />
       case 'pending': return <Clock className="h-4 w-4" />
+      case 'inactive': return <AlertTriangle className="h-4 w-4" />
       default: return <Clock className="h-4 w-4" />
     }
   }
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'completed': return 'Testes Realizados'
-      case 'risk': return 'Riscos Identificados'
-      case 'pending': return 'Testes Pendentes'
+      case 'active': return 'Ativo'
+      case 'pending': return 'Pendente'
+      case 'inactive': return 'Inativo'
       default: return 'Status Desconhecido'
     }
   }
 
-  const getTestStatusColor = (status: string) => {
-    switch (status) {
-      case 'excellent': return 'bg-green-500'
-      case 'good': return 'bg-blue-500'
-      case 'warning': return 'bg-yellow-500'
-      case 'risk': return 'bg-orange-500'
-      case 'high-risk': return 'bg-red-500'
-      default: return 'bg-gray-300'
-    }
-  }
 
-  const generateAIAnalysis = (candidatoId: string) => {
-    const results = testResults[candidatoId as keyof typeof testResults]
-    if (!results) return "Aguardando realização dos testes."
-
-    const completedTests = Object.entries(results).filter(([_, test]) => test.completed)
-    if (completedTests.length === 0) return "Aguardando realização dos testes."
-
-    // Análise baseada nos resultados
-    const riskTests = completedTests.filter(([_, test]) => test.status === 'risk' || test.status === 'high-risk')
-    const goodTests = completedTests.filter(([_, test]) => test.status === 'good' || test.status === 'excellent')
-    const candidato = candidatos.find(c => c.id === candidatoId)
-    
-    let analysis = "**Análise de Adequação ao Cargo por IA:**\n\n"
-    
-    analysis += `**Candidato:** ${candidato?.name}\n`
-    analysis += `**Vaga:** ${candidato?.position}\n`
-    analysis += `**Experiência:** ${candidato?.experience}\n\n`
-    
-    if (riskTests.length > 0) {
-      analysis += "⚠️ **Pontos de Atenção:**\n"
-      riskTests.forEach(([testKey, test]) => {
-        const testName = testDefinitions[testKey as keyof typeof testDefinitions].name
-        analysis += `• ${testName}: Score ${test.score}% - Pode impactar performance no cargo\n`
-      })
-      analysis += "\n"
-    }
-    
-    if (goodTests.length > 0) {
-      analysis += "✅ **Competências Adequadas:**\n"
-      goodTests.forEach(([testKey, test]) => {
-        const testName = testDefinitions[testKey as keyof typeof testDefinitions].name
-        analysis += `• ${testName}: Score ${test.score}% - Alinhado com requisitos do cargo\n`
-      })
-      analysis += "\n"
-    }
-    
-    // Recomendação final
-    const riskPercentage = (riskTests.length / completedTests.length) * 100
-    
-    analysis += "**Recomendação Final:**\n"
-    if (riskPercentage > 50) {
-      analysis += "🔴 **NÃO RECOMENDADO** - Múltiplos riscos identificados\n"
-      analysis += "• Considerar outros candidatos\n"
-      analysis += "• Se contratado, implementar plano de acompanhamento intensivo\n"
-    } else if (riskPercentage > 25) {
-      analysis += "🟡 **RECOMENDADO COM RESSALVAS** - Alguns pontos de atenção\n"
-      analysis += "• Contratação possível com acompanhamento\n"
-      analysis += "• Implementar programa de integração reforçado\n"
-      analysis += "• Monitoramento nos primeiros 90 dias\n"
-    } else {
-      analysis += "🟢 **ALTAMENTE RECOMENDADO** - Perfil adequado ao cargo\n"
-      analysis += "• Candidato apresenta boa adequação psicossocial\n"
-      analysis += "• Baixo risco de problemas futuros\n"
-      analysis += "• Processo de integração padrão\n"
-    }
-    
-    return analysis
-  }
 
   if (selectedCandidato) {
     const candidato = candidatos.find(c => c.id === selectedCandidato)
-    const results = testResults[selectedCandidato as keyof typeof testResults]
     
     return (
       <div className="space-y-6">
@@ -282,77 +106,40 @@ export default function CandidatosPage() {
           </div>
         </div>
 
-        {/* Cards de Testes */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Object.entries(testDefinitions).map(([testKey, testDef]) => {
-            const testResult = results?.[testKey as keyof typeof results]
-            const Icon = testDef.icon
-            
-            return (
-              <Card key={testKey} className={testResult?.completed ? 'border-l-4 border-l-blue-500' : 'bg-gray-50'}>
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Icon className={`h-5 w-5 ${testDef.color}`} />
-                      <CardTitle className="text-sm">{testDef.name}</CardTitle>
-                    </div>
-                    {testResult?.completed ? (
-                      <Badge className={getTestStatusColor(testResult.status)}>
-                        {testResult.score}%
-                      </Badge>
-                    ) : (
-                      <Badge variant="secondary">Não realizado</Badge>
-                    )}
-                  </div>
-                </CardHeader>
-                
-                {testResult?.completed && (
-                  <CardContent>
-                    <div className="space-y-3">
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className={`h-2 rounded-full ${getTestStatusColor(testResult.status)}`}
-                          style={{ width: `${testResult.score}%` }}
-                        ></div>
-                      </div>
-                      <div className="flex justify-between text-xs text-gray-600">
-                        <span>Realizado em: {new Date(testResult.date).toLocaleDateString('pt-BR')}</span>
-                        <span className="capitalize">{testResult.status.replace('-', ' ')}</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                )}
-              </Card>
-            )
-          })}
-        </div>
-
-        {/* Botão Download Relatório */}
-        <Card>
-          <CardContent className="pt-6">
-            <Button className="w-full">
-              <Download className="h-4 w-4 mr-2" />
-              Baixar Relatório Completo em PDF
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Análise por IA */}
+        {/* Informações do Candidato */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Brain className="h-5 w-5 text-blue-600" />
-              Análise de Adequação ao Cargo por IA
-            </CardTitle>
-            <CardDescription>
-              Análise automática da adequação do candidato baseada nos testes psicossociais
-            </CardDescription>
+            <CardTitle>Informações do Candidato</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="prose prose-sm max-w-none">
-              <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed">
-                {generateAIAnalysis(selectedCandidato)}
-              </pre>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-gray-600">Email</p>
+                <p className="font-medium">{candidato?.email}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Telefone</p>
+                <p className="font-medium">{candidato?.phone}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Cargo Pretendido</p>
+                <p className="font-medium">{candidato?.position}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Experiência</p>
+                <p className="font-medium">{candidato?.experience}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Fonte</p>
+                <p className="font-medium">{candidato?.source}</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Status</p>
+                <Badge className={getStatusColor(candidato?.status || '')}>
+                  {getStatusIcon(candidato?.status || '')}
+                  <span className="ml-1">{getStatusText(candidato?.status || '')}</span>
+                </Badge>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -394,9 +181,9 @@ export default function CandidatosPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos os Status</SelectItem>
-                <SelectItem value="completed">Testes Realizados</SelectItem>
-                <SelectItem value="risk">Riscos Identificados</SelectItem>
-                <SelectItem value="pending">Testes Pendentes</SelectItem>
+                <SelectItem value="active">Ativo</SelectItem>
+                <SelectItem value="pending">Pendente</SelectItem>
+                <SelectItem value="inactive">Inativo</SelectItem>
               </SelectContent>
             </Select>
             <Select value={positionFilter} onValueChange={setPositionFilter}>
@@ -429,7 +216,7 @@ export default function CandidatosPage() {
                   <Avatar className="h-12 w-12">
                     <AvatarImage src={candidato.avatar} />
                     <AvatarFallback>
-                      {candidato.name.split(' ').map(n => n[0]).join('')}
+                      {candidato.name.split(' ').map((n: string) => n[0]).join('')}
                     </AvatarFallback>
                   </Avatar>
                   
@@ -447,17 +234,6 @@ export default function CandidatosPage() {
                 </div>
                 
                 <div className="flex items-center gap-4">
-                  <div className="text-right">
-                    <div className="text-sm font-medium">
-                      {candidato.testsCompleted}/{candidato.totalTests} testes
-                    </div>
-                    {candidato.lastTest && (
-                      <div className="text-xs text-gray-500">
-                        Último: {new Date(candidato.lastTest).toLocaleDateString('pt-BR')}
-                      </div>
-                    )}
-                  </div>
-                  
                   <Badge className={getStatusColor(candidato.status)}>
                     {getStatusIcon(candidato.status)}
                     <span className="ml-1">{getStatusText(candidato.status)}</span>
@@ -465,22 +241,7 @@ export default function CandidatosPage() {
                 </div>
               </div>
               
-              {/* Barra de Progresso */}
-              <div className="mt-4">
-                <div className="flex justify-between text-xs text-gray-600 mb-1">
-                  <span>Progresso dos Testes</span>
-                  <span>{Math.round((candidato.testsCompleted / candidato.totalTests) * 100)}%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className={`h-2 rounded-full transition-all ${
-                      candidato.status === 'completed' ? 'bg-green-500' :
-                      candidato.status === 'risk' ? 'bg-red-500' : 'bg-gray-400'
-                    }`}
-                    style={{ width: `${(candidato.testsCompleted / candidato.totalTests) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
+
             </CardContent>
           </Card>
         ))}

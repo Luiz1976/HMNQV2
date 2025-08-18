@@ -28,7 +28,7 @@ const dadosMock: DadoRiscoSimples[] = [
     tipo: 'Assédio Moral',
     nivel: 'critico',
     data: '2024-01-15',
-    descricao: 'Relato de assédio moral na equipe',
+    descricao: 'Relato de assédio moral na equipe de RH',
     colaborador: 'João Silva'
   },
   {
@@ -37,16 +37,16 @@ const dadosMock: DadoRiscoSimples[] = [
     tipo: 'Estresse Ocupacional',
     nivel: 'alto',
     data: '2024-01-14',
-    descricao: 'Sobrecarga de trabalho relatada',
+    descricao: 'Sobrecarga de trabalho e prazos apertados',
     colaborador: 'Maria Santos'
   },
   {
     id: '3',
     area: 'vendas',
-    tipo: 'Baixa Autonomia',
-    nivel: 'medio',
+    tipo: 'Pressão por Metas',
+    nivel: 'alto',
     data: '2024-01-13',
-    descricao: 'Falta de autonomia para tomada de decisões',
+    descricao: 'Pressão excessiva para atingir metas de vendas',
     colaborador: 'Pedro Costa'
   },
   {
@@ -71,10 +71,46 @@ const dadosMock: DadoRiscoSimples[] = [
     id: '6',
     area: 'operacoes',
     tipo: 'Ambiente Insalubre',
-    nivel: 'baixo',
+    nivel: 'medio',
     data: '2024-01-10',
-    descricao: 'Questões menores de ambiente',
+    descricao: 'Ruído excessivo no ambiente de trabalho',
     colaborador: 'Lucia Ferreira'
+  },
+  {
+    id: '7',
+    area: 'ti',
+    tipo: 'Burnout',
+    nivel: 'critico',
+    data: '2024-01-09',
+    descricao: 'Sinais de esgotamento profissional severo',
+    colaborador: 'Carlos Oliveira'
+  },
+  {
+    id: '8',
+    area: 'marketing',
+    tipo: 'Falta de Reconhecimento',
+    nivel: 'medio',
+    data: '2024-01-08',
+    descricao: 'Ausência de feedback positivo e reconhecimento',
+    colaborador: 'Ana Paula'
+  },
+  {
+    id: '9',
+    area: 'financeiro',
+    tipo: 'Sobrecarga de Trabalho',
+    nivel: 'alto',
+    data: '2024-01-07',
+    descricao: 'Excesso de horas extras e responsabilidades',
+    colaborador: 'Roberto Lima'
+  },
+  {
+    id: '10',
+    area: 'rh',
+    tipo: 'Conflito Interpessoal',
+    nivel: 'medio',
+    data: '2024-01-06',
+    descricao: 'Desentendimentos frequentes entre colegas',
+    colaborador: 'Fernanda Costa'
   }
 ]
 
@@ -123,18 +159,31 @@ export function useFiltrosSimples() {
 
   // Calcular métricas baseadas nos dados filtrados
   const metricas = useMemo((): MetricasSimples => {
-    const total = dadosFiltrados.length
-    const altos = dadosFiltrados.filter(d => d.nivel === 'alto').length
-    const criticos = dadosFiltrados.filter(d => d.nivel === 'critico').length
-    const colaboradoresUnicos = new Set(dadosFiltrados.map(d => d.colaborador)).size
+    const totalRiscos = dadosFiltrados.length
+    const riscosAltos = dadosFiltrados.filter(d => d.nivel === 'alto').length
+    const riscosCriticos = dadosFiltrados.filter(d => d.nivel === 'critico').length
+    const riscosMedios = dadosFiltrados.filter(d => d.nivel === 'medio').length
+    const riscosBaixos = dadosFiltrados.filter(d => d.nivel === 'baixo').length
     
+    // Simular riscos resolvidos baseado no tempo e severidade
+    const riscosResolvidos = Math.floor(
+      (riscosBaixos * 0.8) + (riscosMedios * 0.4) + (riscosAltos * 0.2) + (riscosCriticos * 0.1)
+    )
+    
+    // Calcular confiança baseada na distribuição e quantidade de dados
+    const confianca = Math.min(95, Math.max(60, 
+      85 - (riscosCriticos * 5) - (riscosAltos * 2) + (totalRiscos > 5 ? 5 : 0)
+    ))
+    
+    const colaboradoresAfetados = new Set(dadosFiltrados.map(d => d.colaborador)).size
+
     return {
-      totalRiscos: total,
-      riscosAltos: altos,
-      riscosCriticos: criticos,
-      riscosResolvidos: Math.floor(total * 0.3), // 30% resolvidos (simulado)
-      confianca: total > 0 ? Math.min(95, 70 + (total * 2)) : 0,
-      colaboradoresAfetados: colaboradoresUnicos
+      totalRiscos,
+      riscosAltos,
+      riscosCriticos,
+      riscosResolvidos,
+      confianca,
+      colaboradoresAfetados
     }
   }, [dadosFiltrados])
 

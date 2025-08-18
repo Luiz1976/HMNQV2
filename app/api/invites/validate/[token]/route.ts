@@ -35,6 +35,12 @@ export async function GET(
             id: true,
             name: true
           }
+        },
+        inviter: {
+          select: {
+            id: true,
+            userType: true
+          }
         }
       }
     })
@@ -61,6 +67,9 @@ export async function GET(
 
     const isValid = !isExpired && !isUsed
 
+    // Determine suggested user type based on who created the invite
+    const suggestedUserType = invite.inviter?.userType === 'ADMIN' ? 'COMPANY' : 'EMPLOYEE'
+
     return NextResponse.json({
       success: true,
       invite: {
@@ -72,7 +81,9 @@ export async function GET(
         isExpired,
         isUsed,
         expiresAt: invite.expiresAt.toISOString(),
-        createdAt: invite.createdAt.toISOString()
+        createdAt: invite.createdAt.toISOString(),
+        suggestedUserType,
+        inviterType: invite.inviter?.userType || null
       }
     })
 

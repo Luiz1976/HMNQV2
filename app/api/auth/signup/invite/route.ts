@@ -165,6 +165,14 @@ export async function POST(request: NextRequest) {
         }
       })
 
+      // If user type is COMPANY, set as company owner
+      if (userType === 'COMPANY') {
+        await tx.company.update({
+          where: { id: company.id },
+          data: { ownerId: user.id }
+        })
+      }
+
       // Mark invite as used
       await tx.invitation.update({
         where: {

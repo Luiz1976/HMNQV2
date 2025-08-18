@@ -1,605 +1,424 @@
-
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { useTests } from '@/hooks/useTests'
 import { 
+  Brain, 
+  Target, 
+  Users, 
   Heart, 
-  Clock, 
+  Compass, 
+  Trophy, 
+  Zap, 
+  Lightbulb, 
   CheckCircle, 
-  XCircle, 
-  Play, 
-  AlertTriangle,
-  Brain,
-  Shield,
-  Flame,
-  Download,
+  Clock, 
+  Play,
+  User,
+  Smile,
+  Activity,
   BarChart3,
-  PieChart,
-  TrendingUp
+  Puzzle,
+  Gauge,
+  Layers,
+  Sparkles,
+  Crown
 } from 'lucide-react'
-import { toast } from 'sonner'
-import { Doughnut, Bar, Line } from 'react-chartjs-2'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-  PointElement,
-  LineElement,
-} from 'chart.js'
+import { AdvancedParticleBackground } from '@/components/ui/advanced-particle-background'
 
-// Register Chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-  PointElement,
-  LineElement
-)
-
-interface PsychosocialTest {
+interface Test {
   id: string
   name: string
   description: string
-  estimatedDuration: number
-  status: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED'
-  progress?: number
-  lastAttempt?: string
-  testType: 'stress' | 'burnout' | 'satisfaction' | 'worklife' | 'leadership' | 'teamwork'
-  result?: {
-    overallScore: number
-    riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
-    detailedScores?: {
-      [key: string]: number
-    }
-    categories?: {
-      name: string
-      score: number
-      maxScore: number
-    }[]
-    trends?: {
-      date: string
-      score: number
-    }[]
-  }
+  category: string
+  duration: string
+  status: 'available' | 'in_progress' | 'completed'
+  icon: any
+  score?: number
+  dimensions?: string[]
 }
 
+// Mapeamento de ícones para os testes psicossociais
+const getPsicossocialIcon = (testId: string) => {
+  const iconMap: Record<string, any> = {
+    'humaniq-insight': Lightbulb,
+    'humaniq-qvt': Heart,
+    'humaniq-karasek-siegrist': Gauge,
+    'humaniq-rpo': BarChart3,
+    'humaniq-eo': Activity,
+    'humaniq-pas': Users,
+    'humaniq-mgrp': Layers,
+    'humaniq-tipos': Target,
+    'humaniq-bigfive': User,
+    'humaniq-eneagrama': Compass,
+    'humaniq-valores': Trophy,
+    'humaniq-motiva': Zap,
+    'humaniq-flex': Sparkles
+  }
+  return iconMap[testId] || Brain
+}
+
+// Mapeamento de categorias para os testes psicossociais
+const getPsicossocialCategory = (testId: string) => {
+  const categoryMap: Record<string, string> = {
+    'humaniq-insight': 'Clima Organizacional',
+    'humaniq-qvt': 'Qualidade de Vida',
+    'humaniq-karasek-siegrist': 'Estresse Ocupacional',
+    'humaniq-rpo': 'Riscos Psicossociais',
+    'humaniq-eo': 'Estresse e Burnout',
+    'humaniq-pas': 'Assédio e Violência',
+    'humaniq-mgrp': 'Gestão de Riscos',
+    'humaniq-tipos': 'Personalidade',
+    'humaniq-bigfive': 'Personalidade',
+    'humaniq-eneagrama': 'Personalidade',
+    'humaniq-valores': 'Valores',
+    'humaniq-motiva': 'Motivação',
+    'humaniq-flex': 'Adaptabilidade'
+  }
+  return categoryMap[testId] || 'Psicossocial'
+}
+
+function getCategoryGradient(category: string): string {
+  const gradients = {
+    'Clima Organizacional': 'bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700',
+    'Qualidade de Vida': 'bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700',
+    'Estresse Ocupacional': 'bg-gradient-to-br from-blue-700 via-indigo-700 to-purple-800',
+    'Riscos Psicossociais': 'bg-gradient-to-br from-purple-500 via-indigo-600 to-blue-700',
+    'Estresse e Burnout': 'bg-gradient-to-br from-blue-500 via-indigo-500 to-blue-700',
+    'Assédio e Violência': 'bg-gradient-to-br from-indigo-500 via-blue-600 to-purple-700',
+    'Gestão de Riscos': 'bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700',
+    'Inteligência Emocional': 'bg-gradient-to-br from-pink-500 via-rose-600 to-red-700',
+    'Liderança': 'bg-gradient-to-br from-amber-500 via-orange-600 to-red-700'
+  }
+  return gradients[category as keyof typeof gradients] || 'bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700'
+}
+
+// IDs dos testes psicossociais permitidos (IDs reais do banco de dados)
+const ALLOWED_PSICO_TEST_IDS = [
+  'cme216bcl00018wg05iydpwsz', // HumaniQ Insight – Clima Organizacional e Bem-Estar Psicológico
+  'cme216bem00058wg0rqpxnh40', // HumaniQ QVT – Qualidade de Vida no Trabalho
+  'cme216bgy00078wg0e0ethrmz', // HumaniQ Karasek-Siegrist – Teste Psicossocial Avançado
+  'cme216bjq00098wg0yz7ly97k', // HumaniQ EO – Estresse Ocupacional, Burnout e Resiliência
+  'cme216blq000b8wg0viq7ta6k', // HumaniQ PAS – Percepção de Assédio Moral e Sexual
+  'cme216boc000d8wg02vj91skk', // HumaniQ MGRP – Maturidade em Gestão de Riscos Psicossociais
+  'cme7u1z2w00058w1w9k11srma', // HumaniQ RPO – Riscos Psicossociais Ocupacionais
+  'humaniq-tipos' // HumaniQ Tipos
+] as const
+
 export default function PsicossociaisPage() {
-  const [tests, setTests] = useState<PsychosocialTest[]>([])
-  const [loading, setLoading] = useState(true)
+  const { data: session } = useSession()
+  const router = useRouter()
+  const { tests: apiTests, loading, error } = useTests()
+  const [tests, setTests] = useState<Test[]>([])
 
   useEffect(() => {
-    fetchPsychosocialTests()
-  }, [])
-
-  const fetchPsychosocialTests = async () => {
-    try {
-      // Simulando dados para demonstração
-      const mockData: PsychosocialTest[] = [
-        {
-          id: '1',
-          name: 'Teste de Estresse',
-          description: 'Avalia os níveis de estresse no ambiente de trabalho',
-          estimatedDuration: 15,
-          status: 'COMPLETED',
-          testType: 'stress',
-          lastAttempt: '2024-01-14',
-          result: {
-            overallScore: 75,
-            riskLevel: 'MEDIUM',
-            detailedScores: {
-              workload: 80,
-              timeManagement: 70,
-              workEnvironment: 75
-            }
-          }
-        },
-        {
-          id: '2',
-          name: 'Teste de Burnout',
-          description: 'Identifica sinais de esgotamento profissional',
-          estimatedDuration: 20,
-          status: 'COMPLETED',
-          testType: 'burnout',
-          lastAttempt: '2024-01-13',
-          result: {
-            overallScore: 82,
-            riskLevel: 'LOW',
-            detailedScores: {
-              exhaustion: 65,
-              depersonalization: 40,
-              accomplishment: 75
-            }
-          }
-        },
-        {
-          id: '3',
-          name: 'Satisfação no Trabalho',
-          description: 'Mede o nível de satisfação e engajamento',
-          estimatedDuration: 12,
-          status: 'COMPLETED',
-          testType: 'satisfaction',
-          lastAttempt: '2024-01-12',
-          result: {
-            overallScore: 88,
-            riskLevel: 'LOW',
-            trends: [
-              { date: '2024-01-01', score: 70 },
-              { date: '2024-01-02', score: 75 },
-              { date: '2024-01-03', score: 72 },
-              { date: '2024-01-04', score: 78 },
-              { date: '2024-01-05', score: 82 },
-              { date: '2024-01-06', score: 85 }
-            ]
-          }
-        },
-        {
-          id: '4',
-          name: 'Work-life Balance',
-          description: 'Avalia o equilíbrio entre vida pessoal e profissional',
-          estimatedDuration: 10,
-          status: 'IN_PROGRESS',
-          testType: 'worklife',
-          progress: 60,
-          lastAttempt: '2024-01-14'
-        },
-        {
-          id: '5',
-          name: 'Liderança',
-          description: 'Avalia competências de liderança e gestão',
-          estimatedDuration: 25,
-          status: 'COMPLETED',
-          testType: 'leadership',
-          lastAttempt: '2024-01-11',
-          result: {
-            overallScore: 85,
-            riskLevel: 'LOW'
-          }
-        },
-        {
-          id: '6',
-          name: 'Trabalho em Equipe',
-          description: 'Mede a capacidade de colaboração e trabalho em grupo',
-          estimatedDuration: 18,
-          status: 'NOT_STARTED',
-          testType: 'teamwork'
-        }
-      ]
+    if (apiTests.length > 0) {
+      // Filtrar apenas os testes desejados para a página
+      const psicossocialTests: Test[] = apiTests
+        .filter(test => ALLOWED_PSICO_TEST_IDS.includes(test.id as any))
+        .map(test => ({
+        id: test.id,
+        name: test.title,
+        description: test.description,
+        category: getPsicossocialCategory(test.id),
+        duration: `${test.estimatedDuration} min`,
+        status: 'available' as const,
+        icon: getPsicossocialIcon(test.id),
+        dimensions: getDimensionsForTest(test.id)
+      }))
       
-      setTests(mockData)
-    } catch (error) {
-      console.error('Erro ao carregar testes:', error)
-      toast.error('Erro ao carregar testes psicossociais')
-    } finally {
-      setLoading(false)
+      // Ordenar de acordo com a lista definida
+      psicossocialTests.sort((a, b) => ALLOWED_PSICO_TEST_IDS.indexOf(a.id as any) - ALLOWED_PSICO_TEST_IDS.indexOf(b.id as any))
+      setTests(psicossocialTests)
     }
+  }, [apiTests])
+
+  // Função para mapear dimensões baseadas no ID do teste
+  const getDimensionsForTest = (testId: string): string[] => {
+    const dimensionsMap: Record<string, string[]> = {
+      'cme216bcl00018wg05iydpwsz': ['Clima', 'Bem-estar', 'Ambiente', 'Satisfação'], // HumaniQ Insight
+      'cme216bem00058wg0rqpxnh40': ['Qualidade de Vida', 'Satisfação', 'Equilíbrio', 'Bem-estar'], // HumaniQ QVT
+      'cme216bgy00078wg0e0ethrmz': ['Demanda', 'Controle', 'Esforço', 'Recompensa'], // HumaniQ Karasek-Siegrist
+      'cme7u1z2w00058w1w9k11srma': ['Riscos', 'Prevenção', 'Segurança', 'Saúde Ocupacional'], // HumaniQ RPO
+      'cme216bjq00098wg0yz7ly97k': ['Estresse', 'Burnout', 'Resiliência', 'Recuperação'], // HumaniQ EO
+      'cme216blq000b8wg0viq7ta6k': ['Assédio Moral', 'Assédio Sexual', 'Violência', 'Proteção'], // HumaniQ PAS
+      'cme216boc000d8wg02vj91skk': ['Maturidade', 'Gestão', 'Prevenção', 'Políticas'], // HumaniQ MGRP
+      'cme216bde00038wg0xkau0ea0': ['Clima', 'Bem-estar', 'Comportamento', 'Satisfação'] // HumaniQ Pesquisa de Clima
+    }
+    return dimensionsMap[testId] || ['Dimensão Geral']
   }
 
-  const startTest = (testId: string) => {
-    toast.success('Redirecionando para o teste...')
-    // Here would be the logic to start/resume test
-  }
+  const handleStartTest = (testId: string) => {
+    const test = tests.find(t => t.id === testId)
+    if (!test) return
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'NOT_STARTED': return <XCircle className="h-5 w-5 text-gray-400" />
-      case 'IN_PROGRESS': return <Clock className="h-5 w-5 text-blue-500" />
-      case 'COMPLETED': return <CheckCircle className="h-5 w-5 text-green-500" />
-      default: return <XCircle className="h-5 w-5 text-gray-400" />
-    }
-  }
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'NOT_STARTED': return 'Não iniciado'
-      case 'IN_PROGRESS': return 'Em progresso'
-      case 'COMPLETED': return 'Concluído'
-      default: return status
-    }
-  }
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'NOT_STARTED': return 'bg-gray-100 text-gray-700'
-      case 'IN_PROGRESS': return 'bg-blue-100 text-blue-700'
-      case 'COMPLETED': return 'bg-green-100 text-green-700'
-      default: return 'bg-gray-100 text-gray-700'
-    }
-  }
-
-  const getRiskColor = (level: string) => {
-    switch (level) {
-      case 'LOW': return 'text-green-600'
-      case 'MEDIUM': return 'text-yellow-600'
-      case 'HIGH': return 'text-orange-600'
-      case 'CRITICAL': return 'text-red-600'
-      default: return 'text-gray-600'
-    }
-  }
-
-  const getRiskIcon = (level: string) => {
-    switch (level) {
-      case 'LOW': return <Shield className="h-4 w-4" />
-      case 'MEDIUM': return <AlertTriangle className="h-4 w-4" />
-      case 'HIGH': return <AlertTriangle className="h-4 w-4" />
-      case 'CRITICAL': return <Flame className="h-4 w-4" />
-      default: return <Shield className="h-4 w-4" />
-    }
-  }
-
-  const downloadPDF = async (testId: string, testName: string) => {
-    try {
-      const loadingToast = toast.loading('Gerando PDF...')
-      const response = await fetch(`/api/colaborador/tests/${testId}/pdf`, {
-        method: 'GET',
-      })
-      
-      if (!response.ok) {
-        throw new Error('Erro ao gerar PDF')
-      }
-      
-      const blob = await response.blob()
-      const url = window.URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.style.display = 'none'
-      a.href = url
-      a.download = `${testName.replace(/\s+/g, '_')}_resultado.pdf`
-      document.body.appendChild(a)
-      a.click()
-      window.URL.revokeObjectURL(url)
-      document.body.removeChild(a)
-      
-      toast.dismiss(loadingToast)
-      toast.success('PDF baixado com sucesso!')
-    } catch (error) {
-      toast.error('Erro ao baixar PDF')
-      console.error('Erro ao baixar PDF:', error)
-    }
-  }
-
-  const getChartForTest = (test: PsychosocialTest) => {
-    if (!test.result) return null
-
-    const chartOptions = {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'bottom' as const,
-          labels: {
-            usePointStyle: true,
-            padding: 15,
-            font: {
-              size: 11
-            }
-          }
-        },
-        tooltip: {
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          titleColor: 'white',
-          bodyColor: 'white',
-          borderColor: 'rgba(255, 255, 255, 0.1)',
-          borderWidth: 1
-        }
-      }
+    // Mapeamento de IDs reais -> rotas de introdução por slug
+      const routeMap: Record<string, string> = {
+      // Rotas específicas para testes que possuem páginas de introdução customizadas
+      'cme216bcl00018wg05iydpwsz': '/colaborador/psicossociais/humaniq-insight/introducao', // HumaniQ Insight
+      'cme7u1z2w00058w1w9k11srma': '/colaborador/psicossociais/humaniq-rpo/introducao', // HumaniQ RPO
+      'cme216bem00058wg0rqpxnh40': '/colaborador/psicossociais/humaniq-qvt/introducao', // HumaniQ QVT
+      'cmdxqvgu4000p8wsg7l8brjee': '/colaborador/psicossociais/humaniq-tipos/introducao', // HumaniQ TIPOS
+      'cmdxqvgu4000o8wsg7l8brjed': '/colaborador/psicossociais/humaniq-valores/introducao', // HumaniQ VALORES
+      'cme216bgy00078wg0e0ethrmz': '/colaborador/psicossociais/humaniq-karasek-siegrist/introducao', // HumaniQ Karasek-Siegrist
+      'cme216bjq00098wg0yz7ly97k': '/colaborador/psicossociais/humaniq-eo/introducao', // HumaniQ EO
+      'cme216blq000b8wg0viq7ta6k': '/colaborador/psicossociais/humaniq-pas/introducao', // HumaniQ PAS
+      'cme216boc000d8wg02vj91skk': '/colaborador/psicossociais/humaniq-mgrp/introducao', // HumaniQ MGRP
     }
 
-    switch (test.testType) {
-      case 'stress':
-        // Gráfico de rosca para níveis de estresse
-        const stressData = {
-          labels: ['Baixo Estresse', 'Estresse Moderado', 'Alto Estresse'],
-          datasets: [{
-            data: [30, 45, 25],
-            backgroundColor: ['#10B981', '#F59E0B', '#EF4444'],
-            borderWidth: 0
-          }]
-        }
-        return (
-          <div className="h-32">
-            <Doughnut data={stressData} options={chartOptions} />
-          </div>
-        )
-
-      case 'burnout':
-        // Gráfico de barras para dimensões do burnout
-        const burnoutData = {
-          labels: ['Exaustão', 'Despersonalização', 'Realização'],
-          datasets: [{
-            label: 'Pontuação',
-            data: [test.result.detailedScores?.exhaustion || 65, 
-                   test.result.detailedScores?.depersonalization || 40, 
-                   test.result.detailedScores?.accomplishment || 75],
-            backgroundColor: ['#EF4444', '#F59E0B', '#10B981'],
-            borderRadius: 4
-          }]
-        }
-        return (
-          <div className="h-32">
-            <Bar data={burnoutData} options={chartOptions} />
-          </div>
-        )
-
-      case 'satisfaction':
-        // Gráfico de linha para tendência de satisfação
-        const satisfactionData = {
-          labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
-          datasets: [{
-            label: 'Satisfação',
-            data: test.result.trends?.map(t => t.score) || [70, 75, 72, 78, 82, 85],
-            borderColor: '#8B5CF6',
-            backgroundColor: 'rgba(139, 92, 246, 0.1)',
-            tension: 0.4,
-            fill: true
-          }]
-        }
-        return (
-          <div className="h-32">
-            <Line data={satisfactionData} options={chartOptions} />
-          </div>
-        )
-
-      case 'worklife':
-        // Gráfico de rosca para equilíbrio vida-trabalho
-        const worklifeData = {
-          labels: ['Trabalho', 'Vida Pessoal', 'Flexibilidade'],
-          datasets: [{
-            data: [40, 35, 25],
-            backgroundColor: ['#3B82F6', '#10B981', '#F59E0B'],
-            borderWidth: 0
-          }]
-        }
-        return (
-          <div className="h-32">
-            <Doughnut data={worklifeData} options={chartOptions} />
-          </div>
-        )
-
-      case 'leadership':
-        // Gráfico de barras para competências de liderança
-        const leadershipData = {
-          labels: ['Comunicação', 'Motivação', 'Decisão', 'Delegação'],
-          datasets: [{
-            label: 'Competência',
-            data: [85, 78, 82, 75],
-            backgroundColor: '#6366F1',
-            borderRadius: 4
-          }]
-        }
-        return (
-          <div className="h-32">
-            <Bar data={leadershipData} options={chartOptions} />
-          </div>
-        )
-
-      case 'teamwork':
-        // Gráfico de rosca para trabalho em equipe
-        const teamworkData = {
-          labels: ['Colaboração', 'Comunicação', 'Confiança', 'Conflitos'],
-          datasets: [{
-            data: [25, 30, 25, 20],
-            backgroundColor: ['#10B981', '#3B82F6', '#8B5CF6', '#F59E0B'],
-            borderWidth: 0
-          }]
-        }
-        return (
-          <div className="h-32">
-            <Doughnut data={teamworkData} options={chartOptions} />
-          </div>
-        )
-
-      default:
-        return null
-    }
-  }
-
-  const getChartIcon = (testType: string) => {
-    switch (testType) {
-      case 'stress':
-      case 'worklife':
-      case 'teamwork':
-        return <PieChart className="h-4 w-4" />
-      case 'burnout':
-      case 'leadership':
-        return <BarChart3 className="h-4 w-4" />
-      case 'satisfaction':
-        return <TrendingUp className="h-4 w-4" />
-      default:
-        return <BarChart3 className="h-4 w-4" />
+    if (test.status === 'completed') {
+      router.push(`/colaborador/resultados/${testId}`)
+    } else {
+      const route = routeMap[testId] || `/colaborador/psicossociais/${testId}/introducao`
+      router.push(route)
     }
   }
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-lg text-gray-600">Carregando testes psicossociais...</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Testes Psicossociais</h1>
-          <p className="text-gray-600 mt-2">
-            Avalie sua saúde mental, bem-estar e riscos psicossociais no ambiente de trabalho
-          </p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header com gradiente azul e partículas */}
+      <div className="relative bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 text-white overflow-hidden">
+        {/* Partículas flutuantes avançadas */}
+        <AdvancedParticleBackground 
+          color="#ffffff" 
+          particleCount={25} 
+          size="large" 
+          animation="drift"
+          className="opacity-30"
+        />
+        <AdvancedParticleBackground 
+          color="#3b82f6" 
+          particleCount={15} 
+          size="medium" 
+          animation="float"
+          className="opacity-20"
+        />
+        
+        <div className="relative max-w-7xl mx-auto px-6 py-8 z-10">
+          <div className="text-center mb-5">
+            <div className="flex items-center justify-center mb-2">
+              <div className="p-2 bg-white/20 rounded-full backdrop-blur-sm">
+                <Brain className="h-5 w-5 text-white" />
+              </div>
+            </div>
+            <h1 className="text-4xl font-bold mb-2">Testes Psicossociais</h1>
+            {session?.user?.firstName && (
+              <div className="mb-3">
+                <p className="text-xl text-white/95 font-medium">
+                  Olá, {session.user.firstName}! 👋
+                </p>
+              </div>
+            )}
+            <p className="text-lg text-white/90 max-w-2xl mx-auto mb-3">
+              Avalie aspectos psicológicos e sociais que impactam seu bem-estar e desempenho no trabalho
+            </p>
+            <div className="inline-flex items-center px-3 py-1 bg-white/20 rounded-full backdrop-blur-sm">
+              <Lightbulb className="h-4 w-4 mr-2" />
+              <span className="text-sm">Descubra insights sobre sua saúde mental e desenvolvimento profissional</span>
+            </div>
+          </div>
+          
+          {/* Stats no header */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-7 text-center">
+              <div className="text-4xl font-bold mb-1">{tests.length}</div>
+              <div className="text-white/80 text-base">Testes</div>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-7 text-center">
+              <div className="text-4xl font-bold mb-1">15-45</div>
+              <div className="text-white/80 text-base">Minutos</div>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-7 text-center">
+              <div className="text-4xl font-bold mb-1">100%</div>
+              <div className="text-white/80 text-base">Personalizado</div>
+            </div>
+          </div>
         </div>
       </div>
+      
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Título da seção */}
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">Testes Disponíveis</h2>
+          <p className="text-lg text-gray-600">
+            Escolha um teste para começar sua jornada de autoconhecimento
+          </p>
+        </div>
 
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total</p>
-                <p className="text-2xl font-bold text-gray-900">{tests.length}</p>
-              </div>
-              <Heart className="h-8 w-8 text-red-500" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-green-600">Concluídos</p>
-                <p className="text-2xl font-bold text-green-900">
-                  {tests.filter(t => t.status === 'COMPLETED').length}
-                </p>
-              </div>
-              <CheckCircle className="h-8 w-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-blue-600">Em Progresso</p>
-                <p className="text-2xl font-bold text-blue-900">
-                  {tests.filter(t => t.status === 'IN_PROGRESS').length}
-                </p>
-              </div>
-              <Clock className="h-8 w-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Não Iniciados</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {tests.filter(t => t.status === 'NOT_STARTED').length}
-                </p>
-              </div>
-              <Brain className="h-8 w-8 text-gray-600" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Tests Grid */}
-      <div className="grid gap-6">
-        {tests.map((test) => (
-          <Card key={test.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <CardTitle className="text-lg">{test.name}</CardTitle>
-                  <CardDescription className="mt-2">{test.description}</CardDescription>
-                </div>
-                <div className="flex items-center space-x-2">
-                  {getStatusIcon(test.status)}
-                  <Badge className={getStatusColor(test.status)}>
-                    {getStatusText(test.status)}
-                  </Badge>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {/* Test Info */}
-                <div className="flex items-center justify-between text-sm text-gray-600">
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-1">
-                      <Clock className="h-4 w-4" />
-                      <span>{test.estimatedDuration} minutos</span>
-                    </div>
-                    {test.lastAttempt && (
-                      <div>
-                        <span>Última tentativa: {new Date(test.lastAttempt).toLocaleDateString('pt-BR')}</span>
+        {/* Tests Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {tests.map((test) => {
+            const Icon = test.icon
+            return (
+              <div key={test.id} className="group relative">
+                {/* Partículas avançadas do card */}
+                <AdvancedParticleBackground 
+                  color="#ffffff" 
+                  particleCount={8} 
+                  size="small" 
+                  animation="float"
+                  className="opacity-40 rounded-2xl"
+                />
+                <AdvancedParticleBackground 
+                  color="#3b82f6" 
+                  particleCount={5} 
+                  size="medium" 
+                  animation="pulse"
+                  className="opacity-20 rounded-2xl"
+                />
+                
+                <div className={`relative ${getCategoryGradient(test.category)} rounded-2xl p-6 text-white shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 hover:scale-105 backdrop-blur-sm border border-white/10 min-h-[420px] flex flex-col`}>
+                  {/* Status Badge */}
+                  <div className="absolute top-4 right-4">
+                    {test.status === 'completed' ? (
+                      <div className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center">
+                        <CheckCircle className="h-4 w-4 mr-1" />
+                        Concluído
+                      </div>
+                    ) : test.status === 'in_progress' ? (
+                      <div className="bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center">
+                        <Clock className="h-4 w-4 mr-1" />
+                        Em Andamento
+                      </div>
+                    ) : (
+                      <div className="bg-white/20 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
+                        Disponível
                       </div>
                     )}
                   </div>
-                </div>
-
-                {/* Progress for in-progress tests */}
-                {test.status === 'IN_PROGRESS' && test.progress && (
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Progresso</span>
-                      <span>{test.progress}%</span>
+                  
+                  {/* Icon */}
+                  <div className="mb-4">
+                    <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                      <Icon className="h-6 w-6 text-white" />
                     </div>
-                    <Progress value={test.progress} className="h-2" />
                   </div>
-                )}
-
-                {/* Results for completed tests */}
-                {test.status === 'COMPLETED' && test.result && (
-                  <div className="bg-gray-50 p-4 rounded-lg space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">Resultado</p>
-                        <p className="text-lg font-bold text-gray-900">{test.result.overallScore}/100</p>
-                      </div>
-                      <div className={`flex items-center space-x-2 ${getRiskColor(test.result.riskLevel)}`}>
-                        {getRiskIcon(test.result.riskLevel)}
-                        <span className="font-medium">Risco {test.result.riskLevel}</span>
-                      </div>
-                    </div>
+                  
+                  {/* Content */}
+                  <div className="mb-4 flex-grow flex flex-col">
+                    <h3 className="text-2xl font-bold mb-2">{test.name}</h3>
+                    <p className="text-white/90 text-base mb-3 line-clamp-3 flex-grow">
+                      {test.description}
+                    </p>
                     
-                    {/* Chart Section */}
-                    <div className="border-t pt-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center space-x-2">
-                          {getChartIcon(test.testType)}
-                          <span className="text-sm font-medium text-gray-700">Análise Detalhada</span>
-                        </div>
-                      </div>
-                      {getChartForTest(test)}
+                    {/* Category and Duration */}
+                    <div className="flex items-center justify-between text-base mt-auto">
+                      <span className="bg-white/20 px-2 py-1 rounded-lg backdrop-blur-sm text-sm">
+                        {test.category}
+                      </span>
+                      <span className="text-white/80 text-sm">{test.duration}</span>
                     </div>
                   </div>
-                )}
-
-                {/* Actions */}
-                <div className="flex justify-end space-x-2">
-                  {test.status === 'COMPLETED' && (
-                    <>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => downloadPDF(test.id, test.name)}
-                        className="flex items-center space-x-2"
-                      >
-                        <Download className="h-4 w-4" />
-                        <span>Baixar PDF</span>
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        Ver Resultados
-                      </Button>
-                    </>
-                  )}
-                  <Button 
-                    onClick={() => startTest(test.id)}
-                    size="sm"
-                    className="bg-purple-600 hover:bg-purple-700"
+                  
+                  {/* Action Button */}
+                  <button 
+                    onClick={() => handleStartTest(test.id)}
+                    className="relative w-full bg-white/20 hover:bg-white/40 backdrop-blur-sm text-white font-medium py-3 px-4 rounded-xl transition-all duration-300 flex items-center justify-center group-hover:bg-white/40 text-base overflow-hidden border border-white/20 hover:border-white/40 hover:shadow-lg"
                   >
-                    <Play className="h-4 w-4 mr-2" />
-                    {test.status === 'NOT_STARTED' ? 'Iniciar Teste' : 
-                     test.status === 'IN_PROGRESS' ? 'Continuar' : 'Refazer'}
-                  </Button>
+                    {/* Efeito de brilho no botão */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    <Play className="h-5 w-5 mr-2 relative z-10" />
+                    <span className="relative z-10">{test.status === 'completed' ? 'Ver Resultado' : 'Iniciar Teste'}</span>
+                  </button>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        ))}
+            )
+          })}
+        </div>
+
+        {/* Info Section */}
+        <div className="relative mt-12 bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/50 rounded-2xl p-8 shadow-xl border border-blue-100/50 overflow-hidden">
+          {/* Partículas avançadas de fundo */}
+          <AdvancedParticleBackground 
+            color="#3b82f6" 
+            particleCount={12} 
+            size="medium" 
+            animation="drift"
+            className="opacity-15 rounded-2xl"
+          />
+          
+          <div className="relative z-10">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-700 to-indigo-600 bg-clip-text text-transparent mb-3">Sobre os Testes Psicossociais</h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Avaliações científicas desenvolvidas para identificar aspectos psicológicos e sociais que impactam seu bem-estar e performance profissional.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="relative bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100/50 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+                <AdvancedParticleBackground 
+                  color="#3b82f6" 
+                  particleCount={6} 
+                  size="small" 
+                  animation="pulse"
+                  className="opacity-25 rounded-xl"
+                />
+                <div className="relative z-10">
+                  <div className="flex items-center mb-4">
+                    <div className="p-2 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg mr-3 shadow-sm">
+                      <Brain className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900">Como Funciona</h3>
+                  </div>
+                  <p className="text-gray-700 text-base leading-relaxed">
+                    Cada teste utiliza metodologias científicas validadas para avaliar diferentes dimensões da personalidade, 
+                    cognição e comportamento, fornecendo insights precisos e personalizados.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="relative bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6 border border-indigo-100/50 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+                <AdvancedParticleBackground 
+                  color="#6366f1" 
+                  particleCount={6} 
+                  size="small" 
+                  animation="float"
+                  className="opacity-25 rounded-xl"
+                />
+                <div className="relative z-10">
+                  <div className="flex items-center mb-4">
+                    <div className="p-2 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-lg mr-3 shadow-sm">
+                      <Trophy className="h-5 w-5 text-indigo-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900">Benefícios</h3>
+                  </div>
+                  <ul className="text-gray-700 text-base space-y-2">
+                    <li className="flex items-start">
+                      <div className="w-1.5 h-1.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full mt-2 mr-2 flex-shrink-0 shadow-sm"></div>
+                      Autoconhecimento profundo e desenvolvimento pessoal
+                    </li>
+                    <li className="flex items-start">
+                      <div className="w-1.5 h-1.5 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full mt-2 mr-2 flex-shrink-0 shadow-sm"></div>
+                      Identificação de pontos fortes e oportunidades de crescimento
+                    </li>
+                    <li className="flex items-start">
+                      <div className="w-1.5 h-1.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-2 mr-2 flex-shrink-0 shadow-sm"></div>
+                      Orientação estratégica para carreira e liderança
+                    </li>
+                    <li className="flex items-start">
+                      <div className="w-1.5 h-1.5 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full mt-2 mr-2 flex-shrink-0 shadow-sm"></div>
+                      Melhoria nas relações interpessoais e trabalho em equipe
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

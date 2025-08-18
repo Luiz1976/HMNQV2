@@ -31,12 +31,11 @@ import Link from 'next/link'
 export default function EmpresaVisaoGeralPage() {
   // Dados mock para demonstração
   const stats = {
-    totalColaboradores: 156,
-    colaboradoresAtivos: 142,
-    candidatosProcesso: 23,
-    testesRealizados: 89,
-    riscosIdentificados: 12,
-    convitesEnviados: 45
+    totalColaboradores: 0,
+    colaboradoresAtivos: 0,
+    candidatosProcesso: 0,
+    riscosIdentificados: 0,
+    convitesEnviados: 0
   }
 
   // Estado para filtros e animações
@@ -49,8 +48,8 @@ export default function EmpresaVisaoGeralPage() {
   const recentActivities = [
     {
       id: 1,
-      type: 'test_completed',
-      message: 'João Silva completou teste psicossocial',
+      type: 'profile_updated',
+      message: 'João Silva atualizou seu perfil',
       time: '2 min atrás',
       status: 'success'
     },
@@ -78,11 +77,11 @@ export default function EmpresaVisaoGeralPage() {
   ]
 
   const departmentHealth = [
-    { name: 'Tecnologia', score: 85, trend: 'up', employees: 45 },
-    { name: 'Vendas', score: 72, trend: 'down', employees: 32 },
-    { name: 'Marketing', score: 91, trend: 'up', employees: 28 },
-    { name: 'RH', score: 88, trend: 'stable', employees: 15 },
-    { name: 'Financeiro', score: 79, trend: 'up', employees: 22 }
+    { name: 'Tecnologia', score: 0, trend: 'stable', employees: 0 },
+    { name: 'Vendas', score: 0, trend: 'stable', employees: 0 },
+    { name: 'Marketing', score: 0, trend: 'stable', employees: 0 },
+    { name: 'RH', score: 0, trend: 'stable', employees: 0 },
+    { name: 'Financeiro', score: 0, trend: 'stable', employees: 0 }
   ]
 
   const getStatusIcon = (status: string) => {
@@ -158,21 +157,7 @@ export default function EmpresaVisaoGeralPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-purple-50 to-violet-100 dark:from-purple-900/20 dark:to-violet-900/20 border-purple-200 dark:border-purple-800 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-3 text-base font-semibold">
-              <div className="p-2 bg-purple-500 rounded-lg">
-                <Heart className="h-5 w-5 text-white" />
-              </div>
-              Testes Realizados
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-purple-700 dark:text-purple-300 mb-3">{stats.testesRealizados}%</div>
-            <Progress value={stats.testesRealizados} className="mt-2 h-3" />
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">Taxa de <span className="font-medium text-purple-600">conclusão</span></p>
-          </CardContent>
-        </Card>
+
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

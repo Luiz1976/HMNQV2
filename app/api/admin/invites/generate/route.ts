@@ -69,7 +69,6 @@ export async function POST(request: NextRequest) {
     const invite = await prisma.invitation.create({
       data: {
         email: `invite-${Date.now()}@temp.com`,
-        testId: firstTest.id,
         companyId: company.id,
         invitedBy: session.user.id,
         token: inviteToken,

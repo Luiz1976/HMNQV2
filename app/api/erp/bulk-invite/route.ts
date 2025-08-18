@@ -29,26 +29,45 @@ export async function POST(request: NextRequest) {
       erpConfigId, 
       testId, 
       employeeIds, 
+      employees, // Auto-imported employees data
       message, 
-      expiresInDays = 7 
+      expiresInDays = 7,
+      isAutoImported = false
     } = body
 
-    if (!erpConfigId || !testId) {
+    if (!testId) {
       return NextResponse.json({ 
-        error: 'ERP configuration ID and test ID are required' 
+        error: 'Test ID is required' 
       }, { status: 400 })
     }
 
-    // Validate ERP config belongs to company
-    const erpConfig = await prisma.eRPConfig.findFirst({
-      where: { 
-        id: erpConfigId,
-        companyId: user.company.id 
-      }
-    })
+    // Check if we have either ERP config or auto-imported employees
+    if (!isAutoImported && !erpConfigId) {
+      return NextResponse.json({ 
+        error: 'ERP configuration ID is required when not using auto-import' 
+      }, { status: 400 })
+    }
 
-    if (!erpConfig) {
-      return NextResponse.json({ error: 'ERP configuration not found' }, { status: 404 })
+    if (isAutoImported && (!employees || employees.length === 0)) {
+      return NextResponse.json({ 
+        error: 'Employee data is required for auto-import' 
+      }, { status: 400 })
+    }
+
+    let erpConfig = null
+    
+    // Validate ERP config belongs to company (only if not auto-imported)
+    if (!isAutoImported) {
+      erpConfig = await prisma.eRPConfig.findFirst({
+        where: { 
+          id: erpConfigId,
+          companyId: user.company.id 
+        }
+      })
+
+      if (!erpConfig) {
+        return NextResponse.json({ error: 'ERP configuration not found' }, { status: 404 })
+      }
     }
 
     // Validate test exists
@@ -60,27 +79,37 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Test not found' }, { status: 404 })
     }
 
-    // Get employees from ERP
-    let employees
-    if (employeeIds && employeeIds.length > 0) {
-      // Specific employees
-      employees = await prisma.eRPEmployee.findMany({
-        where: {
-          erpConfigId,
-          id: { in: employeeIds }
-        }
-      })
+    // Get employees data
+    let employeesData
+    if (isAutoImported) {
+      // Use auto-imported employees data
+      if (employeeIds && employeeIds.length > 0) {
+        employeesData = employees.filter((emp: any) => employeeIds.includes(emp.id))
+      } else {
+        employeesData = employees
+      }
     } else {
-      // All active employees
-      employees = await prisma.eRPEmployee.findMany({
-        where: {
-          erpConfigId,
-          status: 'Active'
-        }
-      })
+      // Get employees from ERP database
+      if (employeeIds && employeeIds.length > 0) {
+        // Specific employees
+        employeesData = await prisma.eRPEmployee.findMany({
+          where: {
+            erpConfigId,
+            id: { in: employeeIds }
+          }
+        })
+      } else {
+        // All active employees
+        employeesData = await prisma.eRPEmployee.findMany({
+          where: {
+            erpConfigId,
+            status: 'Active'
+          }
+        })
+      }
     }
 
-    if (employees.length === 0) {
+    if (employeesData.length === 0) {
       return NextResponse.json({ 
         error: 'No employees found for invitation' 
       }, { status: 400 })
@@ -93,12 +122,11 @@ export async function POST(request: NextRequest) {
     const invitations = []
     const createdInvitations = []
 
-    for (const employee of employees) {
+    for (const employee of employeesData) {
       // Check if invitation already exists
       const existingInvitation = await prisma.invitation.findFirst({
         where: {
           email: employee.email,
-          testId,
           companyId: user.company.id,
           status: { in: ['PENDING', 'SENT'] }
         }
@@ -110,22 +138,33 @@ export async function POST(request: NextRequest) {
 
       const token = randomUUID()
       
+      // Prepare metadata based on source
+      const metadata = isAutoImported ? {
+        isAutoImported: true,
+        cpf: employee.cpf,
+        matricula: employee.matricula,
+        department: employee.department,
+        position: employee.position
+      } : {
+        erpEmployeeId: employee.id,
+        erpConfigId: erpConfig?.id,
+        department: employee.department,
+        position: employee.position
+      }
+      
       const invitation = await prisma.invitation.create({
         data: {
           email: employee.email,
           firstName: employee.firstName,
           lastName: employee.lastName,
-          testId,
           companyId: user.company.id,
           invitedBy: user.id,
           token,
           expiresAt,
           message: message || `Você foi convidado para realizar o teste ${test.name}`,
           metadata: {
-            erpEmployeeId: employee.id,
-            erpConfigId: erpConfig.id,
-            department: employee.department,
-            position: employee.position
+            ...metadata,
+            testId: testId
           }
         }
       })
@@ -148,8 +187,9 @@ export async function POST(request: NextRequest) {
       success: true,
       message: `${createdInvitations.length} convites criados com sucesso`,
       invitations: createdInvitations.length,
-      totalEmployees: employees.length,
-      skipped: employees.length - createdInvitations.length
+      totalEmployees: employeesData.length,
+      skipped: employeesData.length - createdInvitations.length,
+      isAutoImported
     })
 
   } catch (error) {

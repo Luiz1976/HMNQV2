@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
-import { TrendingUp, TrendingDown, Minus, AlertTriangle, Users, Clock, Target, BarChart3 } from "lucide-react"
+import { TrendingUp, TrendingDown, Minus, AlertTriangle, Users, Clock, Target, BarChart3, Building } from "lucide-react"
 import { FiltrosSimples } from "./filtros-simples"
 import { useFiltrosSimples } from "@/hooks/use-filtros-simples"
 
@@ -19,87 +19,43 @@ export default function IndicadorRiscoPsicossocial() {
 
   // Calcular nível de risco geral baseado nas métricas filtradas
   const overallRisk = {
-    level: metricas.totalRiscos > 0 ? Math.min(100, (metricas.riscosAltos * 15 + metricas.riscosCriticos * 25)) : 0,
-    status: metricas.riscosCriticos > 0 ? "Crítico" : metricas.riscosAltos > 2 ? "Alto" : metricas.riscosAltos > 0 ? "Médio" : "Baixo",
-    trend: "up",
-    color: metricas.riscosCriticos > 0 ? "#dc2626" : metricas.riscosAltos > 2 ? "#ef4444" : metricas.riscosAltos > 0 ? "#f59e0b" : "#10b981"
+    level: Math.min(85, Math.max(15, 
+      (metricas.riscosCriticos * 20) + 
+      (metricas.riscosAltos * 12) + 
+      (metricas.totalRiscos * 3) + 25
+    )),
+    status: metricas.riscosCriticos > 0 ? 'CRÍTICO' : 
+            metricas.riscosAltos > 2 ? 'ALTO' : 
+            metricas.riscosAltos > 0 ? 'MODERADO' : 'BAIXO',
+    color: metricas.riscosCriticos > 0 ? '#dc2626' : 
+           metricas.riscosAltos > 2 ? '#ea580c' : 
+           metricas.riscosAltos > 0 ? '#d97706' : '#059669'
   }
 
   // Métricas avançadas baseadas nos dados filtrados
   const advancedMetrics = {
-    confiancaAnalise: { value: metricas.confianca, trend: "up" },
-    tempoAcao: { value: 24, trend: "down" },
-    colaboradoresAfetados: { value: metricas.colaboradoresAfetados, trend: "stable" },
-    areasCriticas: { value: Math.max(1, Math.floor(metricas.totalRiscos / 3)), trend: "down" }
+    confiancaAnalise: {
+      value: Math.min(95, Math.max(70, metricas.confianca + (metricas.totalRiscos * 2))),
+      trend: "up" as const
+    },
+    tempoAcao: {
+      value: Math.max(1, 48 - (metricas.riscosCriticos * 8) - (metricas.riscosAltos * 3)),
+      trend: metricas.riscosCriticos > 0 ? "up" as const : "down" as const
+    },
+    colaboradoresAfetados: {
+      value: metricas.colaboradoresAfetados,
+      trend: metricas.totalRiscos > 4 ? "up" as const : "stable" as const
+    },
+    areasCriticas: {
+      value: Math.min(6, Math.max(0, metricas.riscosCriticos + Math.floor(metricas.riscosAltos / 2))),
+      trend: metricas.riscosCriticos > 0 ? "up" as const : metricas.riscosAltos > 2 ? "stable" as const : "down" as const
+    }
   }
 
-  const MetricCard = ({ icon: Icon, title, value, unit, trend, description }: {
-    icon: any
-    title: string
-    value: number
-    unit?: string
-    trend?: "up" | "down" | "stable"
-    description?: string
-  }) => {
-    const getTrendIcon = () => {
-      switch (trend) {
-        case "up": return <TrendingUp className="h-4 w-4 text-red-500" />
-        case "down": return <TrendingDown className="h-4 w-4 text-green-500" />
-        case "stable": return <Minus className="h-4 w-4 text-yellow-500" />
-        default: return null
-      }
-    }
 
-    const getTrendColor = () => {
-      switch (trend) {
-        case "up": return "text-red-500"
-        case "down": return "text-green-500"
-        case "stable": return "text-yellow-500"
-        default: return "text-gray-500"
-      }
-    }
-
-    return (
-      <Card className="relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-105 group">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 rounded-full bg-gradient-to-br from-blue-50 to-purple-50 group-hover:from-blue-100 group-hover:to-purple-100 transition-all duration-300">
-              <Icon className="h-6 w-6 text-blue-600 group-hover:text-purple-600 transition-colors duration-300" />
-            </div>
-            {trend && (
-              <div className={`flex items-center gap-1 ${getTrendColor()}`}>
-                {getTrendIcon()}
-                <span className="text-xs font-medium">
-                  {trend === "up" ? "↑" : trend === "down" ? "↓" : "→"}
-                </span>
-              </div>
-            )}
-          </div>
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium text-gray-600 group-hover:text-gray-800 transition-colors duration-300">
-              {title}
-            </h3>
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
-                {value}
-              </span>
-              {unit && (
-                <span className="text-sm text-gray-500">{unit}</span>
-              )}
-            </div>
-            {description && (
-              <p className="text-xs text-gray-500 group-hover:text-gray-600 transition-colors duration-300">
-                {description}
-              </p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-    )
-  }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Filtros Simples */}
       <FiltrosSimples
         filtros={filtros}
@@ -107,170 +63,213 @@ export default function IndicadorRiscoPsicossocial() {
         onLimparFiltros={limparFiltros}
       />
 
-      <Card className="w-full mx-auto shadow-2xl border-0 rounded-2xl overflow-hidden">
+      <Card className="w-full mx-auto border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
         {/* HEADER */}
-        <div className="bg-gradient-to-r from-blue-700 via-purple-600 to-indigo-700 text-white p-6">
+        <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 border-b border-slate-200 dark:border-slate-700 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold mb-2">Indicador de Risco Psicossocial Geral</h1>
-              <p className="text-blue-100">Análise em tempo real dos riscos psicossociais organizacionais</p>
+              <h1 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">Indicador de Risco Psicossocial</h1>
+              <p className="text-slate-600 dark:text-slate-400 text-sm">Análise geral dos riscos identificados na organização</p>
             </div>
             <div className="text-right">
-              <div className="text-3xl font-bold">{overallRisk.level}%</div>
-              <div className="text-sm text-blue-100">Nível de Risco</div>
+              <div className="text-2xl font-bold" style={{ color: overallRisk.color }}>{overallRisk.status}</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400">Nível de Risco</div>
             </div>
           </div>
         </div>
 
-        {/* SPEEDOMETER SECTION */}
-        <div className="p-8 bg-gradient-to-br from-gray-50 to-white">
-          <div className="max-w-md mx-auto">
-            <div className="relative">
-              {/* Speedometer Background */}
-              <div className="w-64 h-32 mx-auto relative overflow-hidden">
-                <svg viewBox="0 0 200 100" className="w-full h-full">
-                  {/* Background Arc */}
-                  <defs>
-                    <linearGradient id="speedometerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#10b981" />
-                      <stop offset="33%" stopColor="#f59e0b" />
-                      <stop offset="66%" stopColor="#ef4444" />
-                      <stop offset="100%" stopColor="#dc2626" />
-                    </linearGradient>
-                    <filter id="glow">
-                      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                      <feMerge> 
-                        <feMergeNode in="coloredBlur"/>
-                        <feMergeNode in="SourceGraphic"/>
-                      </feMerge>
-                    </filter>
-                  </defs>
+        {/* VELOCÍMETRO */}
+        <div className="bg-white dark:bg-slate-800 p-6">
+          <div className="flex flex-col items-center">
+            <div className="relative w-64 h-32 mb-4">
+              {/* SVG do velocímetro */}
+              <svg className="w-full h-full" viewBox="0 0 200 100">
+                <defs>
+                  <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#10b981" />
+                    <stop offset="25%" stopColor="#f59e0b" />
+                    <stop offset="50%" stopColor="#f97316" />
+                    <stop offset="75%" stopColor="#ef4444" />
+                    <stop offset="100%" stopColor="#dc2626" />
+                  </linearGradient>
+                  <filter id="glow">
+                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                    <feMerge> 
+                      <feMergeNode in="coloredBlur"/>
+                      <feMergeNode in="SourceGraphic"/> 
+                    </feMerge>
+                  </filter>
+                </defs>
+                
+                {/* Arco do velocímetro */}
+                <path
+                  d="M 20 80 A 60 60 0 0 1 180 80"
+                  fill="none"
+                  stroke="url(#gaugeGradient)"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                />
+                
+                {/* Marcações de tique */}
+                {[0, 25, 50, 75, 100].map((value, index) => {
+                  const angle = (value / 100) * 160 - 80;
+                  const radian = (angle * Math.PI) / 180;
+                  const x1 = 100 + 55 * Math.cos(radian);
+                  const y1 = 80 + 55 * Math.sin(radian);
+                  const x2 = 100 + 65 * Math.cos(radian);
+                  const y2 = 80 + 65 * Math.sin(radian);
+                  const textX = 100 + 75 * Math.cos(radian);
+                  const textY = 80 + 75 * Math.sin(radian);
                   
-                  {/* Main Arc */}
-                  <path
-                    d="M 20 80 A 60 60 0 0 1 180 80"
-                    fill="none"
-                    stroke="url(#speedometerGradient)"
-                    strokeWidth="12"
+                  return (
+                    <g key={value}>
+                      <line
+                        x1={x1}
+                        y1={y1}
+                        x2={x2}
+                        y2={y2}
+                        stroke="#64748b"
+                        strokeWidth="2"
+                      />
+                      <text
+                        x={textX}
+                        y={textY}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        className="text-xs font-medium fill-slate-600 dark:fill-slate-400"
+                      >
+                        {value}
+                      </text>
+                    </g>
+                  );
+                })}
+                
+                {/* Ponteiro */}
+                <g transform={`rotate(${(overallRisk.level / 100) * 160 - 80} 100 80)`}>
+                  <line
+                    x1="100"
+                    y1="80"
+                    x2="100"
+                    y2="30"
+                    stroke={overallRisk.color}
+                    strokeWidth="3"
                     strokeLinecap="round"
                     filter="url(#glow)"
-                    className="drop-shadow-lg"
                   />
-                  
-                  {/* Tick Marks */}
-                  {[0, 25, 50, 75, 100].map((tick, index) => {
-                    const angle = (tick / 100) * 160 - 80
-                    const radian = (angle * Math.PI) / 180
-                    const x1 = 100 + 55 * Math.cos(radian)
-                    const y1 = 80 + 55 * Math.sin(radian)
-                    const x2 = 100 + 65 * Math.cos(radian)
-                    const y2 = 80 + 65 * Math.sin(radian)
-                    
-                    return (
-                      <g key={tick}>
-                        <line
-                          x1={x1}
-                          y1={y1}
-                          x2={x2}
-                          y2={y2}
-                          stroke="#374151"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                        />
-                        <text
-                          x={100 + 75 * Math.cos(radian)}
-                          y={80 + 75 * Math.sin(radian) + 4}
-                          textAnchor="middle"
-                          className="text-xs font-semibold fill-gray-600"
-                        >
-                          {tick}
-                        </text>
-                      </g>
-                    )
-                  })}
-                  
-                  {/* Animated Pointer */}
-                  <g className="transition-transform duration-1000 ease-out" 
-                     style={{ transformOrigin: '100px 80px', transform: `rotate(${(overallRisk.level / 100) * 160 - 80}deg)` }}>
-                    <line
-                      x1="100"
-                      y1="80"
-                      x2="100"
-                      y2="35"
-                      stroke={overallRisk.color}
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                      filter="url(#glow)"
-                    />
-                    <circle
-                      cx="100"
-                      cy="80"
-                      r="6"
-                      fill={overallRisk.color}
-                      filter="url(#glow)"
-                      className={overallRisk.level > 75 ? "animate-pulse" : ""}
-                    />
-                  </g>
-                </svg>
-              </div>
-              
-              {/* Risk Status */}
-              <div className="text-center mt-4">
-                <Badge 
-                  variant="outline" 
-                  className={`text-lg px-4 py-2 font-bold border-2 ${overallRisk.level > 75 ? 'animate-pulse' : ''}`}
-                  style={{ 
-                    borderColor: overallRisk.color, 
-                    color: overallRisk.color,
-                    backgroundColor: `${overallRisk.color}10`
-                  }}
-                >
-                  RISCO {overallRisk.status.toUpperCase()}
-                </Badge>
-                <div className="mt-2 text-sm text-gray-600">
-                  {overallRisk.level > 75 ? "Ação imediata necessária" : 
-                   overallRisk.level > 50 ? "Monitoramento intensivo" :
-                   overallRisk.level > 25 ? "Acompanhamento regular" : "Situação controlada"}
+                  <circle
+                    cx="100"
+                    cy="80"
+                    r="5"
+                    fill={overallRisk.color}
+                    filter="url(#glow)"
+                  />
+                </g>
+              </svg>
+            </div>
+            
+            {/* Badge de status */}
+            <Badge 
+              variant="outline" 
+              className={`text-sm px-3 py-1 font-semibold border-2`}
+              style={{ 
+                borderColor: overallRisk.color, 
+                color: overallRisk.color,
+                backgroundColor: `${overallRisk.color}15`
+              }}
+            >
+              {overallRisk.status}
+            </Badge>
+          </div>
+        </div>
+
+        {/* MÉTRICAS AVANÇADAS */}
+        <div className="p-6 bg-slate-50 dark:bg-slate-800">
+          <h3 className="text-lg font-semibold mb-6 text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <BarChart3 className="h-5 w-5" />
+            Métricas Avançadas
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-white dark:bg-slate-700 p-5 rounded-xl border border-slate-200 dark:border-slate-600 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Confiança da Análise</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{advancedMetrics.confiancaAnalise.value}%</p>
+                  <div className="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-2 mt-2">
+                    <div 
+                      className={`h-2 rounded-full transition-all duration-500 ${
+                        advancedMetrics.confiancaAnalise.value >= 80 ? 'bg-green-500' : 
+                        advancedMetrics.confiancaAnalise.value >= 60 ? 'bg-yellow-500' : 'bg-red-500'
+                      }`}
+                      style={{ width: `${advancedMetrics.confiancaAnalise.value}%` }}
+                    ></div>
+                  </div>
+                </div>
+                <div className={`p-3 rounded-full ml-4 ${
+                  advancedMetrics.confiancaAnalise.value >= 80 ? 'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400' : 
+                  advancedMetrics.confiancaAnalise.value >= 60 ? 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900 dark:text-yellow-400' : 
+                  'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400'
+                }`}>
+                  <Target className="h-5 w-5" />
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* METRICS SECTION */}
-        <div className="p-6 bg-white">
-          <h2 className="text-xl font-semibold mb-6 text-gray-800">Métricas Detalhadas</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <MetricCard
-              icon={Target}
-              title="Confiança da Análise"
-              value={advancedMetrics.confiancaAnalise.value}
-              unit="%"
-              trend={advancedMetrics.confiancaAnalise.trend}
-              description="Precisão dos dados coletados"
-            />
-            <MetricCard
-              icon={Clock}
-              title="Tempo para Ação"
-              value={advancedMetrics.tempoAcao.value}
-              unit="h"
-              trend={advancedMetrics.tempoAcao.trend}
-              description="Tempo médio de resposta"
-            />
-            <MetricCard
-              icon={Users}
-              title="Colaboradores Afetados"
-              value={advancedMetrics.colaboradoresAfetados.value}
-              trend={advancedMetrics.colaboradoresAfetados.trend}
-              description="Pessoas impactadas"
-            />
-            <MetricCard
-              icon={AlertTriangle}
-              title="Áreas Críticas"
-              value={advancedMetrics.areasCriticas.value}
-              trend={advancedMetrics.areasCriticas.trend}
-              description="Setores que requerem atenção"
-            />
+            
+            <div className="bg-white dark:bg-slate-700 p-5 rounded-xl border border-slate-200 dark:border-slate-600 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Tempo para Ação</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{advancedMetrics.tempoAcao.value}h</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    {advancedMetrics.tempoAcao.value <= 24 ? 'Urgente' : advancedMetrics.tempoAcao.value <= 72 ? 'Moderado' : 'Baixa prioridade'}
+                  </p>
+                </div>
+                <div className={`p-3 rounded-full ml-4 ${
+                  advancedMetrics.tempoAcao.value <= 24 ? 'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400' : 
+                  advancedMetrics.tempoAcao.value <= 72 ? 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900 dark:text-yellow-400' : 
+                  'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400'
+                }`}>
+                  <Clock className="h-5 w-5" />
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white dark:bg-slate-700 p-5 rounded-xl border border-slate-200 dark:border-slate-600 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Colaboradores Afetados</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{advancedMetrics.colaboradoresAfetados.value}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    {((advancedMetrics.colaboradoresAfetados.value / 150) * 100).toFixed(1)}% do total
+                  </p>
+                </div>
+                <div className={`p-3 rounded-full ml-4 ${
+                  advancedMetrics.colaboradoresAfetados.value >= 50 ? 'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400' : 
+                  advancedMetrics.colaboradoresAfetados.value >= 20 ? 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900 dark:text-yellow-400' : 
+                  'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400'
+                }`}>
+                  <Users className="h-5 w-5" />
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white dark:bg-slate-700 p-5 rounded-xl border border-slate-200 dark:border-slate-600 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Áreas Críticas</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{advancedMetrics.areasCriticas.value}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    {advancedMetrics.areasCriticas.value >= 3 ? 'Múltiplas áreas' : advancedMetrics.areasCriticas.value >= 2 ? 'Algumas áreas' : 'Área isolada'}
+                  </p>
+                </div>
+                <div className={`p-3 rounded-full ml-4 ${
+                  advancedMetrics.areasCriticas.value >= 3 ? 'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400' : 
+                  advancedMetrics.areasCriticas.value >= 2 ? 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900 dark:text-yellow-400' : 
+                  'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400'
+                }`}>
+                  <AlertTriangle className="h-5 w-5" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

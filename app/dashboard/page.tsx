@@ -36,12 +36,12 @@ export default async function DashboardPage() {
     db.user.count({ where: { isActive: true } }),
     db.testResult.count(),
     db.invitation.count({ where: { status: 'PENDING' } }),
-    db.testSession.count({ 
-      where: { 
-        createdAt: { 
+    db.testSession.count({
+      where: {
+        createdAt: {
           gte: new Date(Date.now() - 24 * 60 * 60 * 1000) // últimas 24h
-        } 
-      } 
+        }
+      }
     })
   ])
 

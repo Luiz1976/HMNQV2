@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
@@ -66,8 +66,18 @@ export default function MatrizRiscoPsicossocial() {
 
   // Calcular posição atual do risco baseado nas métricas filtradas
   const currentRiskPosition = {
-    severity: Math.min(4, Math.floor(metricas.riscosCriticos > 0 ? 4 : metricas.riscosAltos > 2 ? 3 : metricas.riscosAltos > 0 ? 2 : 1)),
-    probability: Math.min(4, Math.floor(metricas.totalRiscos > 10 ? 4 : metricas.totalRiscos > 5 ? 3 : metricas.totalRiscos > 2 ? 2 : 1))
+    severity: Math.min(4, Math.max(0, 
+      metricas.riscosCriticos > 0 ? 4 : 
+      metricas.riscosAltos > 2 ? 3 : 
+      metricas.riscosAltos > 0 ? 2 : 
+      metricas.totalRiscos > 3 ? 1 : 0
+    )),
+    probability: Math.min(4, Math.max(0, 
+      metricas.totalRiscos > 8 ? 4 : 
+      metricas.totalRiscos > 5 ? 3 : 
+      metricas.totalRiscos > 2 ? 2 : 
+      metricas.totalRiscos > 0 ? 1 : 0
+    ))
   }
 
   const currentRisk = riskMatrix.matrix[currentRiskPosition.severity][currentRiskPosition.probability]
@@ -118,20 +128,20 @@ export default function MatrizRiscoPsicossocial() {
         onLimparFiltros={limparFiltros}
       />
 
-      <Card className="w-full mx-auto shadow-2xl border-0 rounded-2xl overflow-hidden">
+      <Card className="w-full mx-auto shadow-xl border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden bg-white dark:bg-slate-900">
         {/* HEADER */}
-        <div className="bg-gradient-to-r from-emerald-700 via-teal-600 to-cyan-700 text-white p-6">
+        <div className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 text-white p-6">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold mb-2 flex items-center gap-3">
-                <Shield className="h-8 w-8" />
+                <Shield className="h-8 w-8 text-blue-400" />
                 Matriz Quantitativa de Riscos Psicossociais
               </h1>
-              <p className="text-emerald-100">Análise probabilística e impacto dos riscos organizacionais</p>
+              <p className="text-slate-300">Análise probabilística e impacto dos riscos organizacionais</p>
             </div>
             <div className="text-right">
               <Badge 
-                className="text-lg px-4 py-2 font-bold"
+                className="text-lg px-4 py-2 font-bold shadow-lg"
                 style={{ 
                   backgroundColor: getRiskColor(currentRisk),
                   color: 'white'
@@ -139,31 +149,37 @@ export default function MatrizRiscoPsicossocial() {
               >
                 {currentRisk}
               </Badge>
-              <div className="text-sm text-emerald-100 mt-1">Nível Atual</div>
+              <div className="text-sm text-slate-300 mt-1">Nível Atual</div>
             </div>
           </div>
         </div>
 
         {/* MATRIX SECTION */}
-        <div className="p-8 bg-gradient-to-br from-gray-50 to-white">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-xl font-semibold mb-6 text-gray-800 flex items-center gap-2">
-              <Target className="h-6 w-6 text-emerald-600" />
+        <div className="p-8 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800 dark:to-slate-900">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-xl font-semibold mb-6 text-slate-800 dark:text-slate-200 flex items-center gap-2">
+              <Target className="h-6 w-6 text-blue-600" />
               Matriz de Risco 5x5
             </h2>
             
-            <div className="bg-white rounded-xl shadow-lg p-6 overflow-x-auto">
-              <div className="grid grid-cols-6 gap-2 min-w-[600px]">
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 overflow-x-auto border border-slate-200 dark:border-slate-700">
+              <div className="mb-4">
+                <p className="text-sm text-slate-600 dark:text-slate-400">Avaliação baseada na severidade e probabilidade dos riscos identificados</p>
+              </div>
+              
+              <div className="grid grid-cols-6 gap-2 min-w-[700px]">
                 {/* Header vazio */}
-                <div className="p-3"></div>
+                <div className="p-3 flex items-end justify-center">
+                  <span className="text-xs font-medium text-slate-600 dark:text-slate-400 transform -rotate-45 origin-bottom">Probabilidade</span>
+                </div>
                 
                 {/* Headers de Severidade */}
                 {riskMatrix.severity.map((severity, index) => (
-                  <div key={index} className="p-3 text-center">
-                    <div className="text-xs font-semibold text-gray-700 mb-1">
+                  <div key={index} className="p-3 text-center bg-slate-100 dark:bg-slate-700 rounded-t-lg">
+                    <div className="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                       {severity.label}
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-[10px] text-slate-500 dark:text-slate-400">
                       {severity.description}
                     </div>
                   </div>
@@ -173,11 +189,11 @@ export default function MatrizRiscoPsicossocial() {
                 {riskMatrix.probability.map((probability, probIndex) => (
                   <React.Fragment key={probIndex}>
                     {/* Header de Probabilidade */}
-                    <div className="p-3 text-center">
-                      <div className="text-xs font-semibold text-gray-700 mb-1">
+                    <div className="p-3 text-center bg-slate-100 dark:bg-slate-700 rounded-l-lg">
+                      <div className="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                         {probability.label}
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-[10px] text-slate-500 dark:text-slate-400">
                         {probability.description}
                       </div>
                     </div>
@@ -192,33 +208,33 @@ export default function MatrizRiscoPsicossocial() {
                         <div
                           key={sevIndex}
                           className={`
-                            p-4 text-center cursor-pointer transition-all duration-300 rounded-lg border-2
-                            ${isCurrentPosition ? 'ring-4 ring-blue-500 ring-opacity-50 scale-105' : ''}
-                            ${isHovered ? 'scale-110 shadow-lg' : ''}
-                            ${isSelected ? 'ring-2 ring-purple-500' : 'border-gray-200'}
+                            p-4 text-center cursor-pointer transition-all duration-300 rounded-lg border-2 relative
+                            ${isCurrentPosition ? 'ring-4 ring-blue-500 ring-opacity-70 scale-105 z-10' : ''}
+                            ${isHovered ? 'scale-110 shadow-xl z-20' : ''}
+                            ${isSelected ? 'ring-2 ring-purple-500' : 'border-white dark:border-slate-600'}
+                            ${sevIndex === riskMatrix.severity.length - 1 ? 'rounded-r-lg' : ''}
+                            ${probIndex === riskMatrix.probability.length - 1 ? 'rounded-b-lg' : ''}
                           `}
                           style={{
-                            backgroundColor: `${getRiskColor(risk)}20`,
-                            borderColor: getRiskColor(risk)
+                            backgroundColor: `${getRiskColor(risk)}`,
+                            opacity: isHovered ? 0.9 : 0.8
                           }}
                           onMouseEnter={() => setHoveredCell({ row: probIndex, col: sevIndex })}
                           onMouseLeave={() => setHoveredCell(null)}
                           onClick={() => setSelectedCell({ row: probIndex, col: sevIndex })}
+                          title={`${probability.label} × ${riskMatrix.severity[sevIndex].label} = ${risk}`}
                         >
-                          <div 
-                            className="text-sm font-bold mb-1"
-                            style={{ color: getRiskColor(risk) }}
-                          >
+                          <div className="text-sm font-bold mb-1 text-white drop-shadow-sm">
                             {risk}
                           </div>
-                          <div className="text-xs text-gray-600">
+                          <div className="text-xs text-white opacity-90">
                             Nível {getRiskLevel(risk)}
                           </div>
                           {isCurrentPosition && (
-                            <div className="mt-2">
-                              <Badge variant="secondary" className="text-xs animate-pulse">
-                                ATUAL
-                              </Badge>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <div className="w-4 h-4 bg-white rounded-full animate-pulse shadow-lg flex items-center justify-center">
+                                <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                              </div>
                             </div>
                           )}
                         </div>
@@ -227,26 +243,42 @@ export default function MatrizRiscoPsicossocial() {
                   </React.Fragment>
                 ))}
               </div>
+              
+              {/* Labels dos eixos */}
+              <div className="flex justify-between items-center mt-4 px-3">
+                <div className="text-xs text-slate-500 dark:text-slate-400">
+                  <span className="font-medium">Severidade:</span> Impacto do risco
+                </div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">
+                  <span className="font-medium">Probabilidade:</span> Chance de ocorrência
+                </div>
+              </div>
             </div>
             
             {/* Legenda */}
-            <div className="mt-6 grid grid-cols-2 md:grid-cols-5 gap-4">
-              {['TRIVIAL', 'ACEITÁVEL', 'MODERADO', 'SUBSTANCIAL', 'INTOLERÁVEL'].map((risk) => (
-                <div key={risk} className="flex items-center gap-2">
-                  <div 
-                    className="w-4 h-4 rounded"
-                    style={{ backgroundColor: getRiskColor(risk) }}
-                  ></div>
-                  <span className="text-sm font-medium text-gray-700">{risk}</span>
-                </div>
-              ))}
+            <div className="mt-6 p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
+              <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">Níveis de Risco</h4>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                {['TRIVIAL', 'ACEITÁVEL', 'MODERADO', 'SUBSTANCIAL', 'INTOLERÁVEL'].map((risk) => (
+                  <div key={risk} className="flex items-center gap-2">
+                    <div 
+                      className="w-4 h-4 rounded shadow-sm"
+                      style={{ backgroundColor: getRiskColor(risk) }}
+                    ></div>
+                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{risk}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
         {/* METRICS SECTION */}
-        <div className="p-6 bg-white border-t">
-          <h2 className="text-xl font-semibold mb-6 text-gray-800">Métricas da Matriz</h2>
+        <div className="p-6 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
+          <h2 className="text-xl font-semibold mb-6 text-slate-800 dark:text-slate-200 flex items-center gap-2">
+            <Activity className="h-6 w-6 text-blue-600" />
+            Métricas da Matriz
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <MetricCard
               icon={Shield}
@@ -279,19 +311,19 @@ export default function MatrizRiscoPsicossocial() {
         </div>
 
         {/* SUMMARY SECTION */}
-        <div className="p-6 bg-gray-50 border-t">
+        <div className="p-6 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-emerald-600">{metricas.totalRiscos}</div>
-              <div className="text-sm text-gray-600">Total de Riscos Mapeados</div>
+            <div className="text-center p-4 bg-white dark:bg-slate-700 rounded-lg shadow-sm">
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{metricas.totalRiscos}</div>
+              <div className="text-sm text-slate-600 dark:text-slate-400">Total de Riscos Mapeados</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">{metricas.riscosAltos}</div>
-              <div className="text-sm text-gray-600">Riscos de Alto Impacto</div>
+            <div className="text-center p-4 bg-white dark:bg-slate-700 rounded-lg shadow-sm">
+              <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{metricas.riscosAltos}</div>
+              <div className="text-sm text-slate-600 dark:text-slate-400">Riscos de Alto Impacto</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-red-600">{metricas.riscosCriticos}</div>
-              <div className="text-sm text-gray-600">Riscos Críticos</div>
+            <div className="text-center p-4 bg-white dark:bg-slate-700 rounded-lg shadow-sm">
+              <div className="text-2xl font-bold text-red-600 dark:text-red-400">{metricas.riscosCriticos}</div>
+              <div className="text-sm text-slate-600 dark:text-slate-400">Riscos Críticos</div>
             </div>
           </div>
         </div>

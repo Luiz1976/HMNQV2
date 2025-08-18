@@ -63,9 +63,6 @@ export async function cleanup() {
   await disconnectDB()
 }
 
-// Handle process termination
-if (typeof process !== 'undefined') {
-  process.on('SIGINT', cleanup)
-  process.on('SIGTERM', cleanup)
-  process.on('beforeExit', cleanup)
-}
+// Register cleanup with process manager
+import { registerCleanup } from './process-manager'
+registerCleanup(cleanup)

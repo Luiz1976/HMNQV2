@@ -84,7 +84,6 @@ export async function POST(request: NextRequest) {
         email: email.toLowerCase().trim(),
         firstName: firstName ? firstName.trim() : null,
         lastName: lastName ? lastName.trim() : null,
-        testId: null,
         companyId: company.id,
         invitedBy: session.user.id,
         token: inviteToken,

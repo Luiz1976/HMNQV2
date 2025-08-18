@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Teste de Abas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .tab-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .tab-list {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: #f0f0f0;
+            padding: 5px;
+            border-radius: 6px;
+        }
+        .tab-button {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .tab-button.active {
+            background: white;
+            color: #2563eb;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .tab-button:hover:not(.active) {
+            background: #e5e5e5;
+        }
+        .tab-content {
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 6px;
+            min-height: 200px;
+        }
+        .debug-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-info">
+        <h3>🔍 Debug - Teste de Abas do Relatório Grafológico</h3>
+        <p>Este teste verifica se todas as 4 abas estão sendo renderizadas corretamente:</p>
+        <ul>
+            <li><strong>Dashboard</strong> - Visão geral dos resultados</li>
+            <li><strong>Visualização</strong> - Gráficos e métricas detalhadas</li>
+            <li><strong>Manuscrito</strong> - Análise visual do manuscrito (⚠️ Esta aba não está aparecendo)</li>
+            <li><strong>Insights</strong> - Interpretações profissionais</li>
+        </ul>
+    </div>
+
+    <div class="tab-container">
+        <div class="tab-list">
+            <button class="tab-button active" onclick="showTab('dashboard')" id="tab-dashboard">
+                📊 Dashboard
+            </button>
+            <button class="tab-button" onclick="showTab('visualization')" id="tab-visualization">
+                📈 Visualização
+            </button>
+            <button class="tab-button" onclick="showTab('manuscript')" id="tab-manuscript">
+                👁️ Manuscrito
+            </button>
+            <button class="tab-button" onclick="showTab('insights')" id="tab-insights">
+                🧠 Insights
+            </button>
+        </div>
+
+        <div class="tab-content" id="content">
+            <div id="dashboard-content">
+                <h3>📊 Dashboard</h3>
+                <p>Visão geral dos resultados da análise grafológica.</p>
+                <div style="background: #e8f5e8; padding: 15px; border-radius: 4px; margin-top: 10px;">
+                    <strong>✅ Esta aba está funcionando corretamente</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const tabs = {
+            dashboard: {
+                title: '📊 Dashboard',
+                content: `
+                    <h3>📊 Dashboard</h3>
+                    <p>Visão geral dos resultados da análise grafológica.</p>
+                    <div style="background: #e8f5e8; padding: 15px; border-radius: 4px; margin-top: 10px;">
+                        <strong>✅ Esta aba está funcionando corretamente</strong>
+                    </div>
+                `
+            },
+            visualization: {
+                title: '📈 Visualização',
+                content: `
+                    <h3>📈 Visualização</h3>
+                    <p>Gráficos e métricas detalhadas da análise.</p>
+                    <div style="background: #e8f5e8; padding: 15px; border-radius: 4px; margin-top: 10px;">
+                        <strong>✅ Esta aba está funcionando corretamente</strong>
+                    </div>
+                `
+            },
+            manuscript: {
+                title: '👁️ Manuscrito',
+                content: `
+                    <h3>👁️ Manuscrito Anotado</h3>
+                    <p>Análise visual do manuscrito com anotações e destaques.</p>
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 4px; margin-top: 10px; border-left: 4px solid #ffc107;">
+                        <strong>⚠️ ESTA É A ABA QUE NÃO ESTÁ APARECENDO NO SISTEMA REAL</strong><br>
+                        <small>Se você consegue ver esta aba aqui, o problema não é de CSS básico.</small>
+                    </div>
+                `
+            },
+            insights: {
+                title: '🧠 Insights',
+                content: `
+                    <h3>🧠 Insights</h3>
+                    <p>Interpretações profissionais e recomendações.</p>
+                    <div style="background: #e8f5e8; padding: 15px; border-radius: 4px; margin-top: 10px;">
+                        <strong>✅ Esta aba está funcionando corretamente</strong>
+                    </div>
+                `
+            }
+        };
+
+        function showTab(tabId) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to clicked tab
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            
+            // Update content
+            document.getElementById('content').innerHTML = tabs[tabId].content;
+            
+            console.log(`Aba ativada: ${tabId}`);
+        }
+
+        // Log para debug
+        console.log('Teste de abas carregado. Abas disponíveis:', Object.keys(tabs));
+        console.log('Se a aba "Manuscrito" aparece aqui, o problema não é de CSS básico.');
+    </script>
+</body>
+</html>

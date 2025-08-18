@@ -1,0 +1,57 @@
+{
+  "id": "cmebjx6ye003m8wns8vt0euhb",
+  "testId": "cmdxqvgu4000p8wsg7l8brjee",
+  "testName": "HumaniQ TIPOS – Perfil Cognitivo",
+  "testType": "PSYCHOSOCIAL",
+  "userId": "cme9aryqs00018w88ivmnluxf",
+  "sessionId": "cmebjx4th002k8wnsq6aqopfz",
+  "overallScore": 315,
+  "dimensionScores": {
+    "Energia": {
+      "Extroversão (E)": 44,
+      "Introversão (I)": 56
+    },
+    "Percepção": {
+      "Sensação (S)": 40,
+      "Intuição (N)": 60
+    },
+    "Decisão": {
+      "Pensamento (T)": 40,
+      "Sentimento (F)": 60
+    },
+    "Organização": {
+      "Julgamento (J)": 57,
+      "Percepção (P)": 43
+    }
+  },
+  "duration": 19,
+  "completedAt": "2025-08-14T15:25:52.116Z",
+  "status": "completed",
+  "metadata": {
+    "results": {
+      "personality": "INFJ",
+      "scores": {
+        "E": 12,
+        "I": 15,
+        "S": 12,
+        "N": 18,
+        "T": 12,
+        "F": 18,
+        "J": 12,
+        "P": 9
+      },
+      "dimensions": {
+        "Energia": "Introversão",
+        "Percepção": "Intuição",
+        "Decisão": "Sentimento",
+        "Organização": "Julgamento"
+      }
+    },
+    "calculationDate": "2025-08-14T15:25:52.098Z",
+    "totalAnswers": 36,
+    "testDescription": "Mapeamento de preferências cognitivas e comportamentais baseado na teoria de Carl Jung (Base Junguiana / MBTI).",
+    "archivedFromAPI": true
+  },
+  "archivedAt": "2025-08-14T15:25:52.130Z",
+  "filePath": "C:\\Users\\ALICEBELLA\\Desktop\\HMNQV2\\app\\archives\\results\\2025\\08\\PSYCHOSOCIAL\\cme9aryqs00018w88ivmnluxf_PSYCHOSOCIAL_cmdxqvgu4000p8wsg7l8brjee_2025-08-14_15-25-52-116Z.json"
+}

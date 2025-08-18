@@ -51,16 +51,10 @@ const navigation = [
     description: 'Envio de convites via ERP'
   },
   {
-    name: 'Integrações ERP',
-    href: '/empresa/integracoes',
-    icon: Database,
-    description: 'Configurar integrações ERP'
-  },
-  {
-    name: 'Relatórios',
-    href: '/empresa/relatorios',
-    icon: BarChart3,
-    description: 'Análises e relatórios'
+    name: 'Convite Individual',
+    href: '/empresa/convite-individual',
+    icon: LinkIcon,
+    description: 'Gerar convites personalizados'
   }
 ]
 
@@ -177,12 +171,12 @@ export default function EmpresaLayout({
                 <div className="flex items-center">
                   <div className="w-10 h-10 bg-gradient-to-r from-gray-400 to-gray-600 rounded-full flex items-center justify-center">
                     <span className="text-white font-bold text-sm">
-                      {session?.user?.name?.[0] || 'U'}
+                      {session?.user?.firstName?.[0] || 'U'}
                     </span>
                   </div>
                   <div className="ml-3 flex-1">
                     <div className="text-sm font-medium text-gray-900">
-                      {session?.user?.name}
+                      {`${session?.user?.firstName || ''} ${session?.user?.lastName || ''}`.trim()}
                     </div>
                     <div className="text-xs text-gray-500">
                       {session?.user?.email}

@@ -1,0 +1,156 @@
+{
+  "lastUpdated": "2025-08-17T00:18:32.570Z",
+  "totalEntries": 17,
+  "index": {
+    "description": "Índice de resultados organizados por usuário/colaborador",
+    "structure": "userId",
+    "entries": {
+      "cme9aryqs00018w88ivmnluxf": {
+        "totalTests": 17,
+        "tests": [
+          {
+            "id": "cme9xpf5800038wpwm6mwapjl",
+            "testType": "PERSONALITY",
+            "testId": "cme216bqg000f8wg08lorykq7",
+            "completedAt": "2025-08-13T12:16:11.756Z",
+            "filePath": "C:\\Users\\ALICEBELLA\\Desktop\\HMNQV2\\app\\archives\\results\\2025\\08\\PERSONALITY\\cme9aryqs00018w88ivmnluxf_PERSONALITY_cme216bqg000f8wg08lorykq7_2025-08-13_12-16-11-756Z.json",
+            "status": "completed"
+          },
+          {
+            "id": "cme9xrl9200078wpwfjmbz9q3",
+            "testType": "PERSONALITY",
+            "testId": "cme216bqg000f8wg08lorykq7",
+            "completedAt": "2025-08-13T12:17:52.982Z",
+            "filePath": "C:\\Users\\ALICEBELLA\\Desktop\\HMNQV2\\app\\archives\\results\\2025\\08\\PERSONALITY\\cme9aryqs00018w88ivmnluxf_PERSONALITY_cme216bqg000f8wg08lorykq7_2025-08-13_12-17-52-982Z.json",
+            "status": "completed"
+          },
+          {
+            "id": "cme9z0zao000b8wpwf8an9ube",
+            "testType": "PERSONALITY",
+            "testId": "cme216bqg000f8wg08lorykq7",
+            "completedAt": "2025-08-13T12:53:10.704Z",
+            "filePath": "C:\\Users\\ALICEBELLA\\Desktop\\HMNQV2\\app\\archives\\results\\2025\\08\\PERSONALITY\\cme9aryqs00018w88ivmnluxf_PERSONALITY_cme216bqg000f8wg08lorykq7_2025-08-13_12-53-10-704Z.json",
+            "status": "completed"
+          },
+          {
+            "id": "cmea44mnx00038wfknfeb495k",
+            "testType": "PERSONALITY",
+            "testId": "cme216bqg000f8wg08lorykq7",
+            "completedAt": "2025-08-13T15:15:59.037Z",
+            "filePath": "C:\\Users\\ALICEBELLA\\Desktop\\HMNQV2\\app\\archives\\results\\2025\\08\\PERSONALITY\\cme9aryqs00018w88ivmnluxf_PERSONALITY_cme216bqg000f8wg08lorykq7_2025-08-13_15-15-59-037Z.json",
+            "status": "completed"
+          },
+          {
+            "id": "cmea5fkw200038wf4jd64cpil",
+            "testType": "PERSONALITY",
+            "testId": "cme216bqg000f8wg08lorykq7",
+            "completedAt": "2025-08-13T15:52:29.571Z",
+            "filePath": "C:\\Users\\ALICEBELLA\\Desktop\\HMNQV2\\app\\archives\\results\\2025\\08\\PERSONALITY\\cme9aryqs00018w88ivmnluxf_PERSONALITY_cme216bqg000f8wg08lorykq7_2025-08-13_15-52-29-571Z.json",
+            "status": "completed"
+          },
+          {
+            "id": "cmea6uis000038wfckc7v3zvu",
+            "testType": "PERSONALITY",
+            "testId": "cme216bqg000f8wg08lorykq7",
+            "completedAt": "2025-08-13T16:32:06.287Z",
+            "filePath": "C:\\Users\\ALICEBELLA\\Desktop\\HMNQV2\\app\\archives\\results\\2025\\08\\PERSONALITY\\cme9aryqs00018w88ivmnluxf_PERSONALITY_cme216bqg000f8wg08lorykq7_2025-08-13_16-32-06-287Z.json",
+            "status": "completed"
+          },
+          {
+            "id": "cmeamuk3c000b8wfczloxj83w",
+            "testType": "PERSONALITY",
+            "testId": "cme216bqg000f8wg08lorykq7",
+            "completedAt": "2025-08-14T00:00:01.847Z",
+            "filePath": "C:\\Users\\ALICEBELLA\\Desktop\\HMNQV2\\app\\archives\\results\\2025\\08\\PERSONALITY\\cme9aryqs00018w88ivmnluxf_PERSONALITY_cme216bqg000f8wg08lorykq7_2025-08-14_00-00-01-847Z.json",
+            "status": "completed"
+          },
+          {
+            "id": "cmebesrdu00038wxcnlzkt11p",
+            "testType": "PERSONALITY",
+            "testId": "cme216bqg000f8wg08lorykq7",
+            "completedAt": "2025-08-14T13:02:27.234Z",
+            "filePath": "C:\\Users\\ALICEBELLA\\Desktop\\HMNQV2\\app\\archives\\results\\2025\\08\\PERSONALITY\\cme9aryqs00018w88ivmnluxf_PERSONALITY_cme216bqg000f8wg08lorykq7_2025-08-14_13-02-27-234Z.json",
+            "status": "completed"
+          },
+          {
+            "id": "cmebjx6ye003m8wns8vt0euhb",
+            "testType": "PSYCHOSOCIAL",
+            "testId": "cmdxqvgu4000p8wsg7l8brjee",
+            "completedAt": "2025-08-14T15:25:52.116Z",
+            "filePath": "C:\\Users\\ALICEBELLA\\Desktop\\HMNQV2\\app\\archives\\results\\2025\\08\\PSYCHOSOCIAL\\cme9aryqs00018w88ivmnluxf_PSYCHOSOCIAL_cmdxqvgu4000p8wsg7l8brjee_2025-08-14_15-25-52-116Z.json",
+            "status": "completed"
+          },
+          {
+            "id": "cmebks4kf00108w64s674f9hc",
+            "testType": "PSYCHOSOCIAL",
+            "testId": "cmdxqvgu4000p8wsg7l8brjee",
+            "completedAt": "2025-08-14T15:49:55.360Z",
+            "filePath": "C:\\Users\\ALICEBELLA\\Desktop\\HMNQV2\\app\\archives\\results\\2025\\08\\PSYCHOSOCIAL\\cme9aryqs00018w88ivmnluxf_PSYCHOSOCIAL_cmdxqvgu4000p8wsg7l8brjee_2025-08-14_15-49-55-360Z.json",
+            "status": "completed"
+          },
+          {
+            "id": "cmebleuk000238w64073lgnyu",
+            "testType": "PSYCHOSOCIAL",
+            "testId": "cmdxqvgu4000p8wsg7l8brjee",
+            "completedAt": "2025-08-14T16:07:35.472Z",
+            "filePath": "C:\\Users\\ALICEBELLA\\Desktop\\HMNQV2\\app\\archives\\results\\2025\\08\\PSYCHOSOCIAL\\cme9aryqs00018w88ivmnluxf_PSYCHOSOCIAL_cmdxqvgu4000p8wsg7l8brjee_2025-08-14_16-07-35-472Z.json",
+            "status": "completed"
+          },
+          {
+            "id": "cmeblnomx00348w643ssl51e5",
+            "testType": "PSYCHOSOCIAL",
+            "testId": "cmdxqvgu4000p8wsg7l8brjee",
+            "completedAt": "2025-08-14T16:14:27.705Z",
+            "filePath": "C:\\Users\\ALICEBELLA\\Desktop\\HMNQV2\\app\\archives\\results\\2025\\08\\PSYCHOSOCIAL\\cme9aryqs00018w88ivmnluxf_PSYCHOSOCIAL_cmdxqvgu4000p8wsg7l8brjee_2025-08-14_16-14-27-705Z.json",
+            "status": "completed"
+          },
+          {
+            "id": "cmeblofpn00478w64ztenl7kc",
+            "testType": "PSYCHOSOCIAL",
+            "testId": "cmdxqvgu4000p8wsg7l8brjee",
+            "completedAt": "2025-08-14T16:15:02.795Z",
+            "filePath": "C:\\Users\\ALICEBELLA\\Desktop\\HMNQV2\\app\\archives\\results\\2025\\08\\PSYCHOSOCIAL\\cme9aryqs00018w88ivmnluxf_PSYCHOSOCIAL_cmdxqvgu4000p8wsg7l8brjee_2025-08-14_16-15-02-795Z.json",
+            "status": "completed"
+          },
+          {
+            "id": "cmebmams000248wcwnys7obw4",
+            "testType": "PSYCHOSOCIAL",
+            "testId": "cmdxqvgu4000p8wsg7l8brjee",
+            "completedAt": "2025-08-14T16:32:18.384Z",
+            "filePath": "C:\\Users\\ALICEBELLA\\Desktop\\HMNQV2\\app\\archives\\results\\2025\\08\\PSYCHOSOCIAL\\cme9aryqs00018w88ivmnluxf_PSYCHOSOCIAL_cmdxqvgu4000p8wsg7l8brjee_2025-08-14_16-32-18-384Z.json",
+            "status": "completed"
+          },
+          {
+            "id": "cmeewwj7500038w0khsqrugmh",
+            "testType": "PSYCHOSOCIAL",
+            "testId": "cme216bcl00018wg05iydpwsz",
+            "completedAt": "2025-08-16T23:52:34.864Z",
+            "filePath": "C:\\Users\\ALICEBELLA\\Desktop\\HMNQV2\\app\\archives\\results\\2025\\08\\PSYCHOSOCIAL\\cme9aryqs00018w88ivmnluxf_PSYCHOSOCIAL_cme216bcl00018wg05iydpwsz_2025-08-16_23-52-34-864Z.json",
+            "status": "completed"
+          },
+          {
+            "id": "cmeexh6vr00098w0k3oz07ln9",
+            "testType": "PSYCHOSOCIAL",
+            "testId": "cme216bcl00018wg05iydpwsz",
+            "completedAt": "2025-08-17T00:08:38.679Z",
+            "filePath": "C:\\Users\\ALICEBELLA\\Desktop\\HMNQV2\\app\\archives\\results\\2025\\08\\PSYCHOSOCIAL\\cme9aryqs00018w88ivmnluxf_PSYCHOSOCIAL_cme216bcl00018wg05iydpwsz_2025-08-17_00-08-38-679Z.json",
+            "status": "completed"
+          },
+          {
+            "id": "cmeextx4a000f8w0kd3p2katf",
+            "testType": "PSYCHOSOCIAL",
+            "testId": "cme216bcl00018wg05iydpwsz",
+            "completedAt": "2025-08-17T00:18:32.554Z",
+            "filePath": "C:\\Users\\ALICEBELLA\\Desktop\\HMNQV2\\app\\archives\\results\\2025\\08\\PSYCHOSOCIAL\\cme9aryqs00018w88ivmnluxf_PSYCHOSOCIAL_cme216bcl00018wg05iydpwsz_2025-08-17_00-18-32-554Z.json",
+            "status": "completed"
+          }
+        ]
+      }
+    }
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "indexType": "user",
+    "autoUpdate": true
+  }
+}

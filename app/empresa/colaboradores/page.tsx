@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -10,120 +10,192 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { 
   Search, 
   Filter, 
-  Download, 
   User, 
   AlertTriangle, 
   CheckCircle, 
   Clock,
-  BarChart3,
   TrendingUp,
-  TrendingDown,
-  Brain,
-  Heart,
-  Zap,
-  Target,
   Users,
-  Calendar
+  Calendar,
+  ArrowLeft,
+  Eye,
+  FileText,
+  Download,
+  Loader2
 } from 'lucide-react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import Link from 'next/link'
+
+interface Colaborador {
+  id: string
+  name: string
+  firstName: string
+  lastName: string
+  email: string
+  userType: string
+  department: string
+  position: string
+  matricula?: string
+  createdAt: string
+  lastLoginAt?: string
+  status: 'pending' | 'in_progress' | 'completed' | 'risk'
+  riskLevel?: 'low' | 'medium' | 'high'
+  statistics: {
+    totalTests: number
+    totalCompleted: number
+    totalInProgress: number
+    completionRate: number
+    averageScore: number
+    lastTestDate?: string
+    categoriesStats: { [key: string]: number }
+  }
+  lastEvaluation?: string
+  avatar?: string
+}
+
+interface CompanyStatistics {
+  total: number
+  byStatus: {
+    completed: number
+    pending: number
+    inProgress: number
+    risk: number
+  }
+  byRiskLevel: {
+    low: number
+    medium: number
+    high: number
+  }
+  overallAverageScore: number
+  overallCompletionRate: number
+  departmentStats: { [key: string]: number }
+  lastUpdated: string
+}
+
+interface ApiResponse {
+  success: boolean
+  data: {
+    colaboradores: Colaborador[]
+    statistics: CompanyStatistics
+    pagination: {
+      currentPage: number
+      totalPages: number
+      totalCount: number
+      hasNextPage: boolean
+      hasPreviousPage: boolean
+      limit: number
+    }
+  }
+}
 
 export default function ColaboradoresPage() {
   const { data: session } = useSession()
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [departmentFilter, setDepartmentFilter] = useState('all')
   const [selectedColaborador, setSelectedColaborador] = useState<string | null>(null)
+  const [colaboradores, setColaboradores] = useState<Colaborador[]>([])
+  const [statistics, setStatistics] = useState<CompanyStatistics | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // Mock data - em produção, estes dados viriam da API
-  const colaboradores = [
-    {
-      id: '1',
-      name: 'Ana Silva',
-      email: 'ana.silva@empresa.com',
-      department: 'Recursos Humanos',
-      position: 'Analista de RH',
-      status: 'completed', // completed, risk, pending
-      avatar: '',
-      lastTest: '2024-01-15',
-      riskLevel: 'low',
-      testsCompleted: 4,
-      totalTests: 6
-    },
-    {
-      id: '2',
-      name: 'Carlos Santos',
-      email: 'carlos.santos@empresa.com',
-      department: 'Tecnologia',
-      position: 'Desenvolvedor Senior',
-      status: 'risk',
-      avatar: '',
-      lastTest: '2024-01-10',
-      riskLevel: 'high',
-      testsCompleted: 3,
-      totalTests: 6
-    },
-    {
-      id: '3',
-      name: 'Maria Oliveira',
-      email: 'maria.oliveira@empresa.com',
-      department: 'Vendas',
-      position: 'Gerente de Vendas',
-      status: 'pending',
-      avatar: '',
-      lastTest: null,
-      riskLevel: null,
-      testsCompleted: 0,
-      totalTests: 6
-    },
-    {
-      id: '4',
-      name: 'João Costa',
-      email: 'joao.costa@empresa.com',
-      department: 'Marketing',
-      position: 'Coordenador de Marketing',
-      status: 'completed',
-      avatar: '',
-      lastTest: '2024-01-12',
-      riskLevel: 'medium',
-      testsCompleted: 5,
-      totalTests: 6
-    }
-  ]
+  // Função para buscar dados da API
+  const fetchColaboradores = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      
+      const response = await fetch('/api/empresa/colaboradores', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
 
-  const testResults = {
-    '1': {
-      stress: { completed: true, score: 75, status: 'good', date: '2024-01-15' },
-      burnout: { completed: true, score: 82, status: 'good', date: '2024-01-14' },
-      satisfaction: { completed: true, score: 88, status: 'excellent', date: '2024-01-13' },
-      worklife: { completed: true, score: 70, status: 'good', date: '2024-01-12' },
-      leadership: { completed: false },
-      teamwork: { completed: false }
-    },
-    '2': {
-      stress: { completed: true, score: 45, status: 'risk', date: '2024-01-10' },
-      burnout: { completed: true, score: 35, status: 'high-risk', date: '2024-01-09' },
-      satisfaction: { completed: true, score: 40, status: 'risk', date: '2024-01-08' },
-      worklife: { completed: false },
-      leadership: { completed: false },
-      teamwork: { completed: false }
-    },
-    '4': {
-      stress: { completed: true, score: 65, status: 'warning', date: '2024-01-12' },
-      burnout: { completed: true, score: 78, status: 'good', date: '2024-01-11' },
-      satisfaction: { completed: true, score: 85, status: 'excellent', date: '2024-01-10' },
-      worklife: { completed: true, score: 72, status: 'good', date: '2024-01-09' },
-      leadership: { completed: true, score: 80, status: 'good', date: '2024-01-08' },
-      teamwork: { completed: false }
+      if (!response.ok) {
+        // Tratar diferentes tipos de erro HTTP
+        if (response.status === 403) {
+          throw new Error('Acesso negado. Verifique se você está logado como empresa.')
+        } else if (response.status === 404) {
+          throw new Error('Empresa não encontrada ou inativa.')
+        } else {
+          throw new Error(`Erro ao carregar dados dos colaboradores (${response.status})`)
+        }
+      }
+
+      const data: ApiResponse = await response.json()
+      
+      if (data.success) {
+        // Verificar se há dados de colaboradores
+        const colaboradoresList = data.data.colaboradores || []
+        
+        // Mapear os dados da API para o formato esperado (mesmo que seja lista vazia)
+        const mappedColaboradores = colaboradoresList.map(colaborador => ({
+          ...colaborador,
+          status: determineStatus(colaborador),
+          riskLevel: determineRiskLevel(colaborador),
+          lastEvaluation: colaborador.statistics.lastTestDate
+        }))
+        
+        setColaboradores(mappedColaboradores)
+        setStatistics(data.data.statistics || {
+          total: 0,
+          byStatus: { completed: 0, pending: 0, inProgress: 0, risk: 0 },
+          byRiskLevel: { low: 0, medium: 0, high: 0 },
+          overallAverageScore: 0,
+          overallCompletionRate: 0,
+          departmentStats: {},
+          lastUpdated: new Date().toISOString()
+        })
+      } else {
+        throw new Error('Erro na resposta da API')
+      }
+    } catch (err) {
+      console.error('Erro ao carregar colaboradores:', err)
+      setError(err instanceof Error ? err.message : 'Erro desconhecido')
+    } finally {
+      setLoading(false)
     }
   }
 
-  const testDefinitions = {
-    stress: { name: 'Teste de Estresse', icon: AlertTriangle, color: 'text-red-500' },
-    burnout: { name: 'Teste de Burnout', icon: Zap, color: 'text-orange-500' },
-    satisfaction: { name: 'Satisfação no Trabalho', icon: Heart, color: 'text-pink-500' },
-    worklife: { name: 'Work-life Balance', icon: Target, color: 'text-blue-500' },
-    leadership: { name: 'Liderança', icon: Users, color: 'text-purple-500' },
-    teamwork: { name: 'Trabalho em Equipe', icon: Brain, color: 'text-green-500' }
+  // Função para determinar o status baseado nas estatísticas
+  const determineStatus = (colaborador: Colaborador): 'pending' | 'in_progress' | 'completed' | 'risk' => {
+    if (colaborador.statistics.totalTests === 0) {
+      return 'pending'
+    }
+    
+    if (colaborador.statistics.totalInProgress > 0) {
+      return 'in_progress'
+    }
+    
+    if (colaborador.statistics.averageScore < 40) {
+      return 'risk'
+    }
+    
+    return 'completed'
   }
+
+  // Função para determinar o nível de risco
+  const determineRiskLevel = (colaborador: Colaborador): 'low' | 'medium' | 'high' | undefined => {
+    if (colaborador.statistics.totalCompleted === 0) {
+      return undefined
+    }
+    
+    const score = colaborador.statistics.averageScore
+    
+    if (score >= 70) return 'low'
+    if (score >= 50) return 'medium'
+    return 'high'
+  }
+
+  // Carregar dados ao montar o componente
+  useEffect(() => {
+    fetchColaboradores()
+  }, [])
+
+
+
+
 
   const filteredColaboradores = colaboradores.filter(colaborador => {
     const matchesSearch = colaborador.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -131,9 +203,13 @@ export default function ColaboradoresPage() {
                          colaborador.department.toLowerCase().includes(searchTerm.toLowerCase())
     
     const matchesStatus = statusFilter === 'all' || colaborador.status === statusFilter
+    const matchesDepartment = departmentFilter === 'all' || colaborador.department === departmentFilter
     
-    return matchesSearch && matchesStatus
+    return matchesSearch && matchesStatus && matchesDepartment
   })
+
+  // Obter lista única de departamentos
+  const departments = Array.from(new Set(colaboradores.map(c => c.department).filter(Boolean)))
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -155,302 +231,155 @@ export default function ColaboradoresPage() {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'completed': return 'Testes Realizados'
-      case 'risk': return 'Riscos Identificados'
-      case 'pending': return 'Testes Pendentes'
+      case 'completed': return 'Avaliações Concluídas'
+    case 'risk': return 'Atenção Necessária'
+    case 'pending': return 'Avaliações Pendentes'
       default: return 'Status Desconhecido'
     }
   }
 
-  const getTestStatusColor = (status: string) => {
-    switch (status) {
-      case 'excellent': return 'bg-green-500'
-      case 'good': return 'bg-blue-500'
-      case 'warning': return 'bg-yellow-500'
-      case 'risk': return 'bg-orange-500'
-      case 'high-risk': return 'bg-red-500'
-      default: return 'bg-gray-300'
-    }
-  }
 
-  const generateAIAnalysis = (colaboradorId: string) => {
-    const results = testResults[colaboradorId as keyof typeof testResults]
-    if (!results) return "Aguardando realização dos testes."
-
-    const completedTests = Object.entries(results).filter(([_, test]) => test.completed)
-    if (completedTests.length === 0) return "Aguardando realização dos testes."
-
-    // Análise baseada nos resultados
-    const riskTests = completedTests.filter(([_, test]) => test.status === 'risk' || test.status === 'high-risk')
-    const goodTests = completedTests.filter(([_, test]) => test.status === 'good' || test.status === 'excellent')
-    
-    let analysis = "**Análise Consolidada por IA:**\n\n"
-    
-    if (riskTests.length > 0) {
-      analysis += "🚨 **Áreas de Atenção:**\n"
-      riskTests.forEach(([testKey, test]) => {
-        const testName = testDefinitions[testKey as keyof typeof testDefinitions].name
-        analysis += `• ${testName}: Score ${test.score}% - Requer intervenção imediata\n`
-      })
-      analysis += "\n"
-    }
-    
-    if (goodTests.length > 0) {
-      analysis += "✅ **Pontos Fortes:**\n"
-      goodTests.forEach(([testKey, test]) => {
-        const testName = testDefinitions[testKey as keyof typeof testDefinitions].name
-        analysis += `• ${testName}: Score ${test.score}% - Desempenho satisfatório\n`
-      })
-      analysis += "\n"
-    }
-    
-    analysis += "**Recomendações:**\n"
-    if (riskTests.length > 0) {
-      analysis += "• Agendar sessão individual com RH\n"
-      analysis += "• Considerar ajustes na carga de trabalho\n"
-      analysis += "• Implementar programa de apoio psicológico\n"
-    } else {
-      analysis += "• Manter acompanhamento regular\n"
-      analysis += "• Continuar práticas atuais de gestão\n"
-      analysis += "• Considerar como exemplo para outros colaboradores\n"
-    }
-    
-    return analysis
-  }
 
   if (selectedColaborador) {
     const colaborador = colaboradores.find(c => c.id === selectedColaborador)
-    const results = testResults[selectedColaborador as keyof typeof testResults]
-    
+    if (!colaborador) return null
+
     return (
       <div className="space-y-6">
-        {/* Header com botão voltar */}
         <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={() => setSelectedColaborador(null)}>
-            ← Voltar
+          <Button 
+            variant="ghost" 
+            onClick={() => setSelectedColaborador(null)}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Voltar
           </Button>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">{colaborador?.name}</h1>
-            <p className="text-gray-600">{colaborador?.position} - {colaborador?.department}</p>
-          </div>
+          <h1 className="text-2xl font-bold">{colaborador.name}</h1>
         </div>
 
-        {/* Layout Kanban dos Testes */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Coluna: Aguardando Realização */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 pb-2 border-b">
-              <Clock className="h-5 w-5 text-gray-500" />
-              <h3 className="font-semibold text-gray-700">Aguardando Realização</h3>
-              <Badge variant="secondary" className="ml-auto">
-                {Object.entries(testDefinitions).filter(([testKey]) => !results?.[testKey as keyof typeof results]?.completed).length}
-              </Badge>
-            </div>
-            {Object.entries(testDefinitions)
-              .filter(([testKey]) => !results?.[testKey as keyof typeof results]?.completed)
-              .map(([testKey, testDef]) => {
-                const Icon = testDef.icon
-                return (
-                  <Card key={testKey} className="bg-gray-50 border-gray-200">
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-3">
-                        <Avatar className="h-10 w-10 border-2 border-white shadow-sm">
-                          <AvatarImage src={colaborador?.avatar} />
-                          <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-sm">
-                            {colaborador?.name.split(' ').map(n => n[0]).join('')}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Icon className={`h-4 w-4 ${testDef.color}`} />
-                            <h4 className="font-medium text-sm text-gray-900 truncate">{testDef.name}</h4>
-                          </div>
-                          <div className="flex items-center justify-center h-16 bg-gray-100 rounded-lg mb-3">
-                            <div className="text-center">
-                              <Clock className="h-6 w-6 text-gray-400 mx-auto mb-1" />
-                              <p className="text-xs text-gray-500">Aguardando</p>
-                            </div>
-                          </div>
-                          <Badge variant="outline" className="text-xs">
-                            Não realizado
-                          </Badge>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )
-              })}
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Informações Pessoais</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Email</p>
+                <p className="font-medium">{colaborador.email}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Departamento</p>
+                <p className="font-medium">{colaborador.department}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Cargo</p>
+                <p className="font-medium">{colaborador.position}</p>
+              </div>
+              {colaborador.matricula && (
+                <div>
+                  <p className="text-sm text-muted-foreground">Matrícula</p>
+                  <p className="font-medium">{colaborador.matricula}</p>
+                </div>
+              )}
+              <div>
+                <p className="text-sm text-muted-foreground">Status</p>
+                <Badge className={getStatusColor(colaborador.status)}>
+                  {getStatusIcon(colaborador.status)}
+                  {getStatusText(colaborador.status)}
+                </Badge>
+              </div>
+              {colaborador.riskLevel && (
+                <div>
+                  <p className="text-sm text-muted-foreground">Nível de Risco</p>
+                  <Badge variant={colaborador.riskLevel === 'high' ? 'destructive' : colaborador.riskLevel === 'medium' ? 'secondary' : 'default'}>
+                    {colaborador.riskLevel === 'high' ? 'Alto' : colaborador.riskLevel === 'medium' ? 'Médio' : 'Baixo'}
+                  </Badge>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-          {/* Coluna: Resultados Críticos */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 pb-2 border-b">
-              <AlertTriangle className="h-5 w-5 text-red-500" />
-              <h3 className="font-semibold text-red-700">Requer Atenção</h3>
-              <Badge variant="destructive" className="ml-auto">
-                {Object.entries(testDefinitions).filter(([testKey]) => {
-                  const testResult = results?.[testKey as keyof typeof results]
-                  return testResult?.completed && testResult.status === 'critico'
-                }).length}
-              </Badge>
-            </div>
-            {Object.entries(testDefinitions)
-              .filter(([testKey]) => {
-                const testResult = results?.[testKey as keyof typeof results]
-                return testResult?.completed && testResult.status === 'critico'
-              })
-              .map(([testKey, testDef]) => {
-                const testResult = results?.[testKey as keyof typeof results]
-                const Icon = testDef.icon
-                return (
-                  <Card key={testKey} className="border-l-4 border-l-red-500 bg-red-50">
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-3">
-                        <div className="relative">
-                          <Avatar className="h-10 w-10 border-2 border-white shadow-sm">
-                            <AvatarImage src={colaborador?.avatar} />
-                            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-sm">
-                              {colaborador?.name.split(' ').map(n => n[0]).join('')}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center">
-                            <AlertTriangle className="h-2.5 w-2.5 text-white" />
-                          </div>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Icon className={`h-4 w-4 ${testDef.color}`} />
-                            <h4 className="font-medium text-sm text-gray-900 truncate">{testDef.name}</h4>
-                          </div>
-                          <div className="bg-white rounded-lg p-3 mb-3">
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-2xl font-bold text-red-600">{testResult?.score}%</span>
-                              <TrendingDown className="h-5 w-5 text-red-500" />
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2">
-                              <div className="h-2 bg-red-500 rounded-full" style={{ width: `${testResult?.score}%` }}></div>
-                            </div>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <Badge variant="destructive" className="text-xs">
-                              Crítico
-                            </Badge>
-                            <Button size="sm" variant="outline" className="h-6 px-2 text-xs">
-                              <Download className="h-3 w-3 mr-1" />
-                              PDF
-                            </Button>
-                          </div>
-                          <p className="text-xs text-gray-500 mt-2">
-                            {new Date(testResult?.date || '').toLocaleDateString('pt-BR')}
-                          </p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )
-              })}
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Estatísticas de Testes</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Total de Testes</p>
+                <p className="text-2xl font-bold">{colaborador.statistics.totalTests}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Testes Concluídos</p>
+                <p className="text-2xl font-bold text-green-600">{colaborador.statistics.totalCompleted}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Taxa de Conclusão</p>
+                <p className="text-2xl font-bold">{colaborador.statistics.completionRate.toFixed(1)}%</p>
+              </div>
+              {colaborador.statistics.averageScore > 0 && (
+                <div>
+                  <p className="text-sm text-muted-foreground">Pontuação Média</p>
+                  <p className="text-2xl font-bold">{colaborador.statistics.averageScore.toFixed(1)}</p>
+                </div>
+              )}
+              {colaborador.lastEvaluation && (
+                <div>
+                  <p className="text-sm text-muted-foreground">Última Avaliação</p>
+                  <p className="font-medium">{new Date(colaborador.lastEvaluation).toLocaleDateString('pt-BR')}</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-          {/* Coluna: Resultados Adequados */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 pb-2 border-b">
-              <CheckCircle className="h-5 w-5 text-green-500" />
-              <h3 className="font-semibold text-green-700">Resultados Adequados</h3>
-              <Badge variant="default" className="ml-auto bg-green-100 text-green-800">
-                {Object.entries(testDefinitions).filter(([testKey]) => {
-                  const testResult = results?.[testKey as keyof typeof results]
-                  return testResult?.completed && (testResult.status === 'adequado' || testResult.status === 'medio')
-                }).length}
-              </Badge>
-            </div>
-            {Object.entries(testDefinitions)
-              .filter(([testKey]) => {
-                const testResult = results?.[testKey as keyof typeof results]
-                return testResult?.completed && (testResult.status === 'adequado' || testResult.status === 'medio')
-              })
-              .map(([testKey, testDef]) => {
-                const testResult = results?.[testKey as keyof typeof results]
-                const Icon = testDef.icon
-                const isAdequado = testResult?.status === 'adequado'
-                return (
-                  <Card key={testKey} className={`border-l-4 ${isAdequado ? 'border-l-green-500 bg-green-50' : 'border-l-yellow-500 bg-yellow-50'}`}>
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-3">
-                        <div className="relative">
-                          <Avatar className="h-10 w-10 border-2 border-white shadow-sm">
-                            <AvatarImage src={colaborador?.avatar} />
-                            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-sm">
-                              {colaborador?.name.split(' ').map(n => n[0]).join('')}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className={`absolute -top-1 -right-1 h-4 w-4 ${isAdequado ? 'bg-green-500' : 'bg-yellow-500'} rounded-full flex items-center justify-center`}>
-                            <CheckCircle className="h-2.5 w-2.5 text-white" />
-                          </div>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Icon className={`h-4 w-4 ${testDef.color}`} />
-                            <h4 className="font-medium text-sm text-gray-900 truncate">{testDef.name}</h4>
-                          </div>
-                          <div className="bg-white rounded-lg p-3 mb-3">
-                            <div className="flex items-center justify-between mb-2">
-                              <span className={`text-2xl font-bold ${isAdequado ? 'text-green-600' : 'text-yellow-600'}`}>{testResult?.score}%</span>
-                              <TrendingUp className={`h-5 w-5 ${isAdequado ? 'text-green-500' : 'text-yellow-500'}`} />
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2">
-                              <div className={`h-2 rounded-full ${isAdequado ? 'bg-green-500' : 'bg-yellow-500'}`} style={{ width: `${testResult?.score}%` }}></div>
-                            </div>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <Badge variant={isAdequado ? "default" : "secondary"} className={`text-xs ${isAdequado ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                              {isAdequado ? 'Adequado' : 'Médio'}
-                            </Badge>
-                            <Button size="sm" variant="outline" className="h-6 px-2 text-xs">
-                              <Download className="h-3 w-3 mr-1" />
-                              PDF
-                            </Button>
-                          </div>
-                          <p className="text-xs text-gray-500 mt-2">
-                            {new Date(testResult?.date || '').toLocaleDateString('pt-BR')}
-                          </p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )
-              })}
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Ações</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <Link href={`/empresa/colaboradores/${colaborador.id}/resultados`}>
+                <Button className="w-full" variant="outline">
+                  <Eye className="h-4 w-4 mr-2" />
+                  Ver Resultados Detalhados
+                </Button>
+              </Link>
+              <Button className="w-full" variant="outline">
+                <FileText className="h-4 w-4 mr-2" />
+                Gerar Relatório
+              </Button>
+              <Button className="w-full" variant="outline">
+                <Download className="h-4 w-4 mr-2" />
+                Baixar Dados
+              </Button>
+            </CardContent>
+          </Card>
         </div>
+      </div>
+    )
+  }
 
-        {/* Botão Download Relatório */}
-        <Card>
-          <CardContent className="pt-6">
-            <Button className="w-full">
-              <Download className="h-4 w-4 mr-2" />
-              Baixar Relatório Completo em PDF
-            </Button>
-          </CardContent>
-        </Card>
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex items-center gap-2">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span>Carregando colaboradores...</span>
+        </div>
+      </div>
+    )
+  }
 
-        {/* Análise por IA */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Brain className="h-5 w-5 text-blue-600" />
-              Análise Consolidada por IA
-            </CardTitle>
-            <CardDescription>
-              Análise automática baseada em todos os testes realizados
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="prose prose-sm max-w-none">
-              <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed">
-                {generateAIAnalysis(selectedColaborador)}
-              </pre>
-            </div>
-          </CardContent>
-        </Card>
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold mb-2">Erro ao carregar dados</h3>
+          <p className="text-muted-foreground mb-4">{error}</p>
+          <Button onClick={fetchColaboradores}>
+            Tentar Novamente
+          </Button>
+        </div>
       </div>
     )
   }
@@ -462,14 +391,69 @@ export default function ColaboradoresPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Gestão de Colaboradores</h1>
           <p className="text-gray-600">
-            Gerencie e monitore o bem-estar psicossocial de {session?.user?.company?.name || 'sua empresa'}
+            Gerencie e monitore o bem-estar psicossocial de sua empresa
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Calendar className="h-4 w-4 text-gray-500" />
-          <span className="text-sm text-gray-600">Última atualização: hoje</span>
+          <span className="text-sm text-gray-600">
+            Última atualização: {statistics?.lastUpdated ? new Date(statistics.lastUpdated).toLocaleDateString('pt-BR') : 'hoje'}
+          </span>
         </div>
       </div>
+
+      {/* Estatísticas da Empresa */}
+      {statistics && (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center">
+                <Users className="h-8 w-8 text-blue-600" />
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Total de Colaboradores</p>
+                  <p className="text-2xl font-bold text-gray-900">{statistics.total}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center">
+                <CheckCircle className="h-8 w-8 text-green-600" />
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Taxa de Conclusão</p>
+                  <p className="text-2xl font-bold text-gray-900">{statistics.overallCompletionRate.toFixed(1)}%</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center">
+                <TrendingUp className="h-8 w-8 text-blue-600" />
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Pontuação Média</p>
+                  <p className="text-2xl font-bold text-gray-900">{statistics.overallAverageScore.toFixed(1)}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center">
+                <AlertTriangle className="h-8 w-8 text-red-600" />
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Alto Risco</p>
+                  <p className="text-2xl font-bold text-gray-900">{statistics.byRiskLevel.high}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Filtros */}
       <Card>
@@ -487,16 +471,27 @@ export default function ColaboradoresPage() {
               </div>
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full sm:w-[200px]">
+              <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Filtrar por status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os status</SelectItem>
+                <SelectItem value="completed">Concluído</SelectItem>
+                <SelectItem value="risk">Em risco</SelectItem>
+                <SelectItem value="pending">Pendente</SelectItem>
+                <SelectItem value="in_progress">Em andamento</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
+              <SelectTrigger className="w-full sm:w-[180px]">
                 <Filter className="h-4 w-4 mr-2" />
                 <SelectValue placeholder="Filtrar por departamento" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos os Departamentos</SelectItem>
-                <SelectItem value="rh">Recursos Humanos</SelectItem>
-                <SelectItem value="tech">Tecnologia</SelectItem>
-                <SelectItem value="vendas">Vendas</SelectItem>
-                <SelectItem value="marketing">Marketing</SelectItem>
+                <SelectItem value="all">Todos os departamentos</SelectItem>
+                {departments.map(dept => (
+                  <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -517,7 +512,7 @@ export default function ColaboradoresPage() {
                 {filteredColaboradores.filter(c => c.status === 'pending').length}
               </Badge>
             </div>
-            <p className="text-xs text-gray-600">Colaboradores que ainda não iniciaram os testes</p>
+            <p className="text-xs text-gray-600">Colaboradores que ainda não iniciaram as avaliações</p>
           </div>
           <div className="space-y-3">
             {filteredColaboradores
@@ -525,31 +520,39 @@ export default function ColaboradoresPage() {
               .map((colaborador) => (
                 <Card 
                   key={colaborador.id} 
-                  className="transition-all duration-200 hover:shadow-md cursor-pointer border-l-4 border-l-gray-400 hover:border-l-gray-600"
+                  className="transition-all duration-200 hover:shadow-md cursor-pointer border-l-4 border-l-gray-400 hover:border-l-gray-600 h-[160px] flex flex-col"
                   onClick={() => setSelectedColaborador(colaborador.id)}
                 >
-                  <CardContent className="p-4">
+                  <CardContent className="p-4 flex flex-col h-full">
                     <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10 ring-2 ring-white shadow-sm">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <Avatar className="h-10 w-10 ring-2 ring-white shadow-sm flex-shrink-0">
                           <AvatarImage src={colaborador.avatar} />
                           <AvatarFallback className="bg-gradient-to-br from-gray-400 to-gray-600 text-white font-semibold text-sm">
-                            {colaborador.name.split(' ').map(n => n[0]).join('')}
+                            {colaborador.firstName[0]}{colaborador.lastName[0]}
                           </AvatarFallback>
                         </Avatar>
-                        <div className="flex-1">
-                          <h4 className="font-medium text-gray-900 text-sm">{colaborador.name}</h4>
-                          <p className="text-xs text-gray-600">{colaborador.position}</p>
-                          <p className="text-xs text-gray-500">{colaborador.department}</p>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-gray-900 text-sm truncate">{colaborador.name}</h4>
+                          <p className="text-xs text-gray-600 truncate">{colaborador.position}</p>
+                          <p className="text-xs text-gray-500 truncate">{colaborador.department}</p>
                         </div>
                       </div>
-                      <Badge variant="outline" className="text-xs bg-gray-50 text-gray-700 border-gray-300">
+                      <Badge variant="outline" className="text-xs bg-gray-50 text-gray-700 border-gray-300 flex-shrink-0">
                         Pendente
                       </Badge>
                     </div>
-                    <div className="flex items-center justify-between">
+                    <div className="flex-1 flex flex-col justify-center">
+                      <div className="text-xs text-gray-600 mb-2">
+                        Testes disponíveis: {colaborador.statistics.totalTests}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        Matrícula: {colaborador.matricula || 'N/A'}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between mt-auto pt-2">
                       <div className="text-xs text-gray-600">
-                        <span className="font-medium">{colaborador.testsCompleted}/{colaborador.totalTests}</span> testes
+                        Status: Pendente
                       </div>
                       <div className="flex gap-1">
                         <Button size="sm" variant="outline" className="h-7 px-2 text-xs">
@@ -587,37 +590,45 @@ export default function ColaboradoresPage() {
               .map((colaborador) => (
                 <Card 
                   key={colaborador.id} 
-                  className="transition-all duration-200 hover:shadow-md cursor-pointer border-l-4 border-l-red-500 hover:border-l-red-600 bg-red-50/30"
+                  className="transition-all duration-200 hover:shadow-md cursor-pointer border-l-4 border-l-red-500 hover:border-l-red-600 bg-red-50/30 h-[160px] flex flex-col"
                   onClick={() => setSelectedColaborador(colaborador.id)}
                 >
-                  <CardContent className="p-4">
+                  <CardContent className="p-4 flex flex-col h-full">
                     <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10 ring-2 ring-white shadow-sm">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <Avatar className="h-10 w-10 ring-2 ring-white shadow-sm flex-shrink-0">
                           <AvatarImage src={colaborador.avatar} />
                           <AvatarFallback className="bg-gradient-to-br from-red-500 to-red-600 text-white font-semibold text-sm">
-                            {colaborador.name.split(' ').map(n => n[0]).join('')}
+                            {colaborador.firstName[0]}{colaborador.lastName[0]}
                           </AvatarFallback>
                         </Avatar>
-                        <div className="flex-1">
-                          <h4 className="font-medium text-gray-900 text-sm">{colaborador.name}</h4>
-                          <p className="text-xs text-gray-600">{colaborador.position}</p>
-                          <p className="text-xs text-gray-500">{colaborador.department}</p>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-gray-900 text-sm truncate">{colaborador.name}</h4>
+                          <p className="text-xs text-gray-600 truncate">{colaborador.position}</p>
+                          <p className="text-xs text-gray-500 truncate">{colaborador.department}</p>
                         </div>
                       </div>
-                      <Badge className="text-xs bg-red-100 text-red-800 border-red-200">
+                      <Badge className="text-xs bg-red-100 text-red-800 border-red-200 flex-shrink-0">
                         Alto Risco
                       </Badge>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <div className="text-xs text-gray-600">
-                        <span className="font-medium">{colaborador.testsCompleted}/{colaborador.totalTests}</span> testes
-                        <div className="text-xs text-red-600 mt-1 flex items-center gap-1">
-                          <AlertTriangle className="h-3 w-3" />
-                          Atenção necessária
-                        </div>
+                    <div className="flex-1 flex flex-col justify-center">
+                      <div className="text-xs text-red-600 mb-2 flex items-center gap-1">
+                        <AlertTriangle className="h-3 w-3" />
+                        <span className="truncate">Atenção necessária</span>
                       </div>
-                      <div className="flex gap-1">
+                      <div className="text-xs text-gray-600 mb-1">
+                        Pontuação: {colaborador.statistics.averageScore.toFixed(1)}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        Matrícula: {colaborador.matricula || 'N/A'}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between mt-auto pt-2">
+                      <div className="text-xs text-gray-600">
+                        Última avaliação: {colaborador.lastEvaluation ? new Date(colaborador.lastEvaluation).toLocaleDateString('pt-BR') : 'N/A'}
+                      </div>
+                      <div className="flex gap-1 flex-shrink-0 ml-2">
                         <Button size="sm" variant="outline" className="h-7 px-2 text-xs border-red-200 text-red-700 hover:bg-red-50">
                           Relatório
                         </Button>
@@ -653,36 +664,44 @@ export default function ColaboradoresPage() {
               .map((colaborador) => (
                 <Card 
                   key={colaborador.id} 
-                  className="transition-all duration-200 hover:shadow-md cursor-pointer border-l-4 border-l-yellow-500 hover:border-l-yellow-600 bg-yellow-50/30"
+                  className="transition-all duration-200 hover:shadow-md cursor-pointer border-l-4 border-l-yellow-500 hover:border-l-yellow-600 bg-yellow-50/30 h-[160px] flex flex-col"
                   onClick={() => setSelectedColaborador(colaborador.id)}
                 >
-                  <CardContent className="p-4">
+                  <CardContent className="p-4 flex flex-col h-full">
                     <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10 ring-2 ring-white shadow-sm">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <Avatar className="h-10 w-10 ring-2 ring-white shadow-sm flex-shrink-0">
                           <AvatarImage src={colaborador.avatar} />
                           <AvatarFallback className="bg-gradient-to-br from-yellow-500 to-yellow-600 text-white font-semibold text-sm">
-                            {colaborador.name.split(' ').map(n => n[0]).join('')}
+                            {colaborador.firstName[0]}{colaborador.lastName[0]}
                           </AvatarFallback>
                         </Avatar>
-                        <div className="flex-1">
-                          <h4 className="font-medium text-gray-900 text-sm">{colaborador.name}</h4>
-                          <p className="text-xs text-gray-600">{colaborador.position}</p>
-                          <p className="text-xs text-gray-500">{colaborador.department}</p>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-gray-900 text-sm truncate">{colaborador.name}</h4>
+                          <p className="text-xs text-gray-600 truncate">{colaborador.position}</p>
+                          <p className="text-xs text-gray-500 truncate">{colaborador.department}</p>
                         </div>
                       </div>
-                      <Badge className="text-xs bg-yellow-100 text-yellow-800 border-yellow-200">
+                      <Badge className="text-xs bg-yellow-100 text-yellow-800 border-yellow-200 flex-shrink-0">
                         Médio
                       </Badge>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <div className="text-xs text-gray-600">
-                        <span className="font-medium">{colaborador.testsCompleted}/{colaborador.totalTests}</span> testes
-                        <div className="text-xs text-yellow-600 mt-1">
-                          Última avaliação: {colaborador.lastTest ? new Date(colaborador.lastTest).toLocaleDateString('pt-BR') : 'N/A'}
-                        </div>
+                    <div className="flex-1 flex flex-col justify-center">
+                      <div className="text-xs text-yellow-600 mb-2">
+                        Resultado dentro da média
                       </div>
-                      <div className="flex gap-1">
+                      <div className="text-xs text-gray-600 mb-1">
+                        Pontuação: {colaborador.statistics.averageScore.toFixed(1)}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        Matrícula: {colaborador.matricula || 'N/A'}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between mt-auto pt-2">
+                      <div className="text-xs text-gray-600">
+                        Última avaliação: {colaborador.lastEvaluation ? new Date(colaborador.lastEvaluation).toLocaleDateString('pt-BR') : 'N/A'}
+                      </div>
+                      <div className="flex gap-1 flex-shrink-0 ml-2">
                         <Button size="sm" variant="outline" className="h-7 px-2 text-xs border-yellow-200 text-yellow-700 hover:bg-yellow-50">
                           Relatório
                         </Button>
@@ -718,37 +737,45 @@ export default function ColaboradoresPage() {
               .map((colaborador) => (
                 <Card 
                   key={colaborador.id} 
-                  className="transition-all duration-200 hover:shadow-md cursor-pointer border-l-4 border-l-green-500 hover:border-l-green-600 bg-green-50/30"
+                  className="transition-all duration-200 hover:shadow-md cursor-pointer border-l-4 border-l-green-500 hover:border-l-green-600 bg-green-50/30 h-[160px] flex flex-col"
                   onClick={() => setSelectedColaborador(colaborador.id)}
                 >
-                  <CardContent className="p-4">
+                  <CardContent className="p-4 flex flex-col h-full">
                     <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10 ring-2 ring-white shadow-sm">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <Avatar className="h-10 w-10 ring-2 ring-white shadow-sm flex-shrink-0">
                           <AvatarImage src={colaborador.avatar} />
                           <AvatarFallback className="bg-gradient-to-br from-green-500 to-green-600 text-white font-semibold text-sm">
-                            {colaborador.name.split(' ').map(n => n[0]).join('')}
+                            {colaborador.firstName[0]}{colaborador.lastName[0]}
                           </AvatarFallback>
                         </Avatar>
-                        <div className="flex-1">
-                          <h4 className="font-medium text-gray-900 text-sm">{colaborador.name}</h4>
-                          <p className="text-xs text-gray-600">{colaborador.position}</p>
-                          <p className="text-xs text-gray-500">{colaborador.department}</p>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-gray-900 text-sm truncate">{colaborador.name}</h4>
+                          <p className="text-xs text-gray-600 truncate">{colaborador.position}</p>
+                          <p className="text-xs text-gray-500 truncate">{colaborador.department}</p>
                         </div>
                       </div>
-                      <Badge className="text-xs bg-green-100 text-green-800 border-green-200">
+                      <Badge className="text-xs bg-green-100 text-green-800 border-green-200 flex-shrink-0">
                         Excelente
                       </Badge>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <div className="text-xs text-gray-600">
-                        <span className="font-medium">{colaborador.testsCompleted}/{colaborador.totalTests}</span> testes
-                        <div className="text-xs text-green-600 mt-1 flex items-center gap-1">
-                          <CheckCircle className="h-3 w-3" />
-                          Saúde em dia
-                        </div>
+                    <div className="flex-1 flex flex-col justify-center">
+                      <div className="text-xs text-green-600 mb-2 flex items-center gap-1">
+                        <CheckCircle className="h-3 w-3" />
+                        <span className="truncate">Saúde em dia</span>
                       </div>
-                      <div className="flex gap-1">
+                      <div className="text-xs text-gray-600 mb-1">
+                        Pontuação: {colaborador.statistics.averageScore.toFixed(1)}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        Matrícula: {colaborador.matricula || 'N/A'}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between mt-auto pt-2">
+                      <div className="text-xs text-gray-600">
+                        Última avaliação: {colaborador.lastEvaluation ? new Date(colaborador.lastEvaluation).toLocaleDateString('pt-BR') : 'N/A'}
+                      </div>
+                      <div className="flex gap-1 flex-shrink-0 ml-2">
                         <Button size="sm" variant="outline" className="h-7 px-2 text-xs border-green-200 text-green-700 hover:bg-green-50">
                           Relatório
                         </Button>

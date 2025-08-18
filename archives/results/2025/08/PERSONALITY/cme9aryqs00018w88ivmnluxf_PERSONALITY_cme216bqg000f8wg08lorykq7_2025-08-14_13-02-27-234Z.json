@@ -1,0 +1,29 @@
+{
+  "id": "cmebesrdu00038wxcnlzkt11p",
+  "testId": "cme216bqg000f8wg08lorykq7",
+  "testName": "HumaniQ QI – Quociente de Inteligência",
+  "testType": "PERSONALITY",
+  "userId": "cme9aryqs00018w88ivmnluxf",
+  "sessionId": "cmebesr2f00018wxclr3zynzz",
+  "overallScore": 145,
+  "dimensionScores": {
+    "Raciocínio Lógico": 100,
+    "Raciocínio Numérico": 100,
+    "Raciocínio Verbal": 100,
+    "Raciocínio Espacial": 0
+  },
+  "duration": 19,
+  "completedAt": "2025-08-14T13:02:27.234Z",
+  "status": "completed",
+  "metadata": {
+    "testName": "HumaniQ QI – Quociente de Inteligência",
+    "totalQuestions": 20,
+    "completedAt": "2025-08-14T13:02:26.841Z",
+    "calculationDate": "2025-08-14T13:02:27.231Z",
+    "totalAnswers": 15,
+    "testDescription": "Avalia habilidades cognitivas, raciocínio lógico e capacidade de resolução de problemas.",
+    "archivedFromAPI": true
+  },
+  "archivedAt": "2025-08-14T13:02:27.247Z",
+  "filePath": "C:\\Users\\ALICEBELLA\\Desktop\\HMNQV2\\app\\archives\\results\\2025\\08\\PERSONALITY\\cme9aryqs00018w88ivmnluxf_PERSONALITY_cme216bqg000f8wg08lorykq7_2025-08-14_13-02-27-234Z.json"
+}

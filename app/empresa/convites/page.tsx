@@ -28,19 +28,19 @@ import { toast } from '@/components/ui/use-toast'
 
 export default function ConvitesPage() {
   const { data: session } = useSession()
-  const [selectedTests, setSelectedTests] = useState<string[]>(['stress', 'burnout'])
+  const [selectedAssessments, setSelectedAssessments] = useState<string[]>(['profile', 'skills'])
   const [frequency, setFrequency] = useState('trimestral')
   const [inviteLink, setInviteLink] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
 
   // Mock data - em produção, estes dados viriam da API
-  const availableTests = [
-    { id: 'stress', name: 'Teste de Estresse', description: 'Avalia níveis de estresse ocupacional' },
-    { id: 'burnout', name: 'Teste de Burnout', description: 'Identifica sinais de esgotamento profissional' },
-    { id: 'satisfaction', name: 'Satisfação no Trabalho', description: 'Mede satisfação e engajamento' },
-    { id: 'worklife', name: 'Work-life Balance', description: 'Avalia equilíbrio vida-trabalho' },
-    { id: 'leadership', name: 'Liderança', description: 'Avalia competências de liderança' },
-    { id: 'teamwork', name: 'Trabalho em Equipe', description: 'Mede colaboração e dinâmica de equipe' }
+  const availableAssessments = [
+    { id: 'profile', name: 'Avaliação de Perfil', description: 'Avalia perfil comportamental e competências' },
+    { id: 'skills', name: 'Avaliação de Competências', description: 'Identifica habilidades técnicas e comportamentais' },
+    { id: '360', name: 'Avaliação 360°', description: 'Feedback completo de superiores, pares e subordinados' },
+    { id: 'feedback', name: 'Feedback Contínuo', description: 'Sistema de feedback regular e estruturado' },
+    { id: 'development', name: 'Plano de Desenvolvimento', description: 'Avalia necessidades de desenvolvimento' },
+    { id: 'performance', name: 'Avaliação de Performance', description: 'Mede desempenho e resultados' }
   ]
 
   const sentInvites = [
@@ -52,7 +52,7 @@ export default function ConvitesPage() {
       status: 'active',
       used: 45,
       total: 150,
-      tests: ['Estresse', 'Burnout'],
+      assessments: ['Perfil', 'Competências'],
       frequency: 'Trimestral'
     },
     {
@@ -63,7 +63,7 @@ export default function ConvitesPage() {
       status: 'expired',
       used: 12,
       total: 20,
-      tests: ['Satisfação', 'Work-life Balance'],
+      assessments: ['Avaliação 360°', 'Feedback'],
       frequency: 'Único'
     },
     {
@@ -74,50 +74,112 @@ export default function ConvitesPage() {
       status: 'pending',
       used: 0,
       total: 75,
-      tests: ['Liderança'],
+      assessments: ['Desenvolvimento'],
       frequency: 'Semestral'
     }
   ]
 
-  const handleTestToggle = (testId: string) => {
-    setSelectedTests(prev => 
-      prev.includes(testId) 
-        ? prev.filter(id => id !== testId)
-        : [...prev, testId]
+  const handleAssessmentToggle = (assessmentId: string) => {
+    setSelectedAssessments(prev => 
+      prev.includes(assessmentId) 
+        ? prev.filter(id => id !== assessmentId)
+        : [...prev, assessmentId]
     )
   }
 
   const generateInviteLink = async () => {
-    setIsGenerating(true)
-    // Simular geração de link
-    setTimeout(() => {
-      const token = Math.random().toString(36).substring(2, 15)
-      const link = `${window.location.origin}/invite/${token}`
-      setInviteLink(link)
-      setIsGenerating(false)
+    if (!session?.user) {
       toast({
-        title: "Link gerado com sucesso!",
-        description: "O link de convite foi criado e está pronto para ser compartilhado."
+        title: "Erro",
+        description: "Informações da empresa não encontradas.",
+        variant: "destructive"
       })
-    }, 2000)
+      return
+    }
+
+    setIsGenerating(true)
+    
+    try {
+      const response = await fetch('/api/empresa/invites/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          assessments: selectedAssessments,
+          frequency: frequency
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok && data.success && data.token) {
+        // Use the inviteUrl from API response if available, otherwise construct it
+        const link = data.inviteUrl || `${window.location.origin}/invite/${data.token}`
+        setInviteLink(link)
+        toast({
+          title: "Link gerado com sucesso!",
+          description: "O link de convite foi criado e está pronto para ser compartilhado."
+        })
+      } else {
+        toast({
+          title: "Erro ao gerar link",
+          description: data.error?.message || "Tente novamente.",
+          variant: "destructive"
+        })
+      }
+    } catch (error) {
+      console.error('Error generating invite link:', error)
+      toast({
+        title: "Erro interno",
+        description: "Ocorreu um erro inesperado. Tente novamente.",
+        variant: "destructive"
+      })
+    } finally {
+      setIsGenerating(false)
+    }
   }
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-    toast({
-      title: "Copiado!",
-      description: "Link copiado para a área de transferência."
-    })
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      toast({
+        title: "Copiado!",
+        description: "Link copiado para a área de transferência."
+      })
+    } catch (error) {
+      console.error('Erro ao copiar:', error)
+      // Fallback para navegadores mais antigos
+      const textArea = document.createElement('textarea')
+      textArea.value = text
+      document.body.appendChild(textArea)
+      textArea.select()
+      try {
+        document.execCommand('copy')
+        toast({
+          title: "Copiado!",
+          description: "Link copiado para a área de transferência."
+        })
+      } catch (fallbackError) {
+        toast({
+          title: "Erro",
+          description: "Não foi possível copiar o link. Tente selecionar e copiar manualmente.",
+          variant: "destructive"
+        })
+      } finally {
+        document.body.removeChild(textArea)
+      }
+    }
   }
 
   const shareViaEmail = () => {
-    const subject = encodeURIComponent('Convite para Testes Psicossociais - HumaniQ AI')
-    const body = encodeURIComponent(`Olá!\n\nVocê foi convidado(a) para realizar testes psicossociais através da plataforma HumaniQ AI.\n\nClique no link abaixo para acessar:\n${inviteLink}\n\nAtenciosamente,\n${session?.user?.company?.name || 'Equipe RH'}`)
+    const subject = encodeURIComponent('Convite para Avaliações - HumaniQ AI')
+    const body = encodeURIComponent(`Olá!\n\nVocê foi convidado(a) para realizar avaliações através da plataforma HumaniQ AI.\n\nClique no link abaixo para acessar:\n${inviteLink}\n\nAtenciosamente,\nEquipe RH`)
     window.open(`mailto:?subject=${subject}&body=${body}`)
   }
 
   const shareViaWhatsApp = () => {
-    const message = encodeURIComponent(`Olá! Você foi convidado(a) para realizar testes psicossociais através da HumaniQ AI. Acesse: ${inviteLink}`)
+    const message = encodeURIComponent(`Olá! Você foi convidado(a) para realizar avaliações através da HumaniQ AI. Acesse: ${inviteLink}`)
     window.open(`https://wa.me/?text=${message}`)
   }
 
@@ -141,7 +203,7 @@ export default function ConvitesPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Gestão de Convites</h1>
           <p className="text-gray-600">
-            Gere e gerencie convites para colaboradores e candidatos realizarem testes psicossociais
+            Gere e gerencie convites para colaboradores e candidatos realizarem avaliações
           </p>
         </div>
       </div>
@@ -158,26 +220,26 @@ export default function ConvitesPage() {
             <CardHeader>
               <CardTitle>Configurar Novo Convite</CardTitle>
               <CardDescription>
-                Selecione os testes e configure a frequência de aplicação
+                Selecione as avaliações e configure a frequência de aplicação
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Seleção de Testes */}
+              {/* Seleção de Avaliações */}
               <div className="space-y-4">
-                <Label className="text-base font-medium">Testes Disponíveis</Label>
+                <Label className="text-base font-medium">Avaliações Disponíveis</Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {availableTests.map((test) => (
-                    <div key={test.id} className="flex items-start space-x-3 p-4 border rounded-lg">
+                  {availableAssessments.map((assessment) => (
+                    <div key={assessment.id} className="flex items-start space-x-3 p-4 border rounded-lg">
                       <Checkbox
-                        id={test.id}
-                        checked={selectedTests.includes(test.id)}
-                        onCheckedChange={() => handleTestToggle(test.id)}
+                        id={assessment.id}
+                        checked={selectedAssessments.includes(assessment.id)}
+                        onCheckedChange={() => handleAssessmentToggle(assessment.id)}
                       />
                       <div className="flex-1">
-                        <Label htmlFor={test.id} className="font-medium cursor-pointer">
-                          {test.name}
+                        <Label htmlFor={assessment.id} className="font-medium cursor-pointer">
+                          {assessment.name}
                         </Label>
-                        <p className="text-sm text-gray-600 mt-1">{test.description}</p>
+                        <p className="text-sm text-gray-600 mt-1">{assessment.description}</p>
                       </div>
                     </div>
                   ))}
@@ -204,7 +266,7 @@ export default function ConvitesPage() {
               {/* Botão Gerar */}
               <Button 
                 onClick={generateInviteLink} 
-                disabled={selectedTests.length === 0 || isGenerating}
+                disabled={selectedAssessments.length === 0 || isGenerating}
                 className="w-full"
               >
                 {isGenerating ? (
@@ -257,7 +319,7 @@ export default function ConvitesPage() {
                 <div className="bg-blue-50 p-4 rounded-lg">
                   <h4 className="font-medium text-blue-900 mb-2">Configurações do Convite:</h4>
                   <ul className="text-sm text-blue-800 space-y-1">
-                    <li>• Testes selecionados: {selectedTests.length}</li>
+                    <li>• Avaliações selecionadas: {selectedAssessments.length}</li>
                     <li>• Frequência: {frequency}</li>
                     <li>• Válido por: 30 dias</li>
                   </ul>
@@ -289,7 +351,7 @@ export default function ConvitesPage() {
                         <div className="text-sm text-gray-600 space-y-1">
                           <p>Criado em: {new Date(invite.createdAt).toLocaleDateString('pt-BR')}</p>
                           <p>Expira em: {new Date(invite.expiresAt).toLocaleDateString('pt-BR')}</p>
-                          <p>Testes: {invite.tests.join(', ')}</p>
+                          <p>Avaliações: {invite.assessments.join(', ')}</p>
                           <p>Frequência: {invite.frequency}</p>
                         </div>
                       </div>

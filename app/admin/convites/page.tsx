@@ -33,10 +33,7 @@ interface Invitation {
   company: {
     name: string
   }
-  test: {
-    name: string
-  } | null
-  invitedByUser: {
+  inviter: {
     firstName: string | null
     lastName: string | null
   } | null
@@ -58,7 +55,8 @@ export default function ConvitesPage() {
         throw new Error('Falha ao buscar convites')
       }
       const data = await response.json()
-      setInvitations(data.invitations || [])
+      // A API retorna um array direto, não um objeto com propriedade invitations
+      setInvitations(Array.isArray(data) ? data : [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro desconhecido')
     } finally {
@@ -202,7 +200,6 @@ export default function ConvitesPage() {
                 <TableRow>
                   <TableHead>Email</TableHead>
                   <TableHead>Empresa</TableHead>
-                  <TableHead>Teste</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Criado em</TableHead>
                   <TableHead>Expira em</TableHead>
@@ -213,7 +210,6 @@ export default function ConvitesPage() {
                   <TableRow key={invite.id}>
                     <TableCell className="font-medium">{invite.email}</TableCell>
                     <TableCell>{invite.company.name}</TableCell>
-                    <TableCell>{invite.test?.name || 'N/A'}</TableCell>
                     <TableCell>
                       <Badge variant={getStatusVariant(invite.status)}>
                         {invite.status}

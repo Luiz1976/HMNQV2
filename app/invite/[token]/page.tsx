@@ -34,7 +34,7 @@ export default function InviteRegistrationPage() {
     companyName: '',
     password: '',
     confirmPassword: '',
-    userType: 'COMPANY' as const
+    userType: 'EMPLOYEE' as const
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -50,11 +50,12 @@ export default function InviteRegistrationPage() {
 
         if (response.ok && data.success) {
           setInviteData(data.invite)
-          // Pre-fill company name if available
+          // Pre-fill company name and user type if available
           if (data.invite.companyName) {
             setFormData(prev => ({
               ...prev,
-              companyName: data.invite.companyName
+              companyName: data.invite.companyName,
+              userType: data.invite.suggestedUserType || 'EMPLOYEE'
             }))
           }
         } else {

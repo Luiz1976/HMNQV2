@@ -8,6 +8,9 @@ import './globals.css'
 import { Providers } from '@/components/providers'
 import { APP_CONFIG } from '@/lib/utils'
 
+// Inicializar sistema de backup
+import '@/lib/backup-init'
+
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {

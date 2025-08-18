@@ -1,0 +1,30 @@
+{
+  "lastUpdated": "2025-01-13T00:00:00.000Z",
+  "totalEntries": 0,
+  "index": {
+    "description": "Índice de resultados organizados por tipo de teste",
+    "structure": "testType",
+    "entries": {
+      "personalidade": {
+        "name": "Testes de Personalidade",
+        "count": 0,
+        "tests": {}
+      },
+      "psicossociais": {
+        "name": "Testes Psicossociais",
+        "count": 0,
+        "tests": {}
+      },
+      "outros": {
+        "name": "Outros Testes",
+        "count": 0,
+        "tests": {}
+      }
+    }
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "indexType": "testType",
+    "autoUpdate": true
+  }
+}

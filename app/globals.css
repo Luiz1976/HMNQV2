@@ -3,6 +3,48 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Animações personalizadas para o indicador de risco */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 5px currentColor);
+  }
+  50% {
+    filter: drop-shadow(0 0 15px currentColor);
+  }
+}
+
+@keyframes scale-bounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+.animate-scale-bounce {
+  animation: scale-bounce 0.6s ease-in-out infinite;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -156,6 +198,23 @@
 /* Loading States */
 .loading-skeleton {
   @apply animate-pulse bg-muted rounded;
+}
+
+/* Confidence Badge Styles */
+.confidence-badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors;
+}
+
+.confidence-high {
+  @apply bg-green-100 text-green-800 border border-green-200;
+}
+
+.confidence-medium {
+  @apply bg-yellow-100 text-yellow-800 border border-yellow-200;
+}
+
+.confidence-low {
+  @apply bg-red-100 text-red-800 border border-red-200;
 }
 
 .loading-shimmer {

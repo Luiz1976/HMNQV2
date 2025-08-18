@@ -1,0 +1,30 @@
+{
+  "id": "archived_test_003",
+  "testName": "HumaniQ FLEX - Avaliação de Adaptabilidade",
+  "testType": "outros",
+  "userId": "user456",
+  "sessionId": "session101",
+  "overallScore": 91,
+  "dimensionScores": {
+    "flexibility": 89,
+    "adaptability": 93,
+    "innovation": 88,
+    "resilience": 94
+  },
+  "duration": 22,
+  "completedAt": "2025-01-08T16:45:00.000Z",
+  "createdAt": "2025-01-08T16:23:00.000Z",
+  "status": "completed",
+  "metadata": {
+    "testCategory": "Adaptabilidade",
+    "testDescription": "Avaliação da capacidade de adaptação e flexibilidade",
+    "version": "1.5"
+  },
+  "archivedAt": "2025-01-08T17:00:00.000Z",
+  "filePath": "2025/01/outros/test-result-example-3.json",
+  "insights": [
+    "Excelente capacidade de adaptação",
+    "Alta pontuação em resiliência",
+    "Perfil ideal para mudanças organizacionais"
+  ]
+}

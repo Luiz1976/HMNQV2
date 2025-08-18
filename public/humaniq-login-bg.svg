@@ -1,0 +1,69 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3a8a;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:#3730a3;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#7c3aed;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#db2777;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="glow1" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0" />
+    </radialGradient>
+    <radialGradient id="glow2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#60a5fa;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Background gradient -->
+  <rect width="1920" height="1080" fill="url(#bg-gradient)" />
+  
+  <!-- Floating geometric shapes -->
+  <circle cx="200" cy="150" r="120" fill="url(#glow1)" opacity="0.6" />
+  <circle cx="1700" cy="900" r="180" fill="url(#glow2)" opacity="0.5" />
+  <circle cx="1600" cy="200" r="100" fill="rgba(255,255,255,0.1)" />
+  <circle cx="300" cy="800" r="80" fill="rgba(96,165,250,0.2)" />
+  
+  <!-- Abstract tech shapes -->
+  <polygon points="100,400 200,350 250,450 150,500" fill="rgba(255,255,255,0.08)" />
+  <polygon points="1500,600 1650,550 1700,700 1550,750" fill="rgba(124,58,237,0.15)" />
+  <rect x="50" y="200" width="150" height="150" rx="20" fill="rgba(255,255,255,0.06)" transform="rotate(25 125 275)" />
+  <rect x="1400" y="800" width="200" height="100" rx="15" fill="rgba(96,165,250,0.1)" transform="rotate(-15 1500 850)" />
+  
+  <!-- Neural network inspired connections -->
+  <g stroke="rgba(255,255,255,0.3)" stroke-width="2" fill="none">
+    <line x1="300" y1="200" x2="500" y2="300" opacity="0.6" />
+    <line x1="500" y1="300" x2="700" y2="250" opacity="0.5" />
+    <line x1="700" y1="250" x2="900" y2="350" opacity="0.4" />
+    <circle cx="300" cy="200" r="8" fill="rgba(255,255,255,0.8)" />
+    <circle cx="500" cy="300" r="6" fill="rgba(96,165,250,0.9)" />
+    <circle cx="700" cy="250" r="7" fill="rgba(124,58,237,0.8)" />
+    <circle cx="900" cy="350" r="5" fill="rgba(219,39,119,0.9)" />
+  </g>
+  
+  <!-- Brain/AI icon in corner -->
+  <g transform="translate(1650, 100)">
+    <circle cx="0" cy="0" r="60" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.3)" stroke-width="2" />
+    <path d="M-30,-15 Q0,-35 30,-15 Q15,5 30,25 Q0,35 -30,25 Q-15,5 -30,-15" fill="rgba(255,255,255,0.2)" />
+    <circle cx="-15" cy="-8" r="3" fill="rgba(255,255,255,0.9)" />
+    <circle cx="15" cy="-8" r="3" fill="rgba(255,255,255,0.9)" />
+    <circle cx="0" cy="8" r="3" fill="rgba(255,255,255,0.9)" />
+    <line x1="-15" y1="-8" x2="0" y2="8" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" />
+    <line x1="15" y1="-8" x2="0" y2="8" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" />
+  </g>
+  
+  <!-- Data visualization elements -->
+  <g transform="translate(100, 600)">
+    <rect x="0" y="40" width="8" height="60" fill="rgba(96,165,250,0.6)" rx="4" />
+    <rect x="15" y="20" width="8" height="80" fill="rgba(124,58,237,0.7)" rx="4" />
+    <rect x="30" y="0" width="8" height="100" fill="rgba(219,39,119,0.8)" rx="4" />
+    <rect x="45" y="30" width="8" height="70" fill="rgba(255,255,255,0.6)" rx="4" />
+  </g>
+  
+  <!-- Subtle overlay for text readability -->
+  <rect width="1920" height="1080" fill="rgba(0,0,0,0.2)" />
+  
+  <!-- Centered content area highlight -->
+  <ellipse cx="960" cy="540" rx="400" ry="300" fill="rgba(255,255,255,0.03)" />
+</svg>

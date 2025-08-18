@@ -1,0 +1,34 @@
+{
+  "version": "1.0.0",
+  "archiveSettings": {
+    "autoArchive": true,
+    "retentionPeriod": "unlimited",
+    "compressionEnabled": false,
+    "indexingEnabled": true
+  },
+  "testTypes": {
+    "personalidade": {
+      "name": "Testes de Personalidade",
+      "folder": "personalidade",
+      "description": "Resultados de testes de personalidade e comportamento"
+    },
+    "psicossociais": {
+      "name": "Testes Psicossociais",
+      "folder": "psicossociais",
+      "description": "Resultados de testes psicossociais e cognitivos"
+    },
+    "outros": {
+      "name": "Outros Testes",
+      "folder": "outros",
+      "description": "Outros tipos de testes e avaliações"
+    }
+  },
+  "fileNaming": {
+    "pattern": "{userId}_{testType}_{testId}_{timestamp}.json",
+    "timestampFormat": "YYYY-MM-DD_HH-mm-ss"
+  },
+  "indexing": {
+    "updateFrequency": "immediate",
+    "fields": ["userId", "testType", "testId", "completedAt", "score", "status"]
+  }
+}

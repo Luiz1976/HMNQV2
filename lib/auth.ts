@@ -20,7 +20,10 @@ export const authOptions: NextAuthOptions = {
     signOut: '/auth/logout',
     error: '/auth/error',
   },
-  useSecureCookies: process.env.NODE_ENV === 'production',
+  // Configuração específica para desenvolvimento local
+  secret: process.env.NEXTAUTH_SECRET,
+  // Removido useSecureCookies e configurações de cookies para simplificar
+  // e usar os padrões do NextAuth que geralmente funcionam bem em localhost
   providers: [
     CredentialsProvider({
       name: 'credentials',
@@ -103,19 +106,72 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user }) {
+      console.log('🔐 JWT Callback - User:', !!user, 'Token exists:', !!token)
       // Initial sign in
       if (user) {
         token.user = user as AuthUser
+        console.log('🔐 JWT - Setting user in token:', user.email)
       }
 
       return token
     },
     async session({ session, token }) {
+      console.log('🔐 Session Callback - Token user:', !!token?.user)
       // Send properties to the client
       if (token?.user) {
         session.user = token.user as AuthUser
+        console.log('🔐 Session - User set:', session.user.email)
       }
       return session
+    },
+    async redirect({ url, baseUrl }) {
+      // Reduzir logs para evitar spam
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔐 Redirect Callback - URL:', url, 'Base:', baseUrl)
+      }
+      
+      // Se a URL é igual ao baseUrl, não redirecionar para evitar loops
+      if (url === baseUrl) {
+        return baseUrl
+      }
+      
+      // Evitar redirecionamentos RSC desnecessários
+      if (url.includes('_rsc=')) {
+        return baseUrl
+      }
+      
+      // Permite redirecionamentos relativos
+      if (url.startsWith('/')) {
+        // Evitar loops de redirecionamento para a mesma página
+        const urlPath = new URL(url, baseUrl).pathname
+        const basePath = new URL(baseUrl).pathname
+        
+        if (urlPath === basePath) {
+          return baseUrl
+        }
+        
+        return `${baseUrl}${url}`
+      }
+      
+      // Permite redirecionamentos para o mesmo domínio
+      try {
+        const urlObj = new URL(url)
+        const baseObj = new URL(baseUrl)
+        
+        if (urlObj.origin === baseObj.origin) {
+          // Evitar redirecionamento para a mesma página
+          if (urlObj.pathname === baseObj.pathname) {
+            return baseUrl
+          }
+          return url
+        }
+      } catch (error) {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🔐 Invalid URL in redirect:', url)
+        }
+      }
+      
+      return baseUrl
     }
   },
   events: {
@@ -135,21 +191,21 @@ export const USER_PERMISSIONS = {
   ADMIN_ALL: 'admin:all',
   ADMIN_USERS: 'admin:users',
   ADMIN_COMPANIES: 'admin:companies',
-  ADMIN_TESTS: 'admin:tests',
+  ADMIN_EVALUATIONS: 'admin:evaluations',
   ADMIN_ANALYTICS: 'admin:analytics',
   
   // Company permissions
   COMPANY_MANAGE: 'company:manage',
   COMPANY_EMPLOYEES: 'company:employees',
-  COMPANY_TESTS: 'company:tests',
+  COMPANY_EVALUATIONS: 'company:evaluations',
   COMPANY_ANALYTICS: 'company:analytics',
   COMPANY_INVITATIONS: 'company:invitations',
   
-  // Test permissions
-  TESTS_READ: 'tests:read',
-  TESTS_WRITE: 'tests:write',
-  TESTS_TAKE: 'tests:take',
-  TESTS_RESULTS: 'tests:results',
+  // Evaluation permissions
+  EVALUATIONS_READ: 'evaluations:read',
+  EVALUATIONS_WRITE: 'evaluations:write',
+  EVALUATIONS_TAKE: 'evaluations:take',
+  EVALUATIONS_RESULTS: 'evaluations:results',
   
   // Analytics permissions
   ANALYTICS_READ: 'analytics:read',
@@ -193,28 +249,32 @@ export function getDefaultPermissions(userType: string): string[] {
       return [
         USER_PERMISSIONS.COMPANY_MANAGE,
         USER_PERMISSIONS.COMPANY_EMPLOYEES,
-        USER_PERMISSIONS.COMPANY_TESTS,
+        USER_PERMISSIONS.COMPANY_EVALUATIONS,
         USER_PERMISSIONS.COMPANY_ANALYTICS,
         USER_PERMISSIONS.COMPANY_INVITATIONS,
-        USER_PERMISSIONS.TESTS_READ,
-        USER_PERMISSIONS.TESTS_WRITE,
+        USER_PERMISSIONS.EVALUATIONS_READ,
+    USER_PERMISSIONS.EVALUATIONS_WRITE,
         USER_PERMISSIONS.ANALYTICS_READ,
         USER_PERMISSIONS.ANALYTICS_EXPORT
       ]
     
     case 'EMPLOYEE':
       return [
-        USER_PERMISSIONS.TESTS_READ,
-        USER_PERMISSIONS.TESTS_TAKE,
-        USER_PERMISSIONS.TESTS_RESULTS
+        USER_PERMISSIONS.EVALUATIONS_READ,
+    USER_PERMISSIONS.EVALUATIONS_TAKE,
+    USER_PERMISSIONS.EVALUATIONS_RESULTS
       ]
     
     case 'CANDIDATE':
       return [
-        USER_PERMISSIONS.TESTS_TAKE
+        USER_PERMISSIONS.EVALUATIONS_TAKE
       ]
     
     default:
       return []
   }
 }
+
+// Export auth function for use in API routes
+import { getServerSession } from 'next-auth'
+export const auth = () => getServerSession(authOptions)

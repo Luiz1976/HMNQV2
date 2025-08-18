@@ -24,11 +24,6 @@ export async function GET() {
             lastName: true,
           },
         },
-        test: {
-          select: {
-            name: true,
-          },
-        },
       },
     })
 

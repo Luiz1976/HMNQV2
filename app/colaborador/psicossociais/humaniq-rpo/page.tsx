@@ -1,0 +1,582 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Progress } from '@/components/ui/progress'
+import { Badge } from '@/components/ui/badge'
+import { ArrowLeft, ArrowRight, CheckCircle, Brain, AlertTriangle, Printer, TrendingUp, Target, Users, Award } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { LikertScale } from '@/components/ui/likert-scale'
+import { toast } from 'sonner'
+
+interface Question {
+  id: number
+  text: string
+  dimension: string
+  category: string
+}
+
+interface Answer {
+  questionId: number
+  score: number
+}
+
+const questions: Question[] = [
+  // 1. Demandas do Trabalho (12 questões)
+  { id: 1, text: 'Tenho tempo suficiente para realizar todas as minhas tarefas.', dimension: 'Demandas do Trabalho', category: 'Carga de Trabalho' },
+  { id: 2, text: 'Minha carga de trabalho é adequada às minhas capacidades.', dimension: 'Demandas do Trabalho', category: 'Carga de Trabalho' },
+  { id: 3, text: 'Consigo concluir minhas atividades dentro do prazo estabelecido.', dimension: 'Demandas do Trabalho', category: 'Carga de Trabalho' },
+  { id: 4, text: 'As demandas do meu trabalho são realistas.', dimension: 'Demandas do Trabalho', category: 'Carga de Trabalho' },
+  { id: 5, text: 'Raramente preciso trabalhar além do horário normal.', dimension: 'Demandas do Trabalho', category: 'Carga de Trabalho' },
+  { id: 6, text: 'Meu trabalho exige esforço mental excessivo.', dimension: 'Demandas do Trabalho', category: 'Intensidade Mental' },
+  { id: 7, text: 'Preciso me concentrar intensamente por longos períodos.', dimension: 'Demandas do Trabalho', category: 'Intensidade Mental' },
+  { id: 8, text: 'Meu trabalho requer atenção constante aos detalhes.', dimension: 'Demandas do Trabalho', category: 'Intensidade Mental' },
+  { id: 9, text: 'Sinto-me mentalmente esgotado ao final do dia.', dimension: 'Demandas do Trabalho', category: 'Intensidade Mental' },
+  { id: 10, text: 'Meu trabalho exige que eu tome muitas decisões difíceis.', dimension: 'Demandas do Trabalho', category: 'Intensidade Mental' },
+  { id: 11, text: 'Tenho que lidar com situações emocionalmente difíceis.', dimension: 'Demandas do Trabalho', category: 'Demandas Emocionais' },
+  { id: 12, text: 'Meu trabalho me expõe a conflitos interpessoais frequentes.', dimension: 'Demandas do Trabalho', category: 'Demandas Emocionais' },
+
+  // 2. Controle e Autonomia (12 questões)
+  { id: 13, text: 'Tenho liberdade para decidir como realizar meu trabalho.', dimension: 'Controle e Autonomia', category: 'Autonomia de Decisão' },
+  { id: 14, text: 'Posso influenciar as decisões que afetam meu trabalho.', dimension: 'Controle e Autonomia', category: 'Autonomia de Decisão' },
+  { id: 15, text: 'Tenho controle sobre o ritmo do meu trabalho.', dimension: 'Controle e Autonomia', category: 'Autonomia de Decisão' },
+  { id: 16, text: 'Posso escolher quando fazer pausas durante o trabalho.', dimension: 'Controle e Autonomia', category: 'Autonomia de Decisão' },
+  { id: 17, text: 'Tenho autonomia para organizar minha agenda.', dimension: 'Controle e Autonomia', category: 'Autonomia de Decisão' },
+  { id: 18, text: 'Posso usar minhas habilidades e conhecimentos no trabalho.', dimension: 'Controle e Autonomia', category: 'Uso de Habilidades' },
+  { id: 19, text: 'Meu trabalho me permite aprender coisas novas.', dimension: 'Controle e Autonomia', category: 'Uso de Habilidades' },
+  { id: 20, text: 'Tenho oportunidades de desenvolver minhas competências.', dimension: 'Controle e Autonomia', category: 'Uso de Habilidades' },
+  { id: 21, text: 'Meu trabalho é variado e interessante.', dimension: 'Controle e Autonomia', category: 'Uso de Habilidades' },
+  { id: 22, text: 'Posso ser criativo no meu trabalho.', dimension: 'Controle e Autonomia', category: 'Uso de Habilidades' },
+  { id: 23, text: 'Tenho participação nas decisões importantes da empresa.', dimension: 'Controle e Autonomia', category: 'Participação' },
+  { id: 24, text: 'Minha opinião é considerada nas mudanças organizacionais.', dimension: 'Controle e Autonomia', category: 'Participação' },
+
+  // 3. Apoio Social e Relacionamentos (12 questões)
+  { id: 25, text: 'Recebo apoio adequado do meu supervisor.', dimension: 'Apoio Social e Relacionamentos', category: 'Apoio da Chefia' },
+  { id: 26, text: 'Meu supervisor me trata com respeito.', dimension: 'Apoio Social e Relacionamentos', category: 'Apoio da Chefia' },
+  { id: 27, text: 'Posso contar com meu supervisor quando preciso de ajuda.', dimension: 'Apoio Social e Relacionamentos', category: 'Apoio da Chefia' },
+  { id: 28, text: 'Meu supervisor reconhece meu bom desempenho.', dimension: 'Apoio Social e Relacionamentos', category: 'Apoio da Chefia' },
+  { id: 29, text: 'Tenho um bom relacionamento com meus colegas.', dimension: 'Apoio Social e Relacionamentos', category: 'Apoio dos Colegas' },
+  { id: 30, text: 'Posso contar com meus colegas quando preciso de ajuda.', dimension: 'Apoio Social e Relacionamentos', category: 'Apoio dos Colegas' },
+  { id: 31, text: 'Existe cooperação entre os membros da equipe.', dimension: 'Apoio Social e Relacionamentos', category: 'Apoio dos Colegas' },
+  { id: 32, text: 'Sinto-me integrado à equipe de trabalho.', dimension: 'Apoio Social e Relacionamentos', category: 'Apoio dos Colegas' },
+  { id: 33, text: 'Há comunicação clara entre os membros da equipe.', dimension: 'Apoio Social e Relacionamentos', category: 'Comunicação' },
+  { id: 34, text: 'Recebo informações suficientes para realizar meu trabalho.', dimension: 'Apoio Social e Relacionamentos', category: 'Comunicação' },
+  { id: 35, text: 'As informações chegam até mim no tempo adequado.', dimension: 'Apoio Social e Relacionamentos', category: 'Comunicação' },
+  { id: 36, text: 'Existe transparência na comunicação organizacional.', dimension: 'Apoio Social e Relacionamentos', category: 'Comunicação' },
+
+  // 4. Recompensa e Reconhecimento (12 questões)
+  { id: 37, text: 'Meu salário é adequado ao trabalho que realizo.', dimension: 'Recompensa e Reconhecimento', category: 'Recompensa Financeira' },
+  { id: 38, text: 'Recebo benefícios adequados da empresa.', dimension: 'Recompensa e Reconhecimento', category: 'Recompensa Financeira' },
+  { id: 39, text: 'Minha remuneração é justa comparada a outros colegas.', dimension: 'Recompensa e Reconhecimento', category: 'Recompensa Financeira' },
+  { id: 40, text: 'Tenho perspectivas de crescimento salarial.', dimension: 'Recompensa e Reconhecimento', category: 'Recompensa Financeira' },
+  { id: 41, text: 'Recebo reconhecimento pelo meu bom desempenho.', dimension: 'Recompensa e Reconhecimento', category: 'Reconhecimento' },
+  { id: 42, text: 'Meu trabalho é valorizado pela organização.', dimension: 'Recompensa e Reconhecimento', category: 'Reconhecimento' },
+  { id: 43, text: 'Recebo feedback positivo quando faço um bom trabalho.', dimension: 'Recompensa e Reconhecimento', category: 'Reconhecimento' },
+  { id: 44, text: 'Sinto que minha contribuição faz diferença na empresa.', dimension: 'Recompensa e Reconhecimento', category: 'Reconhecimento' },
+  { id: 45, text: 'Tenho oportunidades de promoção na empresa.', dimension: 'Recompensa e Reconhecimento', category: 'Desenvolvimento' },
+  { id: 46, text: 'A empresa investe no meu desenvolvimento profissional.', dimension: 'Recompensa e Reconhecimento', category: 'Desenvolvimento' },
+  { id: 47, text: 'Tenho acesso a treinamentos e capacitações.', dimension: 'Recompensa e Reconhecimento', category: 'Desenvolvimento' },
+  { id: 48, text: 'Vejo perspectivas de crescimento na minha carreira.', dimension: 'Recompensa e Reconhecimento', category: 'Desenvolvimento' },
+
+  // 5. Justiça e Clima Organizacional (12 questões)
+  { id: 49, text: 'As decisões na empresa são tomadas de forma justa.', dimension: 'Justiça e Clima Organizacional', category: 'Justiça Organizacional' },
+  { id: 50, text: 'Todos são tratados com igualdade na organização.', dimension: 'Justiça e Clima Organizacional', category: 'Justiça Organizacional' },
+  { id: 51, text: 'Os processos de avaliação são transparentes e justos.', dimension: 'Justiça e Clima Organizacional', category: 'Justiça Organizacional' },
+  { id: 52, text: 'As regras são aplicadas de forma consistente para todos.', dimension: 'Justiça e Clima Organizacional', category: 'Justiça Organizacional' },
+  { id: 53, text: 'O ambiente de trabalho é respeitoso e cordial.', dimension: 'Justiça e Clima Organizacional', category: 'Clima Organizacional' },
+  { id: 54, text: 'Existe confiança entre os membros da organização.', dimension: 'Justiça e Clima Organizacional', category: 'Clima Organizacional' },
+  { id: 55, text: 'O ambiente promove a colaboração entre as pessoas.', dimension: 'Justiça e Clima Organizacional', category: 'Clima Organizacional' },
+  { id: 56, text: 'Sinto-me confortável para expressar minhas opiniões.', dimension: 'Justiça e Clima Organizacional', category: 'Clima Organizacional' },
+  { id: 57, text: 'A empresa tem valores claros e bem definidos.', dimension: 'Justiça e Clima Organizacional', category: 'Valores Organizacionais' },
+  { id: 58, text: 'Os valores da empresa são praticados no dia a dia.', dimension: 'Justiça e Clima Organizacional', category: 'Valores Organizacionais' },
+  { id: 59, text: 'Identifico-me com a missão e visão da empresa.', dimension: 'Justiça e Clima Organizacional', category: 'Valores Organizacionais' },
+  { id: 60, text: 'A empresa age de forma ética e responsável.', dimension: 'Justiça e Clima Organizacional', category: 'Valores Organizacionais' },
+
+  // 6. Segurança no Trabalho e Futuro (12 questões)
+  { id: 61, text: 'Sinto-me seguro em relação à estabilidade do meu emprego.', dimension: 'Segurança no Trabalho e Futuro', category: 'Segurança no Emprego' },
+  { id: 62, text: 'Não me preocupo com a possibilidade de ser demitido.', dimension: 'Segurança no Trabalho e Futuro', category: 'Segurança no Emprego' },
+  { id: 63, text: 'A empresa demonstra estabilidade financeira.', dimension: 'Segurança no Trabalho e Futuro', category: 'Segurança no Emprego' },
+  { id: 64, text: 'Confio no futuro da organização.', dimension: 'Segurança no Trabalho e Futuro', category: 'Segurança no Emprego' },
+  { id: 65, text: 'O ambiente físico de trabalho é seguro.', dimension: 'Segurança no Trabalho e Futuro', category: 'Segurança Física' },
+  { id: 66, text: 'A empresa fornece equipamentos de proteção adequados.', dimension: 'Segurança no Trabalho e Futuro', category: 'Segurança Física' },
+  { id: 67, text: 'Recebo treinamentos sobre segurança no trabalho.', dimension: 'Segurança no Trabalho e Futuro', category: 'Segurança Física' },
+  { id: 68, text: 'Os riscos de acidentes são minimizados no meu local de trabalho.', dimension: 'Segurança no Trabalho e Futuro', category: 'Segurança Física' },
+  { id: 69, text: 'Tenho perspectivas positivas para meu futuro profissional.', dimension: 'Segurança no Trabalho e Futuro', category: 'Perspectivas Futuras' },
+  { id: 70, text: 'Vejo oportunidades de crescimento a longo prazo.', dimension: 'Segurança no Trabalho e Futuro', category: 'Perspectivas Futuras' },
+  { id: 71, text: 'Sinto-me otimista em relação ao meu futuro na empresa.', dimension: 'Segurança no Trabalho e Futuro', category: 'Perspectivas Futuras' },
+  { id: 72, text: 'A empresa investe em inovação e modernização.', dimension: 'Segurança no Trabalho e Futuro', category: 'Perspectivas Futuras' },
+
+  // 7. Interface Trabalho-Vida Pessoal (12 questões)
+  { id: 73, text: 'Consigo equilibrar trabalho e vida pessoal.', dimension: 'Interface Trabalho-Vida Pessoal', category: 'Equilíbrio' },
+  { id: 74, text: 'Tenho tempo suficiente para atividades pessoais e familiares.', dimension: 'Interface Trabalho-Vida Pessoal', category: 'Equilíbrio' },
+  { id: 75, text: 'O trabalho não interfere negativamente na minha vida pessoal.', dimension: 'Interface Trabalho-Vida Pessoal', category: 'Equilíbrio' },
+  { id: 76, text: 'Consigo cumprir minhas responsabilidades familiares.', dimension: 'Interface Trabalho-Vida Pessoal', category: 'Equilíbrio' },
+  { id: 77, text: 'A empresa oferece flexibilidade de horários quando necessário.', dimension: 'Interface Trabalho-Vida Pessoal', category: 'Flexibilidade' },
+  { id: 78, text: 'Posso trabalhar de forma remota quando apropriado.', dimension: 'Interface Trabalho-Vida Pessoal', category: 'Flexibilidade' },
+  { id: 79, text: 'A empresa compreende minhas necessidades pessoais.', dimension: 'Interface Trabalho-Vida Pessoal', category: 'Flexibilidade' },
+  { id: 80, text: 'Tenho liberdade para negociar horários quando necessário.', dimension: 'Interface Trabalho-Vida Pessoal', category: 'Flexibilidade' },
+  { id: 81, text: 'A empresa respeita meus limites fora do horário de trabalho.', dimension: 'Interface Trabalho-Vida Pessoal', category: 'Limites' },
+  { id: 82, text: 'Posso cuidar da minha saúde sem comprometer o trabalho.', dimension: 'Interface Trabalho-Vida Pessoal', category: 'Limites' },
+  { id: 83, text: 'As exigências do trabalho não afetam minha qualidade de vida.', dimension: 'Interface Trabalho-Vida Pessoal', category: 'Limites' },
+  { id: 84, text: 'Sinto que consigo "desligar" do trabalho ao final do dia.', dimension: 'Interface Trabalho-Vida Pessoal', category: 'Limites' },
+
+  // 8. Violência, Assédio e Pressão (12 questões)
+  { id: 85, text: 'Já presenciei comportamentos abusivos no ambiente de trabalho.', dimension: 'Violência, Assédio e Pressão', category: 'Violência e Assédio' },
+  { id: 86, text: 'Já fui vítima de agressão verbal ou psicológica na empresa.', dimension: 'Violência, Assédio e Pressão', category: 'Violência e Assédio' },
+  { id: 87, text: 'Existe um canal seguro para denunciar assédio.', dimension: 'Violência, Assédio e Pressão', category: 'Violência e Assédio' },
+  { id: 88, text: 'A empresa age quando há denúncias de abuso.', dimension: 'Violência, Assédio e Pressão', category: 'Violência e Assédio' },
+  { id: 89, text: 'Me sinto protegido contra qualquer tipo de violência no trabalho.', dimension: 'Violência, Assédio e Pressão', category: 'Violência e Assédio' },
+  { id: 90, text: 'Sinto que posso discordar de superiores sem medo.', dimension: 'Violência, Assédio e Pressão', category: 'Pressão Psicológica' },
+  { id: 91, text: 'O ambiente tolera comentários ofensivos ou discriminatórios.', dimension: 'Violência, Assédio e Pressão', category: 'Pressão Psicológica' },
+  { id: 92, text: 'As metas são impostas com ameaças ou punições.', dimension: 'Violência, Assédio e Pressão', category: 'Pressão Psicológica' },
+  { id: 93, text: 'Já me senti humilhado por líderes ou colegas.', dimension: 'Violência, Assédio e Pressão', category: 'Pressão Psicológica' },
+  { id: 94, text: 'Existe pressão para manter silêncio sobre irregularidades.', dimension: 'Violência, Assédio e Pressão', category: 'Pressão Psicológica' },
+  { id: 95, text: 'A cultura da empresa combate o assédio moral.', dimension: 'Violência, Assédio e Pressão', category: 'Cultura Preventiva' },
+  { id: 96, text: 'A organização zela pela saúde mental dos colaboradores.', dimension: 'Violência, Assédio e Pressão', category: 'Cultura Preventiva' }
+]
+
+
+
+export default function HumaniQRPOPage() {
+  const router = useRouter()
+  const [currentQuestion, setCurrentQuestion] = useState(0)
+  const [answers, setAnswers] = useState<Answer[]>([])
+  const [isCompleted, setIsCompleted] = useState(false)
+  const [results, setResults] = useState<any>(null)
+  const [isTransitioning, setIsTransitioning] = useState(false)
+
+  // Adicionar estilos CSS para animações
+  useEffect(() => {
+    const style = document.createElement('style')
+    style.textContent = `
+      @keyframes fade-in {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .animate-fade-in {
+        animation: fade-in 0.5s ease-out;
+      }
+      @keyframes slide-in {
+        from { opacity: 0; transform: translateX(20px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+      .animate-slide-in {
+        animation: slide-in 0.3s ease-out;
+      }
+    `
+    document.head.appendChild(style)
+    return () => {
+      if (document.head.contains(style)) {
+        document.head.removeChild(style)
+      }
+    }
+  }, [])
+
+  const handleAnswer = (score: number) => {
+    const newAnswers = [...answers]
+    const existingIndex = newAnswers.findIndex(a => a.questionId === questions[currentQuestion].id)
+    
+    if (existingIndex >= 0) {
+      newAnswers[existingIndex].score = score
+    } else {
+      newAnswers.push({ questionId: questions[currentQuestion].id, score })
+    }
+    
+    setAnswers(newAnswers)
+  }
+
+  // Função para calcular o progresso baseado nas respostas dadas
+  const getProgressPercentage = () => {
+    return (answers.length / questions.length) * 100
+  }
+
+  const getCurrentAnswer = () => {
+    const answer = answers.find(a => a.questionId === questions[currentQuestion].id)
+    return answer?.score || 0
+  }
+
+  const nextQuestion = () => {
+    if (currentQuestion < questions.length - 1) {
+      setCurrentQuestion(currentQuestion + 1)
+    } else {
+      completeTest()
+    }
+  }
+
+  const prevQuestion = () => {
+    if (currentQuestion > 0) {
+      setCurrentQuestion(currentQuestion - 1)
+    }
+  }
+
+  const completeTest = async (finalAnswers?: Answer[]) => {
+    const answersToUse = finalAnswers || answers
+    
+    // Calcular resultados por dimensão
+    const dimensionScores: { [key: string]: number[] } = {}
+    
+    questions.forEach(question => {
+      const answer = answersToUse.find(a => a.questionId === question.id)
+      if (answer) {
+        if (!dimensionScores[question.dimension]) {
+          dimensionScores[question.dimension] = []
+        }
+        dimensionScores[question.dimension].push(answer.score)
+      }
+    })
+
+    // Calcular médias e classificações por dimensão
+    const finalResults: { [key: string]: { total: number, average: number, classification: string, risk: string, color: string } } = {}
+    
+    Object.keys(dimensionScores).forEach(dimension => {
+      const scores = dimensionScores[dimension]
+      const total = scores.reduce((sum, score) => sum + score, 0)
+      const average = total / scores.length
+      
+      let classification = ''
+      let risk = ''
+      let color = ''
+      
+      if (average >= 4.0) {
+        classification = 'Excelente'
+        risk = 'Baixo Risco'
+        color = 'text-green-600'
+      } else if (average >= 3.0) {
+        classification = 'Bom'
+        risk = 'Risco Moderado'
+        color = 'text-blue-600'
+      } else if (average >= 2.0) {
+        classification = 'Regular'
+        risk = 'Risco Alto'
+        color = 'text-yellow-600'
+      } else {
+        classification = 'Crítico'
+        risk = 'Risco Muito Alto'
+        color = 'text-red-600'
+      }
+      
+      finalResults[dimension] = { total, average, classification, risk, color }
+    })
+
+    // Calcular Índice Geral de Risco Psicossocial
+    const totalSum = answersToUse.reduce((sum, answer) => sum + answer.score, 0)
+    const generalIndex = totalSum / 96
+    
+    let generalClassification = ''
+    let generalColor = ''
+    
+    if (generalIndex >= 4.0) {
+      generalClassification = 'Excelente - Baixo Risco'
+      generalColor = 'text-green-600'
+    } else if (generalIndex >= 3.0) {
+      generalClassification = 'Bom - Risco Moderado'
+      generalColor = 'text-blue-600'
+    } else if (generalIndex >= 2.0) {
+      generalClassification = 'Regular - Risco Alto'
+      generalColor = 'text-yellow-600'
+    } else {
+      generalClassification = 'Crítico - Risco Muito Alto'
+      generalColor = 'text-red-600'
+    }
+
+    setResults({ dimensions: finalResults, generalIndex, generalClassification, generalColor })
+    setIsCompleted(true)
+
+    // Submeter resultados para a API
+    try {
+      const response = await fetch('/api/tests/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          testId: 'humaniq-rpo',
+          sessionId: 'temp-session-' + Date.now(),
+          answers: answersToUse,
+          duration: 0,
+          results: { dimensions: finalResults, generalIndex, generalClassification }
+        })
+      })
+
+      if (!response.ok) {
+        console.error('Erro ao submeter teste:', response.statusText)
+      } else {
+        console.log('Teste submetido com sucesso!')
+      }
+    } catch (error) {
+      console.error('Erro ao submeter teste:', error)
+    }
+  }
+
+  const getCriticalDimensions = () => {
+    if (!results) return []
+    return Object.entries(results.dimensions)
+      .filter(([_, data]: [string, any]) => data.average < 2.0)
+      .map(([dimension, _]) => dimension)
+  }
+
+  if (isCompleted && results) {
+    const criticalDimensions = getCriticalDimensions()
+    
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-4">
+        <div className="max-w-4xl mx-auto space-y-6">
+          {/* Header */}
+          <Card>
+            <CardHeader className="text-center">
+              <div className="flex items-center justify-center space-x-2 mb-2">
+                <Brain className="h-8 w-8 text-purple-600" />
+                <CardTitle className="text-2xl font-bold text-purple-800">
+                  HumaniQ RPO - Resultados
+                </CardTitle>
+              </div>
+              <CardDescription className="text-lg">
+                Riscos Psicossociais Ocupacionais - Análise Completa
+              </CardDescription>
+            </CardHeader>
+          </Card>
+
+          {/* Alerta Crítico */}
+          {criticalDimensions.length > 0 && (
+            <Card className="border-red-200 bg-red-50">
+              <CardHeader>
+                <div className="flex items-center space-x-2">
+                  <AlertTriangle className="h-6 w-6 text-red-600" />
+                  <CardTitle className="text-red-800">Alerta Crítico</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-red-700 mb-2">
+                  As seguintes dimensões apresentam risco muito alto (abaixo de 2.0):
+                </p>
+                <ul className="list-disc list-inside text-red-700">
+                  {criticalDimensions.map(dimension => (
+                    <li key={dimension} className="font-medium">{dimension}</li>
+                  ))}
+                </ul>
+                <p className="text-red-700 mt-2 font-medium">
+                  Recomenda-se ação imediata para mitigar estes riscos.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Índice Geral */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Índice Geral de Risco Psicossocial</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center space-y-2">
+                <div className="text-4xl font-bold">{results.generalIndex.toFixed(2)}</div>
+                <div className={`text-xl font-semibold ${results.generalColor}`}>
+                  {results.generalClassification}
+                </div>
+                <div className="text-sm text-gray-600">
+                  Baseado na média de todas as 96 questões
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Resultados por Dimensão */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Resultados por Dimensão</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {Object.entries(results.dimensions).map(([dimension, data]: [string, any]) => (
+                  <div key={dimension} className="p-4 border rounded-lg">
+                    <h4 className="font-semibold mb-2">{dimension}</h4>
+                    <div className="space-y-1">
+                      <div className="flex justify-between">
+                        <span>Média:</span>
+                        <span className="font-bold">{data.average.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Classificação:</span>
+                        <span className={`font-semibold ${data.color}`}>{data.classification}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Nível de Risco:</span>
+                        <span className={`font-semibold ${data.color}`}>{data.risk}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Ações */}
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex justify-center space-x-4">
+                <Button onClick={() => router.push('/colaborador/psicossociais')} variant="outline">
+                  Voltar aos Testes
+                </Button>
+                <Button 
+                  onClick={() => window.print()} 
+                  className="bg-purple-600 hover:bg-purple-700 text-white font-medium transition-all duration-200 hover:scale-[1.02] flex items-center gap-2"
+                >
+                  <Printer className="h-4 w-4" />
+                  Imprimir Relatório
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header com gradiente roxo/azul escuro */}
+      <div className="bg-gradient-to-r from-purple-600 to-blue-800 text-white p-6 shadow-lg">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              {/* Logo circular */}
+              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                <Brain className="h-6 w-6 text-purple-600" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-white">HumaniQ RPO</h1>
+                <p className="text-purple-100 text-sm">Riscos Psicossociais Ocupacionais</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-sm text-purple-200">Questão</div>
+              <div className="text-2xl font-bold text-white">
+                {currentQuestion + 1}/{questions.length}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Barra de progresso */}
+      <div className="bg-white shadow-sm">
+        <div className="max-w-4xl mx-auto px-6">
+          <Progress 
+            value={getProgressPercentage()} 
+            className="h-2 bg-gray-200 [&>div]:bg-purple-600"
+          />
+        </div>
+      </div>
+
+      {/* Área principal */}
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="bg-white rounded-2xl shadow-lg p-8">
+          {/* Categoria da pergunta */}
+          <div className="mb-6">
+            <span className="text-purple-600 font-medium text-lg">
+              {questions[currentQuestion].dimension}
+            </span>
+          </div>
+
+          {/* Pergunta */}
+          <h2 className="text-2xl font-bold text-gray-800 mb-8 leading-relaxed">
+            {questions[currentQuestion].text}
+          </h2>
+
+          {/* Barra de gradiente colorido */}
+          <div className="mb-6">
+            <div className="flex justify-between text-sm font-medium mb-2">
+              <span className="text-red-500">Discordo</span>
+              <span className="text-yellow-500">Neutro</span>
+              <span className="text-green-500">Concordo</span>
+            </div>
+            <div className="h-2 bg-gradient-to-r from-red-300 via-yellow-300 to-green-300 rounded-full mb-6"></div>
+          </div>
+
+          {/* Escala Likert customizada */}
+          <div className="mb-8">
+            <div className="flex justify-center space-x-4 mb-4">
+              {[1, 2, 3, 4, 5].map((value) => {
+                const colors = {
+                  1: 'bg-pink-400 hover:bg-pink-500',
+                  2: 'bg-orange-400 hover:bg-orange-500', 
+                  3: 'bg-yellow-400 hover:bg-yellow-500',
+                  4: 'bg-lime-400 hover:bg-lime-500',
+                  5: 'bg-green-500 hover:bg-green-600'
+                }
+                const isSelected = getCurrentAnswer() === value
+                return (
+                  <button
+                    key={value}
+                    onClick={() => {
+                      const newAnswers = [...answers]
+                      const existingIndex = newAnswers.findIndex(a => a.questionId === questions[currentQuestion].id)
+                      
+                      if (existingIndex >= 0) {
+                        newAnswers[existingIndex].score = value
+                      } else {
+                        newAnswers.push({ questionId: questions[currentQuestion].id, score: value })
+                      }
+                      
+                      setAnswers(newAnswers)
+                      setIsTransitioning(true)
+                      
+                      setTimeout(() => {
+                        setIsTransitioning(false)
+                        if (currentQuestion < questions.length - 1) {
+                          setCurrentQuestion(prev => prev + 1)
+                        } else {
+                          // Na última pergunta, garantir que a barra chegue a 100% antes de completar
+                          completeTest(newAnswers)
+                        }
+                      }, 600)
+                    }}
+                    className={`w-16 h-16 rounded-lg ${colors[value as keyof typeof colors]} text-white font-bold text-xl transition-all duration-200 hover:scale-105 ${
+                      isSelected ? 'ring-4 ring-purple-300 scale-105' : ''
+                    }`}
+                  >
+                    {value}
+                  </button>
+                )
+              })}
+            </div>
+            
+            {/* Labels descritivos */}
+            <div className="flex justify-center space-x-4 text-sm text-gray-600">
+              <div className="w-16 text-center">Discordo totalmente</div>
+              <div className="w-16 text-center">Discordo</div>
+              <div className="w-16 text-center">Neutro</div>
+              <div className="w-16 text-center">Concordo</div>
+              <div className="w-16 text-center">Concordo totalmente</div>
+            </div>
+          </div>
+
+          {/* Navegação */}
+          <div className="flex items-center justify-between pt-6 border-t border-gray-100">
+            <Button
+              onClick={prevQuestion}
+              disabled={currentQuestion === 0 || isTransitioning}
+              variant="ghost"
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Anterior</span>
+            </Button>
+            
+            <div className="text-center text-gray-500 text-sm">
+              Selecione uma resposta para continuar
+            </div>
+            
+            <Button
+              className="flex items-center space-x-2 bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-full"
+              disabled
+            >
+              <span>Próxima</span>
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

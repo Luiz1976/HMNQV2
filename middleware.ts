@@ -1,61 +1,89 @@
 
 import { withAuth } from 'next-auth/middleware'
 import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
 export default withAuth(
   function middleware(req) {
     const { token } = req.nextauth
-    const { pathname } = req.nextUrl
+    const { pathname, search } = req.nextUrl
+    const isRSCRequest = search.includes('_rsc=')
 
-    console.log('Middleware path:', pathname)
-    console.log('Middleware token:', token)
+    // Reduzir logs em produção para melhor performance
+    const shouldLog = process.env.NODE_ENV === 'development'
+    
+    if (shouldLog) {
+      console.log('🔍 Middleware - Path:', pathname)
+      console.log('🔍 Middleware - Has token:', !!token)
+      console.log('🔍 Middleware - User type:', token?.user?.userType)
+      console.log('🔍 Middleware - Is RSC:', isRSCRequest)
+    }
 
-    // Allow access to auth pages without authentication
-    if (pathname.startsWith('/auth/')) {
+    // Skip processing for RSC requests to prevent ERR_ABORTED
+    if (isRSCRequest) {
+      if (shouldLog) console.log('⚡ Skipping RSC request processing')
       return NextResponse.next()
     }
 
-    // Redirect unauthenticated users to login
-    if (!token) {
-      return NextResponse.redirect(new URL('/auth/login', req.url))
+    // Skip processing for auth pages to prevent redirect loops
+    if (pathname.startsWith('/auth/')) {
+      if (shouldLog) console.log('🔐 Allowing auth page access')
+      return NextResponse.next()
     }
 
-    // Role-based routing
-    const userType = token.user?.userType
+    // Only handle authenticated users
+    if (token) {
+      const userType = token.user?.userType
 
-    // Root dashboard redirect based on user type
-    if (pathname === '/dashboard' || pathname === '/') {
-      console.log('Redirecting based on user type:', userType)
-      switch (userType) {
-        case 'ADMIN':
-          return NextResponse.redirect(new URL('/admin/convites', req.url))
-        case 'COMPANY':
-          return NextResponse.redirect(new URL('/empresa', req.url))
-        case 'EMPLOYEE':
-        case 'CANDIDATE':
-          return NextResponse.redirect(
-            new URL('/colaborador/psicossociais', req.url),
-          )
-        default:
-          return NextResponse.redirect(new URL('/auth/login', req.url))
+      // Root dashboard redirect based on user type
+      if (pathname === '/dashboard' || pathname === '/') {
+        if (shouldLog) console.log('🔄 Root redirect for user type:', userType)
+        
+        switch (userType) {
+          case 'ADMIN':
+            if (shouldLog) console.log('➡️ Redirecting ADMIN to /admin/convites')
+            return NextResponse.redirect(new URL('/admin/convites', req.url))
+          case 'COMPANY':
+            if (shouldLog) console.log('➡️ Redirecting COMPANY to /empresa')
+            return NextResponse.redirect(new URL('/empresa', req.url))
+          case 'EMPLOYEE':
+          case 'CANDIDATE':
+            if (shouldLog) console.log('➡️ Redirecting EMPLOYEE/CANDIDATE to /colaborador')
+            return NextResponse.redirect(
+              new URL('/colaborador', req.url),
+            )
+          default:
+            if (shouldLog) console.log('❌ Unknown user type, redirecting to login')
+            return NextResponse.redirect(new URL('/auth/login', req.url))
+        }
       }
     }
 
+    if (shouldLog) console.log('✅ Allowing access to:', pathname)
     return NextResponse.next()
   },
   {
     callbacks: {
       authorized: ({ token, req }) => {
+        const { pathname } = req.nextUrl
+        
+        // Always allow access to auth pages to prevent redirect loops
+        if (pathname.startsWith('/auth/')) {
+          return true
+        }
+        
         // Allow access to public routes
-        if (req.nextUrl.pathname.startsWith('/auth/') || 
-            req.nextUrl.pathname.startsWith('/api/auth/') ||
-            req.nextUrl.pathname.startsWith('/invite/')) {
+        if (pathname.startsWith('/invite/') ||
+            pathname.startsWith('/empresa/saude')) {
           return true
         }
         
         // Require token for all other routes
         return !!token
       },
+    },
+    pages: {
+      signIn: '/auth/login',
     },
   }
 )
@@ -68,10 +96,8 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * - public (public files)
-     * - @vite (Vite development server)
-     * - __nextjs (Next.js internal)
+     * - Static assets
      */
-    '/((?!api/auth|_next/static|_next/image|favicon.ico|public|@vite|__nextjs).*)',
+    '/((?!api/auth|_next/static|_next/image|favicon.ico|.*\.svg|.*\.png|.*\.jpg|.*\.jpeg|.*\.gif|.*\.webp|.*\.ico|.*\.css|.*\.js).*)',
   ],
 }

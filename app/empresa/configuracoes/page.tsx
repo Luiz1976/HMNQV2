@@ -41,7 +41,6 @@ export default function ConfiguracoesPage() {
   // Estados para configurações de notificações
   const [notifications, setNotifications] = useState({
     emailReports: true,
-    testReminders: true,
     riskAlerts: true,
     weeklyDigest: false,
     systemUpdates: true
@@ -196,19 +195,7 @@ export default function ConfiguracoesPage() {
             
             <Separator />
             
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Lembretes de Testes</Label>
-                <p className="text-sm text-gray-500">Notificar sobre testes pendentes</p>
-              </div>
-              <Switch
-                checked={notifications.testReminders}
-                onCheckedChange={(checked) => setNotifications({...notifications, testReminders: checked})}
-              />
-            </div>
-            
-            <Separator />
-            
+
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label>Alertas de Risco</Label>
@@ -270,7 +257,7 @@ export default function ConfiguracoesPage() {
                 value={privacy.dataRetention}
                 onChange={(e) => setPrivacy({...privacy, dataRetention: e.target.value})}
               />
-              <p className="text-xs text-gray-500">Tempo para manter dados dos testes (12-60 meses)</p>
+              <p className="text-xs text-gray-500">Tempo para manter dados da empresa (12-60 meses)</p>
             </div>
             
             <Separator />
@@ -328,19 +315,19 @@ export default function ConfiguracoesPage() {
           <CardContent>
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center p-4 bg-blue-50 rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">156</div>
+                <div className="text-2xl font-bold text-blue-600">0</div>
                 <div className="text-sm text-gray-600">Colaboradores</div>
               </div>
               <div className="text-center p-4 bg-green-50 rounded-lg">
-                <div className="text-2xl font-bold text-green-600">89%</div>
-                <div className="text-sm text-gray-600">Testes Completos</div>
+                <div className="text-2xl font-bold text-green-600">0%</div>
+                <div className="text-sm text-gray-600">Avaliações Completas</div>
               </div>
               <div className="text-center p-4 bg-yellow-50 rounded-lg">
-                <div className="text-2xl font-bold text-yellow-600">23</div>
+                <div className="text-2xl font-bold text-yellow-600">0</div>
                 <div className="text-sm text-gray-600">Candidatos Ativos</div>
               </div>
               <div className="text-center p-4 bg-purple-50 rounded-lg">
-                <div className="text-2xl font-bold text-purple-600">4</div>
+                <div className="text-2xl font-bold text-purple-600">0</div>
                 <div className="text-sm text-gray-600">Integrações ERP</div>
               </div>
             </div>

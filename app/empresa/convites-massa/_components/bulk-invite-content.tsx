@@ -14,14 +14,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Users, Send, CheckCircle, AlertTriangle, Mail, Filter } from 'lucide-react'
 import { toast } from 'react-hot-toast'
+import { ERPAutoConnect } from './erp-auto-connect'
 
 interface ERPEmployee {
   id: string
   email: string
   firstName: string
   lastName: string
+  cpf?: string
   department?: string
   position?: string
+  matricula?: string
   status?: string
 }
 
@@ -51,7 +54,7 @@ interface BulkInviteContentProps {
 
 export function BulkInviteContent({ erpConfigs, tests, companyId }: BulkInviteContentProps) {
   const [selectedERPConfig, setSelectedERPConfig] = useState<string>('')
-  const [selectedTest, setSelectedTest] = useState<string>('')
+  const [selectedEvaluations, setSelectedEvaluations] = useState<string[]>([])
   const [selectedEmployees, setSelectedEmployees] = useState<string[]>([])
   const [message, setMessage] = useState('')
   const [expiresInDays, setExpiresInDays] = useState(7)
@@ -59,26 +62,39 @@ export function BulkInviteContent({ erpConfigs, tests, companyId }: BulkInviteCo
   const [positionFilter, setPositionFilter] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [inviteResult, setInviteResult] = useState<any>(null)
+  const [autoImportedEmployees, setAutoImportedEmployees] = useState<ERPEmployee[]>([])
 
   const selectedConfig = erpConfigs.find(config => config.id === selectedERPConfig)
-  const selectedTestData = tests.find(test => test.id === selectedTest)
+  const selectedTestsData = tests.filter(test => selectedEvaluations.includes(test.id))
+
+  // Use auto-imported employees if available, otherwise use ERP config employees
+  const availableEmployees = autoImportedEmployees.length > 0 ? autoImportedEmployees : (selectedConfig?.employees || [])
 
   // Filter employees based on filters
-  const filteredEmployees = selectedConfig?.employees?.filter(employee => {
+  const filteredEmployees = availableEmployees.filter(employee => {
     const matchesDepartment = !departmentFilter || 
       employee.department?.toLowerCase().includes(departmentFilter.toLowerCase())
     const matchesPosition = !positionFilter || 
       employee.position?.toLowerCase().includes(positionFilter.toLowerCase())
     return matchesDepartment && matchesPosition
-  }) || []
+  })
 
   // Get unique departments and positions for filters
   const departments = Array.from(new Set(
-    selectedConfig?.employees?.map(emp => emp.department).filter(dept => dept != null) || []
+    availableEmployees.map(emp => emp.department).filter(dept => dept != null)
   )) as string[]
   const positions = Array.from(new Set(
-    selectedConfig?.employees?.map(emp => emp.position).filter(pos => pos != null) || []
+    availableEmployees.map(emp => emp.position).filter(pos => pos != null)
   )) as string[]
+
+  // Handle auto-imported employees
+  const handleEmployeesImported = (employees: ERPEmployee[]) => {
+    setAutoImportedEmployees(employees)
+    setSelectedEmployees([]) // Reset selection when new employees are imported
+    setDepartmentFilter('') // Reset filters
+    setPositionFilter('')
+    toast.success(`${employees.length} colaboradores importados com sucesso!`)
+  }
 
   const handleEmployeeToggle = (employeeId: string) => {
     setSelectedEmployees(prev => 
@@ -96,9 +112,25 @@ export function BulkInviteContent({ erpConfigs, tests, companyId }: BulkInviteCo
     }
   }
 
+  const handleEvaluationToggle = (evaluationId: string) => {
+    setSelectedEvaluations(prev => 
+      prev.includes(evaluationId) 
+        ? prev.filter(id => id !== evaluationId)
+        : [...prev, evaluationId]
+    )
+  }
+
+  const handleSelectAllEvaluations = () => {
+    if (selectedEvaluations.length === tests.length) {
+      setSelectedEvaluations([])
+    } else {
+      setSelectedEvaluations(tests.map(test => test.id))
+    }
+  }
+
   const handleSendInvites = async () => {
-    if (!selectedERPConfig || !selectedTest) {
-      toast.error('Selecione uma integração ERP e um teste')
+    if (selectedEvaluations.length === 0) {
+      toast.error('Selecione pelo menos uma avaliação')
       return
     }
 
@@ -107,30 +139,61 @@ export function BulkInviteContent({ erpConfigs, tests, companyId }: BulkInviteCo
       return
     }
 
+    // Check if we have auto-imported employees or ERP config
+    if (autoImportedEmployees.length === 0 && !selectedERPConfig) {
+      toast.error('Conecte um ERP ou selecione uma integração ERP existente')
+      return
+    }
+
     try {
       setIsLoading(true)
       
-      const response = await fetch('/api/erp/bulk-invite', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          erpConfigId: selectedERPConfig,
-          testId: selectedTest,
-          employeeIds: selectedEmployees,
-          message,
-          expiresInDays
+      // Get selected employees data
+      const selectedEmployeesData = filteredEmployees.filter(emp => 
+        selectedEmployees.includes(emp.id)
+      )
+      
+      // Send invites for each selected evaluation
+      const results = []
+      let totalInvitations = 0
+      let totalErrors = 0
+
+      for (const evaluationId of selectedEvaluations) {
+        const response = await fetch('/api/erp/bulk-invite', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            erpConfigId: selectedERPConfig || null,
+            evaluationId: evaluationId,
+            employeeIds: selectedEmployees,
+            employees: selectedEmployeesData, // Send full employee data for auto-imported
+            message,
+            expiresInDays,
+            isAutoImported: autoImportedEmployees.length > 0
+          })
         })
-      })
 
-      const result = await response.json()
+        const result = await response.json()
+        results.push({ evaluationId, result, success: response.ok })
+        
+        if (response.ok) {
+          totalInvitations += result.invitations
+        } else {
+          totalErrors++
+        }
+      }
 
-      if (response.ok) {
-        setInviteResult(result)
-        toast.success(`${result.invitations} convites enviados com sucesso!`)
+       if (totalErrors === 0) {
+        setInviteResult({ invitations: totalInvitations, results })
+        toast.success(`${totalInvitations} convites enviados com sucesso para ${selectedEvaluations.length} avaliação${selectedEvaluations.length > 1 ? 'ões' : ''}!`)
         setSelectedEmployees([])
+        setSelectedEvaluations([])
         setMessage('')
+      } else if (totalErrors < selectedEvaluations.length) {
+        setInviteResult({ invitations: totalInvitations, results })
+        toast.success(`${totalInvitations} convites enviados com sucesso. ${totalErrors} avaliação${totalErrors > 1 ? 'ões' : ''} com erro.`)
       } else {
-        toast.error(result.error || 'Erro ao enviar convites')
+        toast.error('Erro ao enviar todos os convites')
       }
     } catch (error) {
       toast.error('Erro ao enviar convites')
@@ -141,6 +204,84 @@ export function BulkInviteContent({ erpConfigs, tests, companyId }: BulkInviteCo
 
   return (
     <div className="space-y-6">
+      {/* ERP Auto Connect Section */}
+      <ERPAutoConnect 
+        onEmployeesImported={handleEmployeesImported}
+        companyId={companyId}
+      />
+
+      {/* ERP Status Summary */}
+      {(erpConfigs.length > 0 || autoImportedEmployees.length > 0) && (
+        <Card className="bg-gradient-to-r from-blue-50 to-green-50 border-blue-200">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-blue-800">
+              <CheckCircle className="h-5 w-5 text-green-600" />
+              Status da Conexão ERP
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {/* Status de Conexão ERP */}
+              <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                {erpConfigs.length > 0 ? (
+                  <>
+                    <div className="p-2 bg-green-100 rounded-full">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-green-800">Status ERP</p>
+                      <p className="text-sm text-green-600">Conectado</p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="p-2 bg-red-100 rounded-full">
+                      <AlertTriangle className="h-4 w-4 text-red-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-red-800">Status ERP</p>
+                      <p className="text-sm text-red-600">Não Conectado</p>
+                    </div>
+                  </>
+                )}
+              </div>
+              
+              <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                <div className="p-2 bg-blue-100 rounded-full">
+                  <CheckCircle className="h-4 w-4 text-blue-600" />
+                </div>
+                <div>
+                  <p className="font-medium text-blue-800">Integrações Ativas</p>
+                  <p className="text-sm text-blue-600">{erpConfigs.length} ERP(s) conectado(s)</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                <div className="p-2 bg-blue-100 rounded-full">
+                  <Users className="h-4 w-4 text-blue-600" />
+                </div>
+                <div>
+                  <p className="font-medium text-blue-800">Colaboradores Disponíveis</p>
+                  <p className="text-sm text-blue-600">
+                    {erpConfigs.reduce((total, config) => total + config.employeeCount, 0) + autoImportedEmployees.length} total
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                <div className="p-2 bg-purple-100 rounded-full">
+                  <Mail className="h-4 w-4 text-purple-600" />
+                </div>
+                <div>
+                  <p className="font-medium text-purple-800">Auto-importados</p>
+                  <p className="text-sm text-purple-600">{autoImportedEmployees.length} colaborador(es)</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Configuration Section */}
       <Card>
         <CardHeader>
@@ -162,7 +303,10 @@ export function BulkInviteContent({ erpConfigs, tests, companyId }: BulkInviteCo
                   {erpConfigs.map((config) => (
                     <SelectItem key={config.id} value={config.id}>
                       <div className="flex items-center justify-between w-full">
-                        <span>{config.name}</span>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-600" />
+                          <span>{config.name}</span>
+                        </div>
                         <Badge variant="outline" className="ml-2">
                           {config.employeeCount} colaboradores
                         </Badge>
@@ -171,35 +315,65 @@ export function BulkInviteContent({ erpConfigs, tests, companyId }: BulkInviteCo
                   ))}
                 </SelectContent>
               </Select>
-              {erpConfigs.length === 0 && (
-                <p className="text-sm text-red-600">
-                  Nenhuma integração ERP ativa encontrada. Configure uma integração primeiro.
-                </p>
+              {erpConfigs.length === 0 ? (
+                <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-md">
+                  <AlertTriangle className="h-4 w-4 text-red-600 flex-shrink-0" />
+                  <p className="text-sm text-red-600">
+                    Nenhuma integração ERP ativa encontrada. Configure uma integração primeiro.
+                  </p>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-md">
+                  <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
+                  <p className="text-sm text-green-600">
+                    {erpConfigs.length} integração(ões) ERP ativa(s) disponível(eis)
+                  </p>
+                </div>
               )}
             </div>
 
-            {/* Test Selection */}
-            <div className="space-y-2">
-              <Label htmlFor="test">Teste Psicossocial *</Label>
-              <Select value={selectedTest} onValueChange={setSelectedTest}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione um teste" />
-                </SelectTrigger>
-                <SelectContent>
-                  {tests.map((test) => (
-                    <SelectItem key={test.id} value={test.id}>
-                      <div className="flex items-center space-x-2">
-                        <div 
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: test.category.color || '#3B82F6' }}
-                        />
-                        <span>{test.name}</span>
-                        <Badge variant="outline">{test.category.name}</Badge>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            {/* Evaluation Selection */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label>Avaliações Psicossociais *</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSelectAllEvaluations}
+                  className="text-xs"
+                >
+                  {selectedEvaluations.length === tests.length ? 'Desmarcar Todos' : 'Selecionar Todos'}
+                </Button>
+              </div>
+              <div className="space-y-2 max-h-48 overflow-y-auto border rounded-md p-3">
+                {tests.map((test) => (
+                  <div key={test.id} className="flex items-center space-x-3">
+                    <Checkbox
+                      id={test.id}
+                      checked={selectedEvaluations.includes(test.id)}
+                      onCheckedChange={() => handleEvaluationToggle(test.id)}
+                    />
+                    <div className="flex items-center space-x-2 flex-1">
+                      <div 
+                        className="w-3 h-3 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: test.category.color || '#3B82F6' }}
+                      />
+                      <Label htmlFor={test.id} className="cursor-pointer flex-1">
+                        {test.name}
+                      </Label>
+                      <Badge variant="outline" className="text-xs">
+                        {test.category.name}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {selectedEvaluations.length > 0 && (
+                <p className="text-sm text-gray-600">
+                  {selectedEvaluations.length} avaliação{selectedEvaluations.length > 1 ? 'ões' : ''} selecionada{selectedEvaluations.length > 1 ? 's' : ''}
+                </p>
+              )}
             </div>
           </div>
 
@@ -236,7 +410,7 @@ export function BulkInviteContent({ erpConfigs, tests, companyId }: BulkInviteCo
       </Card>
 
       {/* Employee Selection */}
-      {selectedConfig && (
+      {(selectedConfig || autoImportedEmployees.length > 0) && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
@@ -329,12 +503,34 @@ export function BulkInviteContent({ erpConfigs, tests, companyId }: BulkInviteCo
                         <div className="flex-1">
                           <div className="font-medium">
                             {employee.firstName} {employee.lastName}
+                            {employee.matricula && (
+                              <span className="ml-2 text-xs text-gray-500">({employee.matricula})</span>
+                            )}
                           </div>
                           <div className="text-sm text-gray-600 flex items-center space-x-4">
                             <span className="flex items-center space-x-1">
                               <Mail className="h-3 w-3" />
                               <span>{employee.email}</span>
                             </span>
+                            {employee.cpf && (
+                              <span className="text-xs text-gray-500">
+                                CPF: {employee.cpf}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center space-x-2 mt-1">
+                            {/* Indicador de origem */}
+                            {autoImportedEmployees.some(emp => emp.id === employee.id) ? (
+                              <Badge variant="default" className="text-xs bg-blue-100 text-blue-800 border-blue-200">
+                                <CheckCircle className="h-3 w-3 mr-1" />
+                                Auto-importado
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-xs bg-green-100 text-green-800 border-green-200">
+                                <CheckCircle className="h-3 w-3 mr-1" />
+                                ERP Conectado
+                              </Badge>
+                            )}
                             {employee.department && (
                               <Badge variant="outline" className="text-xs">
                                 {employee.department}
@@ -364,20 +560,32 @@ export function BulkInviteContent({ erpConfigs, tests, companyId }: BulkInviteCo
       )}
 
       {/* Send Button */}
-      {selectedConfig && selectedTestData && (
+      {(selectedConfig || autoImportedEmployees.length > 0) && selectedEvaluations.length > 0 && (
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-medium">Pronto para enviar convites</h3>
                 <p className="text-sm text-gray-600">
-                  {selectedEmployees.length} colaboradores receberão o convite para {selectedTestData.name}
+                  {selectedEmployees.length} colaboradores receberão convites para {selectedEvaluations.length} avaliação{selectedEvaluations.length > 1 ? 'ões' : ''}
                 </p>
+                {selectedEvaluations.length > 0 && (
+                  <div className="mt-2">
+                    <p className="text-xs text-gray-500">Avaliações selecionadas:</p>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {selectedTestsData.map((test) => (
+                        <Badge key={test.id} variant="secondary" className="text-xs">
+                          {test.name}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               
               <Button
                 onClick={handleSendInvites}
-                disabled={isLoading || selectedEmployees.length === 0}
+                disabled={isLoading || selectedEmployees.length === 0 || selectedEvaluations.length === 0}
                 size="lg"
               >
                 <Send className="mr-2 h-4 w-4" />

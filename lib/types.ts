@@ -90,9 +90,11 @@ declare module 'next-auth' {
     user: {
       id: string
       email: string
-      name?: string
+      firstName?: string
+      lastName?: string
       userType: 'ADMIN' | 'COMPANY' | 'EMPLOYEE' | 'CANDIDATE'
-      image?: string
+      avatarUrl?: string
+      createdAt?: string
     }
   }
 

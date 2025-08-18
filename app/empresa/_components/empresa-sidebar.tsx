@@ -137,15 +137,15 @@ export function EmpresaSidebar() {
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center space-x-3">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={session?.user?.image || ''} />
+              <AvatarImage src={session?.user?.avatarUrl || ''} />
               <AvatarFallback className="bg-gradient-to-r from-green-500 to-blue-500 text-white">
-                {session?.user?.name?.charAt(0) || 'E'}
+                {session?.user?.firstName?.charAt(0) || 'E'}
               </AvatarFallback>
             </Avatar>
             {!isCollapsed && (
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">
-                  {session?.user?.name || 'Empresa'}
+                  {`${session?.user?.firstName || ''} ${session?.user?.lastName || ''}`.trim() || 'Empresa'}
                 </p>
                 <div className="flex items-center space-x-1">
                   <Building2 className="h-3 w-3 text-green-600" />
