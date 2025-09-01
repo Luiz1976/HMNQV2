@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Login Simples</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Teste de Login HumaniQ</h1>
+        <p>Este é um teste simples para verificar se o login está funcionando corretamente.</p>
+        
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" value="colaborador@demo.com">
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Senha:</label>
+            <input type="password" id="password" value="colaborador123">
+        </div>
+        
+        <button onclick="testLogin()">🔑 Testar Login</button>
+        <button onclick="checkSession()">👤 Verificar Sessão</button>
+        <button onclick="testResultsAPI()">📋 Testar API Resultados</button>
+        <button onclick="clearResults()">🧹 Limpar</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function showResult(message, type = 'info') {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = `result ${type}`;
+            resultDiv.textContent = message;
+        }
+
+        async function testLogin() {
+            try {
+                showResult('🔄 Iniciando teste de login...', 'info');
+                
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                
+                // 1. Obter CSRF token
+                showResult('🔄 Obtendo CSRF token...', 'info');
+                const csrfResponse = await fetch('/api/auth/csrf');
+                const { csrfToken } = await csrfResponse.json();
+                
+                showResult(`✅ CSRF token obtido: ${csrfToken.substring(0, 20)}...`, 'success');
+                
+                // 2. Fazer login
+                showResult('🔄 Fazendo login...', 'info');
+                const loginResponse = await fetch('/api/auth/callback/credentials', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        email: email,
+                        password: password,
+                        csrfToken: csrfToken,
+                        callbackUrl: '/colaborador',
+                        json: 'true'
+                    })
+                });
+                
+                const loginResult = await loginResponse.json();
+                
+                if (loginResponse.ok && loginResult.url) {
+                    showResult(`✅ Login realizado com sucesso!\nRedirecionamento: ${loginResult.url}`, 'success');
+                    
+                    // 3. Verificar sessão após login
+                    setTimeout(async () => {
+                        await checkSession();
+                    }, 1000);
+                } else {
+                    showResult(`❌ Erro no login:\n${JSON.stringify(loginResult, null, 2)}`, 'error');
+                }
+                
+            } catch (error) {
+                showResult(`❌ Erro durante o teste de login:\n${error.message}`, 'error');
+            }
+        }
+
+        async function checkSession() {
+            try {
+                showResult('🔄 Verificando sessão...', 'info');
+                
+                const sessionResponse = await fetch('/api/auth/session');
+                const sessionData = await sessionResponse.json();
+                
+                if (sessionData && sessionData.user) {
+                    showResult(`✅ Usuário logado:\nEmail: ${sessionData.user.email}\nTipo: ${sessionData.user.userType}\nNome: ${sessionData.user.firstName} ${sessionData.user.lastName}`, 'success');
+                } else {
+                    showResult('❌ Nenhuma sessão ativa encontrada', 'error');
+                }
+                
+            } catch (error) {
+                showResult(`❌ Erro ao verificar sessão:\n${error.message}`, 'error');
+            }
+        }
+
+        async function testResultsAPI() {
+            try {
+                showResult('🔄 Testando API de resultados...', 'info');
+                
+                const resultsResponse = await fetch('/api/colaborador/resultados?limit=5');
+                
+                if (resultsResponse.ok) {
+                    const resultsData = await resultsResponse.json();
+                    
+                    if (resultsData.success) {
+                        const stats = resultsData.data.statistics;
+                        const results = resultsData.data.results;
+                        
+                        let message = `✅ API de resultados funcionando!\n`;
+                        message += `Total de testes: ${stats.totalTests}\n`;
+                        message += `Testes completados: ${stats.completedTests}\n`;
+                        message += `Resultados retornados: ${results.length}\n`;
+                        
+                        if (results.length > 0) {
+                            message += `\nPrimeiro resultado:\n`;
+                            message += `- Teste: ${results[0].test.name}\n`;
+                            message += `- Data: ${new Date(results[0].completedAt).toLocaleString()}\n`;
+                            message += `- Score: ${results[0].overallScore || 'N/A'}\n`;
+                        }
+                        
+                        showResult(message, 'success');
+                    } else {
+                        showResult(`❌ API retornou erro:\n${resultsData.message}`, 'error');
+                    }
+                } else {
+                    const errorText = await resultsResponse.text();
+                    showResult(`❌ Erro HTTP ${resultsResponse.status}:\n${errorText}`, 'error');
+                }
+                
+            } catch (error) {
+                showResult(`❌ Erro ao testar API de resultados:\n${error.message}`, 'error');
+            }
+        }
+
+        function clearResults() {
+            document.getElementById('result').textContent = '';
+            document.getElementById('result').className = '';
+        }
+
+        // Verificar sessão ao carregar a página
+        window.onload = function() {
+            checkSession();
+        };
+    </script>
+</body>
+</html>

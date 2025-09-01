@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
-import { ArrowLeft, Download, Share2, BarChart3, Target, Users, Shield, CheckCircle } from 'lucide-react'
+import { ArrowLeft, Download, Share2, Printer, Target, Users, Shield, CheckCircle } from 'lucide-react'
+import GraphologyRadarChart from '@/components/graphology/RadarChart'
 
 interface DISCResults {
   D: number // Dominância
@@ -36,7 +37,10 @@ export default function DISCResultadoPage() {
 
   useEffect(() => {
     // Recuperar resultados do localStorage
-    const savedResults = localStorage.getItem('discTestResults')
+    // Recuperar resultados do localStorage (usa discResults, fallback discTestResults)
+    const savedResults =
+      localStorage.getItem('discResults') ||
+      localStorage.getItem('discTestResults');
     if (savedResults) {
       setResults(JSON.parse(savedResults))
     } else {
@@ -72,7 +76,7 @@ export default function DISCResultadoPage() {
 
   const dimensions: Dimension[] = [
     {
-      name: 'Dominância',
+      name: 'Impulsionador',
       key: 'D',
       score: results.D,
       color: 'bg-red-500',
@@ -87,7 +91,7 @@ export default function DISCResultadoPage() {
       idealEnvironment: results.D >= 60 ? 'Ambientes desafiadores, com autonomia e metas claras' : 'Ambientes estáveis, com diretrizes claras e suporte'
     },
     {
-      name: 'Influência',
+      name: 'Conector',
       key: 'I',
       score: results.I,
       color: 'bg-yellow-500',
@@ -102,7 +106,7 @@ export default function DISCResultadoPage() {
       idealEnvironment: results.I >= 60 ? 'Ambientes sociais, dinâmicos, com interação frequente' : 'Ambientes calmos, com pouca pressão social'
     },
     {
-      name: 'Estabilidade',
+      name: 'Harmônico',
       key: 'S',
       score: results.S,
       color: 'bg-green-500',
@@ -117,7 +121,7 @@ export default function DISCResultadoPage() {
       idealEnvironment: results.S >= 60 ? 'Ambientes previsíveis, com rotinas estabelecidas e segurança' : 'Ambientes dinâmicos, com mudanças e novos desafios'
     },
     {
-      name: 'Conformidade',
+      name: 'Estrategista',
       key: 'C',
       score: results.C,
       color: 'bg-blue-500',
@@ -201,8 +205,274 @@ export default function DISCResultadoPage() {
 
   const profileInfo = getProfileInterpretation(results.profile)
 
-  const handleDownload = () => {
-    console.log('Download do relatório DISC')
+  // Dados para o gráfico Radar DISC
+  const discChartData = [
+    { name: 'Impulsionador', value: results.D },
+    { name: 'Conector', value: results.I },
+    { name: 'Harmônico', value: results.S },
+    { name: 'Estrategista', value: results.C },
+  ]
+
+  const handleDownload = async () => {
+    const { jsPDF } = await import('jspdf');
+    
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 20;
+    const contentWidth = pageWidth - (margin * 2);
+    let yPosition = margin;
+    
+    // Função para adicionar nova página se necessário
+    const checkPageBreak = (requiredHeight: number) => {
+      if (yPosition + requiredHeight > pageHeight - margin) {
+        pdf.addPage();
+        yPosition = margin;
+        // Adicionar cabeçalho em nova página
+        pdf.setFontSize(10);
+        pdf.setTextColor(100, 100, 100);
+        pdf.text('HumaniQ AI - Relatório DISC', margin, yPosition);
+        yPosition += 15;
+      }
+    };
+    
+    // Cabeçalho com logo e identidade visual
+    pdf.setFillColor(147, 51, 234); // Purple-600
+    pdf.rect(0, 0, pageWidth, 40, 'F');
+    
+    // Logo e título
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(24);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('HumaniQ AI', margin, 20);
+    
+    pdf.setFontSize(16);
+    pdf.text('Relatório de Análise DISC', margin, 30);
+    
+    yPosition = 50;
+    
+    // Informações do usuário
+    pdf.setTextColor(0, 0, 0);
+    pdf.setFontSize(14);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Informações do Participante', margin, yPosition);
+    yPosition += 10;
+    
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    const currentDate = new Date().toLocaleDateString('pt-BR');
+    pdf.text(`Data do Relatório: ${currentDate}`, margin, yPosition);
+    yPosition += 6;
+    pdf.text('Tipo de Avaliação: Análise Comportamental DISC', margin, yPosition);
+    yPosition += 15;
+    
+    // Perfil Principal
+    checkPageBreak(40);
+    pdf.setFontSize(16);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Seu Perfil DISC', margin, yPosition);
+    yPosition += 10;
+    
+    // Caixa do perfil
+    pdf.setFillColor(243, 244, 246); // Gray-100
+    pdf.rect(margin, yPosition, contentWidth, 30, 'F');
+    pdf.setDrawColor(147, 51, 234);
+    pdf.rect(margin, yPosition, contentWidth, 30, 'S');
+    
+    pdf.setFontSize(24);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setTextColor(147, 51, 234);
+    pdf.text(results.profile, margin + 10, yPosition + 15);
+    
+    pdf.setFontSize(14);
+    pdf.setTextColor(0, 0, 0);
+    pdf.text(profileInfo.name, margin + 10, yPosition + 25);
+    yPosition += 40;
+    
+    // Descrição do perfil
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    const descriptionLines = pdf.splitTextToSize(profileInfo.description, contentWidth - 20);
+    pdf.text(descriptionLines, margin + 10, yPosition);
+    yPosition += descriptionLines.length * 5 + 10;
+    
+    // Estilo de liderança
+    pdf.setFillColor(237, 233, 254); // Purple-50
+    pdf.rect(margin, yPosition, contentWidth, 15, 'F');
+    pdf.setFontSize(9);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Estilo de Liderança:', margin + 5, yPosition + 6);
+    pdf.setFont('helvetica', 'normal');
+    const leadershipText = pdf.splitTextToSize(profileInfo.leadership, contentWidth - 80);
+    pdf.text(leadershipText, margin + 80, yPosition + 6);
+    yPosition += 25;
+    
+    // Pontuações DISC com barras de progresso
+    checkPageBreak(80);
+    pdf.setFontSize(14);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Pontuações por Dimensão', margin, yPosition);
+    yPosition += 15;
+    
+    dimensions.forEach((dimension, index) => {
+      checkPageBreak(20);
+      
+      // Nome da dimensão e pontuação
+      pdf.setFontSize(11);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(`${dimension.name} (${dimension.key}): ${dimension.score}/100`, margin, yPosition);
+      yPosition += 8;
+      
+      // Barra de progresso
+      const barWidth = contentWidth - 40;
+      const barHeight = 6;
+      const fillWidth = (barWidth * dimension.score) / 100;
+      
+      // Fundo da barra (branco com contorno)
+      pdf.setFillColor(255, 255, 255);
+      pdf.setDrawColor(0, 0, 0);
+      pdf.rect(margin, yPosition, barWidth, barHeight, 'FD');
+      
+      // Preenchimento da barra (verde escuro)
+      pdf.setFillColor(22, 101, 52); // Green-800
+      pdf.rect(margin, yPosition, fillWidth, barHeight, 'F');
+      
+      yPosition += 12;
+      
+      // Descrição
+      pdf.setFontSize(9);
+      pdf.setFont('helvetica', 'normal');
+      const interpretationLines = pdf.splitTextToSize(dimension.interpretation, contentWidth - 20);
+      pdf.text(interpretationLines, margin + 10, yPosition);
+      yPosition += interpretationLines.length * 4 + 8;
+    });
+    
+    // Nova página para análise detalhada
+    pdf.addPage();
+    yPosition = margin;
+    
+    // Cabeçalho da nova página
+    pdf.setFillColor(147, 51, 234);
+    pdf.rect(0, 0, pageWidth, 25, 'F');
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(14);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('HumaniQ AI - Análise Detalhada DISC', margin, 15);
+    
+    yPosition = 35;
+    
+    // Análise Detalhada das Dimensões
+    pdf.setTextColor(0, 0, 0);
+    pdf.setFontSize(14);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Análise Detalhada das Dimensões DISC', margin, yPosition);
+    yPosition += 15;
+    
+    dimensions.forEach((dimension, index) => {
+      checkPageBreak(60);
+      
+      // Título da dimensão
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(`${dimension.name} (${dimension.key}) - ${dimension.score}%`, margin, yPosition);
+      yPosition += 8;
+      
+      // Interpretação Psicológica
+      pdf.setFontSize(9);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Interpretação Psicológica:', margin + 5, yPosition);
+      yPosition += 5;
+      pdf.setFont('helvetica', 'normal');
+      const interpretationLines = pdf.splitTextToSize(dimension.interpretation, contentWidth - 10);
+      pdf.text(interpretationLines, margin + 5, yPosition);
+      yPosition += interpretationLines.length * 4 + 3;
+      
+      // Estilo de Trabalho
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Estilo de Trabalho:', margin + 5, yPosition);
+      yPosition += 5;
+      pdf.setFont('helvetica', 'normal');
+      const workStyleLines = pdf.splitTextToSize(dimension.workStyle, contentWidth - 10);
+      pdf.text(workStyleLines, margin + 5, yPosition);
+      yPosition += workStyleLines.length * 4 + 3;
+      
+      // Padrão de Comunicação
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Padrão de Comunicação:', margin + 5, yPosition);
+      yPosition += 5;
+      pdf.setFont('helvetica', 'normal');
+      const communicationLines = pdf.splitTextToSize(dimension.communication, contentWidth - 10);
+      pdf.text(communicationLines, margin + 5, yPosition);
+      yPosition += communicationLines.length * 4 + 3;
+      
+      // Ambiente Ideal
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Ambiente Ideal:', margin + 5, yPosition);
+      yPosition += 5;
+      pdf.setFont('helvetica', 'normal');
+      const environmentLines = pdf.splitTextToSize(dimension.idealEnvironment, contentWidth - 10);
+      pdf.text(environmentLines, margin + 5, yPosition);
+      yPosition += environmentLines.length * 4 + 10;
+    });
+    
+    // Recomendações de Desenvolvimento
+    checkPageBreak(40);
+    pdf.setFontSize(14);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Recomendações de Desenvolvimento', margin, yPosition);
+    yPosition += 15;
+    
+    // Desenvolvimento Principal
+    pdf.setFillColor(237, 233, 254); // Purple-50
+    pdf.rect(margin, yPosition, contentWidth, 20, 'F');
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Desenvolvimento Principal:', margin + 5, yPosition + 8);
+    yPosition += 12;
+    pdf.setFont('helvetica', 'normal');
+    const recommendationLines = pdf.splitTextToSize(profileInfo.recommendation, contentWidth - 10);
+    pdf.text(recommendationLines, margin + 5, yPosition);
+    yPosition += recommendationLines.length * 4 + 15;
+    
+    // Recomendações específicas por dimensão baixa
+    const lowDimensions = [
+      { condition: results.D < 40, title: 'Desenvolver Impulsionador', text: 'Pratique tomar decisões mais rápidas, assuma mais responsabilidades e desenvolva assertividade.', color: [254, 242, 242] },
+      { condition: results.I < 40, title: 'Desenvolver Conector', text: 'Trabalhe habilidades de comunicação, networking e apresentações públicas.', color: [254, 252, 232] },
+      { condition: results.S < 40, title: 'Desenvolver Harmônico', text: 'Pratique paciência, trabalho em equipe e construção de relacionamentos duradouros.', color: [240, 253, 244] },
+      { condition: results.C < 40, title: 'Desenvolver Estrategista', text: 'Melhore atenção aos detalhes, organização e seguimento de procedimentos.', color: [239, 246, 255] }
+    ];
+    
+    lowDimensions.forEach(rec => {
+      if (rec.condition) {
+        checkPageBreak(20);
+        pdf.setFillColor(rec.color[0], rec.color[1], rec.color[2]);
+        pdf.rect(margin, yPosition, contentWidth, 15, 'F');
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(rec.title + ':', margin + 5, yPosition + 6);
+        yPosition += 10;
+        pdf.setFont('helvetica', 'normal');
+        const recLines = pdf.splitTextToSize(rec.text, contentWidth - 10);
+        pdf.text(recLines, margin + 5, yPosition);
+        yPosition += recLines.length * 4 + 8;
+      }
+    });
+    
+    // Rodapé
+    const totalPages = pdf.internal.pages.length - 1;
+    for (let i = 1; i <= totalPages; i++) {
+      pdf.setPage(i);
+      pdf.setFontSize(8);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text('HumaniQ AI - Plataforma de Avaliação Comportamental', margin, pageHeight - 10);
+      pdf.text(`Página ${i} de ${totalPages}`, pageWidth - margin - 30, pageHeight - 10);
+    }
+    
+    pdf.save('relatorio-disc-completo.pdf');
+  }
+
+  const handlePrint = () => {
+    window.print();
   }
 
   const handleShare = () => {
@@ -232,7 +502,7 @@ export default function DISCResultadoPage() {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div id="disc-results" className="max-w-4xl mx-auto px-4 py-8">
         {/* Perfil Principal */}
         <Card className="mb-8">
           <CardHeader className="text-center">
@@ -251,6 +521,11 @@ export default function DISCResultadoPage() {
             </div>
           </CardHeader>
         </Card>
+
+        {/* Gráfico Radar DISC */}
+        <div className="mb-8">
+          <GraphologyRadarChart data={discChartData} />
+        </div>
 
         {/* Dimensões DISC */}
         <div className="grid md:grid-cols-2 gap-6 mb-8">
@@ -288,6 +563,26 @@ export default function DISCResultadoPage() {
           })}
         </div>
 
+        {/* Análise Profissional Detalhada */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="text-xl mb-4">Análise Profissional Detalhada</CardTitle>
+            <p className="text-gray-700 text-sm">
+              {profileInfo.name}: {profileInfo.description}. Este perfil sugere um estilo de trabalho caracterizado por {profileInfo.leadership.toLowerCase()}.
+              Abaixo, aplicamos cada dimensão do seu resultado ao contexto organizacional:
+            </p>
+            <ul className="text-gray-700 text-sm list-disc ml-6 space-y-1 mt-4">
+              <li><strong>Impulsionador (D):</strong> {dimensions[0].interpretation}. {dimensions[0].workStyle}.</li>
+              <li><strong>Conector (I):</strong> {dimensions[1].interpretation}. {dimensions[1].workStyle}.</li>
+              <li><strong>Harmônico (S):</strong> {dimensions[2].interpretation}. {dimensions[2].workStyle}.</li>
+              <li><strong>Estrategista (C):</strong> {dimensions[3].interpretation}. {dimensions[3].workStyle}.</li>
+            </ul>
+            <p className="text-gray-700 text-sm mt-4">
+              <strong>Recomendações Profissionais:</strong> Utilize estas informações para alinhar seus objetivos de carreira, colaborar de forma estratégica com colegas de perfis complementares e buscar oportunidades que valorizem suas forças comportamentais.
+            </p>
+          </CardHeader>
+        </Card>
+
         {/* Recomendações de Desenvolvimento */}
         <Card className="mb-8">
           <CardHeader>
@@ -300,28 +595,28 @@ export default function DISCResultadoPage() {
               
               {results.D < 40 && (
                 <div className="bg-red-50 p-4 rounded-lg">
-                  <h4 className="font-semibold text-red-800 mb-2">Desenvolver Dominância:</h4>
+                  <h4 className="font-semibold text-red-800 mb-2">Desenvolver Impulsionador:</h4>
                   <p className="text-red-700 text-sm">Pratique tomar decisões mais rápidas, assuma mais responsabilidades e desenvolva assertividade.</p>
                 </div>
               )}
               
               {results.I < 40 && (
                 <div className="bg-yellow-50 p-4 rounded-lg">
-                  <h4 className="font-semibold text-yellow-800 mb-2">Desenvolver Influência:</h4>
+                  <h4 className="font-semibold text-yellow-800 mb-2">Desenvolver Conector:</h4>
                   <p className="text-yellow-700 text-sm">Trabalhe habilidades de comunicação, networking e apresentações públicas.</p>
                 </div>
               )}
               
               {results.S < 40 && (
                 <div className="bg-green-50 p-4 rounded-lg">
-                  <h4 className="font-semibold text-green-800 mb-2">Desenvolver Estabilidade:</h4>
+                  <h4 className="font-semibold text-green-800 mb-2">Desenvolver Harmônico:</h4>
                   <p className="text-green-700 text-sm">Pratique paciência, trabalho em equipe e construção de relacionamentos duradouros.</p>
                 </div>
               )}
               
               {results.C < 40 && (
                 <div className="bg-blue-50 p-4 rounded-lg">
-                  <h4 className="font-semibold text-blue-800 mb-2">Desenvolver Conformidade:</h4>
+                  <h4 className="font-semibold text-blue-800 mb-2">Desenvolver Estrategista:</h4>
                   <p className="text-blue-700 text-sm">Melhore atenção aos detalhes, organização e seguimento de procedimentos.</p>
                 </div>
               )}
@@ -341,10 +636,10 @@ export default function DISCResultadoPage() {
                   quatro dimensões comportamentais fundamentais:
                 </p>
                 <ul className="text-gray-700 text-sm space-y-1 ml-4">
-                  <li>• <strong>Dominância (D):</strong> Como você responde a problemas e desafios</li>
-                  <li>• <strong>Influência (I):</strong> Como você influencia e se relaciona com pessoas</li>
-                  <li>• <strong>Estabilidade (S):</strong> Como você responde ao ritmo e mudanças</li>
-                  <li>• <strong>Conformidade (C):</strong> Como você responde a regras e procedimentos</li>
+                  <li>• <strong>Impulsionador (D):</strong> Como você responde a problemas e desafios</li>
+                  <li>• <strong>Conector (I):</strong> Como você influencia e se relaciona com pessoas</li>
+                  <li>• <strong>Harmônico (S):</strong> Como você responde ao ritmo e mudanças</li>
+                  <li>• <strong>Estrategista (C):</strong> Como você responde a regras e procedimentos</li>
                 </ul>
               </div>
               <div className="bg-blue-50 p-4 rounded-lg">
@@ -369,9 +664,13 @@ export default function DISCResultadoPage() {
 
         {/* Ações */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button variant="outline" onClick={handlePrint} className="flex items-center gap-2">
+            <Printer className="h-4 w-4" />
+            Imprimir
+          </Button>
           <Button onClick={handleDownload} className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700">
             <Download className="h-4 w-4" />
-            Baixar Relatório
+            Baixar PDF
           </Button>
           <Button variant="outline" onClick={handleShare} className="flex items-center gap-2">
             <Share2 className="h-4 w-4" />

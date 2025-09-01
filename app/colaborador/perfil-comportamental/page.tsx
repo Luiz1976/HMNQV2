@@ -69,7 +69,7 @@ export default function TestesPerfilPage() {
       'cme216byv000n8wg0u0i180sm': ['Tipo de Personalidade', 'Motivações Centrais', 'Medos Básicos', 'Padrões Comportamentais'], // HumaniQ Eneagrama
       'cme1ykog2000o8wwgrbx5u7lt': ['Valores Pessoais', 'Valores Profissionais', 'Prioridades de Vida', 'Alinhamento Organizacional'], // HumaniQ Valores
       'cme216c0g000p8wg0z1rzzbcc': ['Motivação Intrínseca', 'Motivação Extrínseca', 'Fatores de Engajamento', 'Drivers de Performance'], // HumaniQ MOTIVA
-      'cme216c1v000t8wg0xbvk5khk': ['Flexibilidade Cognitiva', 'Adaptação a Mudanças', 'Resiliência', 'Abertura a Experiências'], // HumaniQ FLEX
+      // Removido: 'cme216c1v000t8wg0xbvk5khk': ['Flexibilidade Cognitiva', 'Adaptação a Mudanças', 'Resiliência', 'Abertura a Experiências'], // HumaniQ FLEX
       'cme216btc000h8wg0i19nvghc': ['Atenção Sustentada', 'Raciocínio Lógico', 'Processamento Visual', 'Velocidade Cognitiva'], // HumaniQ TAR
       'cme216c12000r8wg0kx6hmfjw': ['Autoconsciência', 'Autorregulação', 'Empatia', 'Habilidades Sociais'] // HumaniQ BOLIE
     }
@@ -118,7 +118,7 @@ export default function TestesPerfilPage() {
         'cme1ykog2000o8wwgrbx5u7lt', // HumaniQ Valores
         'cme216c0g000p8wg0z1rzzbcc', // HumaniQ MOTIVA
         'cme216c12000r8wg0kx6hmfjw', // HumaniQ BOLIE
-        'cme216c1v000t8wg0xbvk5khk'  // HumaniQ FLEX
+        // Removido: 'cme216c1v000t8wg0xbvk5khk'  // HumaniQ FLEX
       ].includes(testId)
 
       if (hasIntroduction) {

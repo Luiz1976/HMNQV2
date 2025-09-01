@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, Heart, Brain, Shield } from 'lucide-react'
+import { ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, Heart, Brain, Shield, Printer } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { LikertScale } from '@/components/ui/likert-scale'
 
@@ -273,6 +273,50 @@ export default function HumaniQEOTest() {
     return recommendations
   }
 
+  const getProfessionalAnalysis = (result: TestResult): string => {
+    const { vulnerabilityIndex, riskLevel, stress, burnout, resilience } = result
+    let analysis = `Com um Índice de Vulnerabilidade ao Estresse de ${vulnerabilityIndex.toFixed(2)}, seu nível geral de risco é considerado ${riskLevel}. `
+
+    // Análise geral
+    if (riskLevel === 'baixo') {
+      analysis += 'Você demonstra sólido equilíbrio emocional e estratégias eficazes de enfrentamento das pressões do trabalho. '
+    } else if (riskLevel === 'moderado') {
+      analysis += 'Embora apresente sinais de alerta, você possui recursos internos para prevenir a escalada do estresse, desde que implemente ações específicas. '
+    } else {
+      analysis += 'Seu nível de risco requer atenção imediata para evitar impactos negativos na saúde e no desempenho profissional. '
+    }
+
+    // Estresse
+    if (stress > 3.5) {
+      analysis += 'Os indicadores mostram alto estresse ocupacional, sugerindo sobrecarga de demandas ou falta de recursos adequados. '
+    } else if (stress > 2.0) {
+      analysis += 'Há indícios moderados de estresse que devem ser monitorados para não evoluírem. '
+    } else {
+      analysis += 'Seu estresse ocupacional está bem gerenciado. '
+    }
+
+    // Burnout
+    if (burnout > 3.5) {
+      analysis += 'Há sintomas relevantes de burnout, como exaustão emocional ou despersonalização. Avalie a possibilidade de pausas estratégicas e redefinição de prioridades. '
+    } else if (burnout > 2.0) {
+      analysis += 'Alguns sinais de esgotamento começam a surgir; intervenções precoces podem restaurar sua motivação. '
+    } else {
+      analysis += 'Você mantém níveis saudáveis de energia e motivação. '
+    }
+
+    // Resiliência
+    if (resilience < 3.0) {
+      analysis += 'A resiliência emocional encontra-se abaixo do ideal; desenvolver habilidades de enfrentamento pode elevar sua capacidade de recuperação após adversidades. '
+    } else if (resilience < 4.0) {
+      analysis += 'Sua resiliência é boa, porém ainda há espaço para fortalecimento por meio de práticas de autocuidado e suporte social. '
+    } else {
+      analysis += 'Você apresenta excelente resiliência, o que contribui para suporte efetivo em momentos de alta pressão. '
+    }
+
+    analysis += '\n\nEm síntese, os resultados indicam como suas experiências emocionais no trabalho influenciam performance e bem-estar. Recomenda-se acompanhar esses indicadores periodicamente e implementar ações preventivas alinhadas às recomendações listadas.'
+    return analysis
+  }
+
   const completeTest = async (resultParam?: TestResult) => {
     setIsSubmitting(true)
     
@@ -300,6 +344,7 @@ export default function HumaniQEOTest() {
 
   if (showResults) {
     const result = testResult ?? calculateResults()
+    const professionalAnalysis = getProfessionalAnalysis(result)
     
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700">
@@ -379,6 +424,15 @@ export default function HumaniQEOTest() {
 
               <Card className="mb-6">
                 <CardHeader>
+                  <CardTitle className="text-lg">Análise Profissional Detalhada</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-line">{professionalAnalysis}</p>
+                </CardContent>
+              </Card>
+
+              <Card className="mb-6">
+                <CardHeader>
                   <CardTitle className="text-lg">Recomendações de Desenvolvimento</CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -400,6 +454,10 @@ export default function HumaniQEOTest() {
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Voltar aos Testes
+                </Button>
+                <Button variant="outline" onClick={() => window.print()}>
+                  <Printer className="w-4 h-4 mr-2" />
+                  Imprimir Resultado
                 </Button>
                 <div className="flex items-center justify-center">
                   <div className="p-3 bg-green-50 rounded-lg">

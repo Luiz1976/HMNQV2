@@ -284,7 +284,7 @@ export default function HumaniQTiposPage() {
 
         // Redirecionar para a página de resultados
         console.log('🔄 Redirecionando para resultados...')
-        router.push(`/colaborador/resultados/${data.testResult.id}`)
+        router.push(`/colaborador/resultados/${data.testResult.id}?saved=1`)
       } else {
         console.error('❌ ID do resultado do teste não encontrado na resposta da API:', data)
         throw new Error('Resposta inválida da API - ID do resultado não encontrado')

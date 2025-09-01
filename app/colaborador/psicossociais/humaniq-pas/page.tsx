@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, Shield } from 'lucide-react'
+import { ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, Shield, Printer } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useRouter } from 'next/navigation'
 import { LikertScale } from '@/components/ui/likert-scale'
@@ -300,7 +300,208 @@ export default function HumaniQPASPage() {
                 ))}
               </div>
 
-              <div className="mt-8 text-center">
+              {/* Nova Seção: Análise Detalhada sobre Percepção de Assédio Moral e Sexual */}
+              <Card className="mt-8 border-l-4 border-l-red-600">
+                <CardHeader className="bg-gradient-to-r from-red-50 to-orange-50">
+                  <CardTitle className="text-xl font-bold text-red-800 flex items-center">
+                    <Shield className="h-6 w-6 mr-2" />
+                    Análise Detalhada: Percepção de Assédio Moral e Sexual
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-6 space-y-6">
+                  {/* Introdução */}
+                  <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                    <h4 className="font-semibold text-blue-800 mb-2">Contextualização Científica</h4>
+                    <p className="text-gray-700 text-sm leading-relaxed">
+                      O assédio moral e sexual no ambiente de trabalho representa uma das principais causas de sofrimento psíquico ocupacional, 
+                      impactando diretamente a saúde mental, produtividade e clima organizacional. Segundo estudos da Organização Internacional 
+                      do Trabalho (OIT, 2019), aproximadamente 23% dos trabalhadores relatam ter sofrido algum tipo de assédio no trabalho, 
+                      sendo que 60% dos casos não são reportados formalmente.
+                    </p>
+                  </div>
+
+                  {/* Análise dos Resultados */}
+                  <div>
+                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                      <AlertTriangle className="h-5 w-5 mr-2 text-orange-600" />
+                      Análise dos Seus Resultados
+                    </h4>
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      {results.overallIndex >= 4.0 ? (
+                        <div className="text-red-700">
+                          <p className="font-medium mb-2">Situação Crítica Identificada</p>
+                          <p className="text-sm leading-relaxed">
+                            Seus resultados indicam uma percepção elevada de assédio moral e/ou sexual no ambiente de trabalho 
+                            (índice {results.overallIndex.toFixed(1)}/5.0). Esta situação demanda atenção imediata e intervenção 
+                            profissional especializada. Estudos de Hirigoyen (2015) demonstram que a exposição prolongada a 
+                            comportamentos hostis pode resultar em transtornos de ansiedade, depressão e síndrome de burnout.
+                          </p>
+                        </div>
+                      ) : results.overallIndex >= 3.0 ? (
+                        <div className="text-orange-700">
+                          <p className="font-medium mb-2">Situação de Risco Moderado</p>
+                          <p className="text-sm leading-relaxed">
+                            Seus resultados sugerem a presença de fatores de risco para assédio no ambiente laboral 
+                            (índice {results.overallIndex.toFixed(1)}/5.0). Embora não configure uma situação crítica, 
+                            é importante implementar medidas preventivas e de monitoramento. Pesquisas de Einarsen et al. (2020) 
+                            indicam que a intervenção precoce é fundamental para prevenir a escalada de comportamentos hostis.
+                          </p>
+                        </div>
+                      ) : results.overallIndex >= 2.0 ? (
+                        <div className="text-yellow-700">
+                          <p className="font-medium mb-2">Ambiente com Potencial de Melhoria</p>
+                          <p className="text-sm leading-relaxed">
+                            Seus resultados indicam um ambiente com baixa percepção de assédio 
+                            (índice {results.overallIndex.toFixed(1)}/5.0), mas ainda há espaço para fortalecimento das 
+                            políticas de prevenção e promoção de um clima organizacional mais saudável. A literatura 
+                            científica enfatiza a importância da prevenção primária (Zapf & Einarsen, 2011).
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="text-green-700">
+                          <p className="font-medium mb-2">Ambiente Seguro e Protegido</p>
+                          <p className="text-sm leading-relaxed">
+                            Seus resultados indicam uma percepção muito baixa de assédio no ambiente de trabalho 
+                            (índice {results.overallIndex.toFixed(1)}/5.0), sugerindo um ambiente organizacional saudável 
+                            e seguro. Mantenha as práticas preventivas e continue monitorando o clima organizacional 
+                            para preservar este ambiente positivo.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Recomendações Profissionais */}
+                  <div>
+                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                      <Shield className="h-5 w-5 mr-2 text-blue-600" />
+                      Recomendações Profissionais Baseadas nos Resultados
+                    </h4>
+                    <div className="space-y-3">
+                      {results.overallIndex >= 4.0 && (
+                        <div className="bg-red-50 p-4 rounded-lg border-l-4 border-red-500">
+                          <h5 className="font-medium text-red-800 mb-2">Intervenção Imediata Necessária</h5>
+                          <ul className="text-sm text-red-700 space-y-1 list-disc list-inside">
+                            <li>Busque apoio psicológico especializado imediatamente</li>
+                            <li>Documente todos os incidentes com detalhes (data, hora, testemunhas)</li>
+                            <li>Reporte formalmente à área de Recursos Humanos ou ouvidoria</li>
+                            <li>Considere apoio jurídico especializado em direito trabalhista</li>
+                            <li>Mantenha rede de apoio social e familiar ativa</li>
+                          </ul>
+                        </div>
+                      )}
+                      
+                      {results.overallIndex >= 3.0 && results.overallIndex < 4.0 && (
+                        <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-500">
+                          <h5 className="font-medium text-orange-800 mb-2">Medidas Preventivas e de Monitoramento</h5>
+                          <ul className="text-sm text-orange-700 space-y-1 list-disc list-inside">
+                            <li>Procure orientação psicológica para desenvolvimento de estratégias de enfrentamento</li>
+                            <li>Mantenha registro de situações que causam desconforto</li>
+                            <li>Fortaleça relacionamentos positivos no ambiente de trabalho</li>
+                            <li>Participe de treinamentos sobre direitos trabalhistas</li>
+                            <li>Estabeleça limites claros nas relações profissionais</li>
+                          </ul>
+                        </div>
+                      )}
+                      
+                      {results.overallIndex >= 2.0 && results.overallIndex < 3.0 && (
+                        <div className="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500">
+                          <h5 className="font-medium text-yellow-800 mb-2">Fortalecimento do Ambiente Organizacional</h5>
+                          <ul className="text-sm text-yellow-700 space-y-1 list-disc list-inside">
+                            <li>Participe ativamente de programas de bem-estar organizacional</li>
+                            <li>Contribua para a construção de um clima organizacional positivo</li>
+                            <li>Mantenha-se informado sobre políticas de prevenção ao assédio</li>
+                            <li>Desenvolva habilidades de comunicação assertiva</li>
+                            <li>Promova práticas de respeito mútuo na equipe</li>
+                          </ul>
+                        </div>
+                      )}
+                      
+                      {results.overallIndex < 2.0 && (
+                        <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+                          <h5 className="font-medium text-green-800 mb-2">Manutenção do Ambiente Saudável</h5>
+                          <ul className="text-sm text-green-700 space-y-1 list-disc list-inside">
+                            <li>Continue promovendo práticas de respeito e inclusão</li>
+                            <li>Seja um agente multiplicador de boas práticas organizacionais</li>
+                            <li>Mantenha-se vigilante para identificar situações de risco</li>
+                            <li>Apoie colegas que possam estar em situação de vulnerabilidade</li>
+                            <li>Participe de iniciativas de melhoria do clima organizacional</li>
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Considerações Finais sobre Gestão do Estresse Ocupacional */}
+                  <div>
+                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                      <AlertTriangle className="h-5 w-5 mr-2 text-purple-600" />
+                      Considerações Finais: Gestão do Estresse Ocupacional
+                    </h4>
+                    <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-500">
+                      <p className="text-sm text-gray-700 leading-relaxed mb-3">
+                        O assédio moral e sexual no trabalho está intrinsecamente relacionado ao desenvolvimento de estresse ocupacional 
+                        crônico. Segundo o modelo de Karasek e Theorell (1990), a combinação de alta demanda psicológica com baixo 
+                        controle sobre o trabalho, agravada por relações sociais hostis, constitui o cenário mais prejudicial à 
+                        saúde mental do trabalhador.
+                      </p>
+                      
+                      <div className="grid md:grid-cols-2 gap-4 mt-4">
+                        <div>
+                          <h5 className="font-medium text-purple-800 mb-2">Estratégias de Enfrentamento Individual</h5>
+                          <ul className="text-xs text-purple-700 space-y-1 list-disc list-inside">
+                            <li>Técnicas de relaxamento e mindfulness</li>
+                            <li>Atividade física regular</li>
+                            <li>Manutenção de hobbies e atividades prazerosas</li>
+                            <li>Sono adequado (7-9 horas por noite)</li>
+                            <li>Alimentação equilibrada</li>
+                          </ul>
+                        </div>
+                        
+                        <div>
+                          <h5 className="font-medium text-purple-800 mb-2">Intervenções Organizacionais Necessárias</h5>
+                          <ul className="text-xs text-purple-700 space-y-1 list-disc list-inside">
+                            <li>Políticas claras de prevenção ao assédio</li>
+                            <li>Canais seguros de denúncia</li>
+                            <li>Treinamentos regulares sobre respeito no trabalho</li>
+                            <li>Programas de apoio psicológico</li>
+                            <li>Monitoramento do clima organizacional</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Referências Científicas */}
+                  <div className="bg-gray-100 p-4 rounded-lg">
+                    <h5 className="font-medium text-gray-800 mb-2">Referências Científicas</h5>
+                    <div className="text-xs text-gray-600 space-y-1">
+                      <p>• Einarsen, S., Hoel, H., Zapf, D., & Cooper, C. L. (2020). <em>Bullying and harassment in the workplace</em>. CRC Press.</p>
+                      <p>• Hirigoyen, M. F. (2015). <em>Assédio moral: a violência perversa no cotidiano</em>. Bertrand Brasil.</p>
+                      <p>• Karasek, R., & Theorell, T. (1990). <em>Healthy work: stress, productivity, and the reconstruction of working life</em>. Basic Books.</p>
+                      <p>• Organização Internacional do Trabalho. (2019). <em>Violence and harassment in the world of work</em>. ILO Publications.</p>
+                      <p>• Zapf, D., & Einarsen, S. (2011). Individual antecedents of bullying. <em>Bullying and harassment in the workplace</em>, 177-200.</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="mt-8 flex justify-center gap-4">
+                <Button 
+                  onClick={() => window.print()}
+                  variant="outline"
+                  className="border-purple-600 text-purple-600 hover:bg-purple-50 px-8 py-3"
+                >
+                  <Printer className="h-4 w-4 mr-2" />
+                  Imprimir Teste
+                </Button>
+                <Button 
+                  onClick={() => router.push('/colaborador/resultados?saved=1')}
+                  className="bg-green-600 hover:bg-green-700 text-white px-8 py-3"
+                >
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Ver Todos os Resultados
+                </Button>
                 <Button 
                   onClick={() => router.push('/colaborador/psicossociais')}
                   className="bg-red-600 hover:bg-red-700 text-white px-8 py-3"

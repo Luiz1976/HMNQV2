@@ -200,6 +200,80 @@
   @apply animate-pulse bg-muted rounded;
 }
 
+/* Print Styles */
+@media print {
+  /* Hide elements that shouldn't be printed */
+  .no-print,
+  button,
+  .sticky,
+  nav,
+  header,
+  .dropdown-menu,
+  .dialog,
+  .toast {
+    display: none !important;
+  }
+  
+  /* Ensure content fits well on printed page */
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt;
+    line-height: 1.4;
+  }
+  
+  /* Page breaks */
+  .page-break {
+    page-break-before: always;
+  }
+  
+  .avoid-break {
+    page-break-inside: avoid;
+  }
+  
+  /* Ensure cards and content are visible */
+  .card,
+  .bg-white,
+  .bg-gradient-to-br {
+    background: white !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: none !important;
+  }
+  
+  /* Adjust text colors for print */
+  .text-gray-600,
+  .text-gray-700,
+  .text-gray-800 {
+    color: black !important;
+  }
+  
+  /* Ensure charts and images are visible */
+  canvas,
+  img,
+  svg {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  
+  /* Adjust margins and padding for print */
+  #report-content {
+    margin: 0 !important;
+    padding: 20px !important;
+    max-width: none !important;
+  }
+  
+  /* Ensure separators are visible */
+  .separator {
+    border-color: #d1d5db !important;
+  }
+  
+  /* Hide background gradients */
+  .bg-gradient-to-br,
+  .bg-gradient-to-r {
+    background: white !important;
+  }
+}
+
 /* Confidence Badge Styles */
 .confidence-badge {
   @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors;

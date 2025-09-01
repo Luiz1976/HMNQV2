@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input'
 import { FileText, Upload, ArrowLeft, Camera, AlertCircle, CheckCircle, Loader2, X, RotateCcw, Zap } from 'lucide-react'
 import { toast } from 'sonner'
 
+
+
 export default function ManuscritoUploadPage() {
   const router = useRouter()
   const { data: session } = useSession()
@@ -173,6 +175,55 @@ export default function ManuscritoUploadPage() {
         reader.readAsDataURL(selectedFile)
       })
 
+      /* NEW: create test session and save answer */
+      setAnalysisStep('Criando sessão de teste...')
+
+      let sessionId: string | null = null
+      try {
+        const sessionResp = await fetch('/api/tests/sessions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            testId: 'analise-grafologica'
+          })
+        })
+
+        if (sessionResp.ok) {
+          const data = await sessionResp.json()
+          sessionId = data.sessionId || null
+        } else {
+          console.warn('Falha ao criar sessão de teste (analise-grafologica)')
+        }
+      } catch (err) {
+        console.warn('Erro ao criar sessão de teste:', err)
+      }
+
+      setAnalysisStep('Salvando imagem...')
+      try {
+        await fetch('/api/tests/save-answer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            testId: 'analise-grafologica',
+            questionId: 'manuscript',
+            value: base64, // contém prefixo data:image
+            metadata: {
+              sessionId,
+              filename: selectedFile.name,
+              timestamp: new Date().toISOString()
+            }
+          })
+        })
+      } catch (err) {
+        console.warn('Erro ao salvar imagem como resposta:', err)
+      }
+
       setAnalysisStep('Enviando imagem para análise...')
 
       // Call API for analysis
@@ -202,7 +253,7 @@ export default function ManuscritoUploadPage() {
       router.push(`/colaborador/grafologia/manuscrito/resultado/${result.analysisId}`)
     } catch (error) {
       console.error('Erro na análise:', error)
-      toast.error(error.message || 'Erro ao processar a análise. Tente novamente.')
+      toast.error(error instanceof Error ? error.message : 'Erro ao processar a análise. Tente novamente.')
     } finally {
       setIsAnalyzing(false)
       setAnalysisStep('')
@@ -215,6 +266,13 @@ export default function ManuscritoUploadPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 relative overflow-hidden">
+      {/* Overlay 3D Robot while analyzing */}
+      {isAnalyzing && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm space-y-4 text-white">
+          <Loader2 className="h-10 w-10 animate-spin" />
+          {analysisStep && <p className="text-sm">{analysisStep}</p>}
+        </div>
+      )}
       {/* Floating Particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(20)].map((_, i) => (
@@ -458,7 +516,7 @@ export default function ManuscritoUploadPage() {
                   <AlertCircle className="h-5 w-5 text-gray-300" />
                   Dicas para Melhor Análise
                 </CardTitle>
-              </CardHeader>
+                </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-4">
                   <div className="flex items-start space-x-3">

@@ -115,8 +115,9 @@ export default function ConfidenceIndicator({
                 >
                   {confidence.overall}%
                 </motion.div>
-                <p className="text-sm text-gray-600">Confiança Geral da Análise</p>
-              </div>
+
+                {/* Removed redundant subtitle below overall confidence percentage */}
+                  </div>
             </div>
 
             {/* Detailed Metrics */}

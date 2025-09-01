@@ -24,7 +24,7 @@ async function removeDemoColaborador() {
       return;
     }
 
-    console.log(`✅ Usuário encontrado: ${user.name} (${user.email})`);
+    console.log(`✅ Usuário encontrado: ${user.firstName} ${user.lastName} (${user.email})`);
     console.log(`📊 Resultados de teste: ${user.testResults.length}`);
     console.log(`📧 Convites: ${user.invitations.length}`);
     console.log(`🎯 Sessões de teste: ${user.testSessions.length}`);

@@ -124,19 +124,13 @@ export function LikertScale({
                 {option.value}
               </button>
               
-              {/* Label */}
-              <span className="text-xs text-gray-600 text-center font-medium max-w-16 leading-tight">
-                {option.shortLabel}
-              </span>
+
             </div>
           )
         })}
       </div>
 
-      {/* Instructions */}
-      <div className="text-center mt-6">
-        <p className="text-sm text-gray-500">Selecione uma resposta para continuar</p>
-      </div>
+
     </div>
   )
 }

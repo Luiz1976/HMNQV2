@@ -54,7 +54,7 @@ const getTestIcon = (testId: string) => {
     'humaniq-eneagrama': Target,
     'humaniq-valores': Compass,
     'humaniq-motiva': Zap,
-    'humaniq-flex': Activity
+    // Removido: 'humaniq-flex': Activity
   }
   return iconMap[testId] || Building2
 }
@@ -110,21 +110,47 @@ export default function CorporativoPage() {
         dimensions: getDimensionsForTest(test.id)
       }))
       
-      // Adicionar teste mock para HumaniQ Pesquisa de Clima se não estiver na API
-      const hasClimaTest = filteredApiTests.some(test => test.id === 'humaniq-pesquisa-clima')
-      if (!hasClimaTest) {
-        corporativeTests.push({
-          id: 'humaniq-pesquisa-clima',
+      // Adicionar testes mock ausentes conforme lista permitida
+      const fallbackTests: Record<string, { name: string; description: string; duration: string }> = {
+        'cme216c2h000v8wg0bwfqdy5z': {
+          name: 'HumaniQ LIDERA – Estilos e Competências de Liderança',
+          description: 'Avalia estilos e competências de liderança essenciais para o desenvolvimento e gestão de equipes.',
+          duration: '20 min'
+        },
+        'cme216c33000x8wg08eauo7vk': {
+          name: 'HumaniQ TELA – Teste de Liderança Autêntica',
+          description: 'Mede o grau de autenticidade e integridade em comportamentos de liderança.',
+          duration: '15 min'
+        },
+        'humaniq-pesquisa-clima': {
           name: 'HumaniQ Pesquisa de Clima',
           description: 'Avaliação abrangente do clima organizacional e bem-estar psicológico, medindo 12 dimensões críticas para o engajamento e performance das equipes.',
-          category: getCorporativeCategory('humaniq-pesquisa-clima'),
-          duration: '15 min',
-          status: 'available' as const,
-          icon: getTestIcon('humaniq-pesquisa-clima'),
-          dimensions: getDimensionsForTest('humaniq-pesquisa-clima')
-        })
+          duration: '15 min'
+        }
       }
-      
+
+      ALLOWED_CORPORATE_TEST_IDS.forEach(id => {
+        const alreadyExists = corporativeTests.some(test => test.id === id)
+        if (!alreadyExists) {
+          const fallback = fallbackTests[id]
+          if (fallback) {
+            corporativeTests.push({
+              id,
+              name: fallback.name,
+              description: fallback.description,
+              category: getCorporativeCategory(id),
+              duration: fallback.duration,
+              status: 'available' as const,
+              icon: getTestIcon(id),
+              dimensions: getDimensionsForTest(id)
+            })
+          }
+        }
+      })
+
+      // Garantir ordem correta
+      corporativeTests.sort((a, b) => ALLOWED_CORPORATE_TEST_IDS.indexOf(a.id) - ALLOWED_CORPORATE_TEST_IDS.indexOf(b.id))
+
       setTests(corporativeTests)
     }
   }, [apiTests])

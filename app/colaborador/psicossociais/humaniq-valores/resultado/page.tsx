@@ -1,16 +1,19 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Progress } from '@/components/ui/progress'
+import html2canvas from 'html2canvas'
+import jsPDF from 'jspdf'
 import { 
   ArrowLeft, 
   Download, 
   Share2, 
+  Printer,
   BarChart3,
   Heart,
   Shield,
@@ -156,6 +159,7 @@ export default function HumaniqValoresResultado() {
   const [loading, setLoading] = useState(true)
   const [dominantValues, setDominantValues] = useState<ValueResult[]>([])
   const [profileText, setProfileText] = useState('')
+  const [professionalAnalysis, setProfessionalAnalysis] = useState('')
 
   useEffect(() => {
     // Carregar resultados do localStorage
@@ -197,6 +201,11 @@ export default function HumaniqValoresResultado() {
     text += `${primaryValue.characteristics.slice(0, 2).join(' e ').toLowerCase()}.`
     
     setProfileText(text)
+    
+    // Gerar análise profissional
+    const analysisText = `Com base nos seus valores dominantes, você demonstra um perfil profissional que valoriza ${primaryValue.name.toLowerCase()} acima de tudo. Isso indica que você se sente mais motivado(a) em ambientes que promovem ${primaryValue.characteristics[0].toLowerCase()}. Seus outros valores importantes (${dominantValues.slice(1, 3).map(v => valueInfoMap[v.category].name.toLowerCase()).join(' e ')}) complementam essa orientação, sugerindo que você busca equilibrio entre diferentes aspectos da vida profissional.`
+    
+    setProfessionalAnalysis(analysisText)
   }
 
   const getScoreColor = (score: number) => {
@@ -213,6 +222,15 @@ export default function HumaniqValoresResultado() {
     if (score >= 3.5) return 'Moderado'
     if (score >= 3.0) return 'Baixo'
     return 'Muito Baixo'
+  }
+
+  const handlePrint = () => {
+    window.print()
+  }
+
+  const handleDownload = () => {
+    // Implementar download do PDF
+    console.log('Download PDF')
   }
 
   if (loading) {
@@ -250,7 +268,7 @@ export default function HumaniqValoresResultado() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4">
+    <div id="valores-results" className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -392,15 +410,34 @@ export default function HumaniqValoresResultado() {
               </CardContent>
             </Card>
 
+            {/* Análise Profissional Detalhada */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Análise Profissional Detalhada</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
+                  {professionalAnalysis}
+                </p>
+              </CardContent>
+            </Card>
+
             {/* Ações */}
             <div className="space-y-3">
               <Button 
                 className="w-full" 
                 variant="outline"
-                onClick={() => window.print()}
+                onClick={handlePrint}
+              >
+                <Printer className="w-4 h-4 mr-2" />
+                Imprimir
+              </Button>
+              <Button 
+                className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white" 
+                onClick={handleDownload}
               >
                 <Download className="w-4 h-4 mr-2" />
-                Baixar Relatório
+                Baixar PDF
               </Button>
               <Button 
                 className="w-full" 

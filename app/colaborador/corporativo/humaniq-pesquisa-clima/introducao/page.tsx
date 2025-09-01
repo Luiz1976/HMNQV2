@@ -340,7 +340,7 @@ export default function HumaniqPesquisaClimaIntroducao() {
                 transition={{ duration: 0.5, delay: 1.2 + index * 0.1 }}
                 className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20 hover:bg-white/15 transition-all duration-300"
               >
-                <div className={`w-12 h-12 mx-auto mb-4 rounded-xl flex items-center justify-center ${card.bgColor}`}>
+                <div className={`w-12 h-12 mx-auto mb-4 rounded-xl flex items-center justify-center bg-gradient-to-r ${card.color}`}>
                   <card.icon className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-white font-semibold mb-2">{card.title}</h3>
@@ -399,7 +399,7 @@ export default function HumaniqPesquisaClimaIntroducao() {
                 className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300"
               >
                 <div className="flex items-start space-x-4">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${dimension.bgColor}`}>
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 bg-gradient-to-r ${dimension.color}`}>
                     <dimension.icon className="w-6 h-6 text-white" />
                   </div>
                   <div className="flex-1">

@@ -4,7 +4,7 @@
 
 import { PrismaClient, TestType, QuestionType } from '@prisma/client'
 import bcrypt from 'bcryptjs'
-import { getDefaultPermissions } from '../lib/auth'
+import { getRolePermissions } from '../lib/auth'
 
 const prisma = new PrismaClient()
 
@@ -30,7 +30,7 @@ async function main() {
   })
 
   // Create admin permissions
-  const adminPermissions = getDefaultPermissions('ADMIN')
+  const adminPermissions = getRolePermissions('ADMIN')
   for (const permission of adminPermissions) {
     await prisma.userPermission.upsert({
       where: {

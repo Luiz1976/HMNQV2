@@ -226,14 +226,69 @@ export default function HumaniqValoresTest() {
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<Record<number, string>>({})
   const [isCompleted, setIsCompleted] = useState(false)
+  const [sessionId, setSessionId] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [startTime] = useState(Date.now())
 
   const progress = ((currentQuestion + 1) / questions.length) * 100
 
-  const handleAnswer = (value: string) => {
+  // Criar sessão de teste quando o componente é montado
+  useEffect(() => {
+    const createTestSession = async () => {
+      try {
+        console.log('🔄 Criando sessão de teste HumaniQ VALORES...')
+        const response = await fetch('/api/tests/sessions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            testId: 'cmehdpsrq00168wc06urx1lqb' // ID do teste HumaniQ VALORES
+          })
+        })
+
+        if (!response.ok) {
+          throw new Error('Erro ao criar sessão de teste')
+        }
+
+        const sessionData = await response.json()
+        setSessionId(sessionData.sessionId)
+        console.log('✅ Sessão criada:', sessionData.sessionId)
+      } catch (error) {
+        console.error('❌ Erro ao criar sessão:', error)
+      }
+    }
+
+    createTestSession()
+  }, [])
+
+  const handleAnswer = async (value: string) => {
+    const questionId = questions[currentQuestion].id
+    
     setAnswers(prev => ({
       ...prev,
-      [questions[currentQuestion].id]: value
+      [questionId]: value
     }))
+    
+    // Salvar resposta na API se a sessão estiver criada
+    if (sessionId) {
+      try {
+        await fetch('/api/tests/save-answer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            sessionId,
+            questionId,
+            selectedOption: value,
+            category: questions[currentQuestion].category
+          })
+        })
+      } catch (error) {
+        console.error('Erro ao salvar resposta:', error)
+      }
+    }
     
     // Avanço automático após 500ms
     setTimeout(() => {
@@ -259,12 +314,95 @@ export default function HumaniqValoresTest() {
     }
   }
 
-  const handleFinish = () => {
-    // Calcular resultados e redirecionar para página de resultados
-    const results = calculateResults(answers)
-    // Salvar resultados no localStorage ou enviar para API
-    localStorage.setItem('humaniq-valores-results', JSON.stringify(results))
-    router.push('/colaborador/psicossociais/humaniq-valores/resultado')
+  const handleFinish = async () => {
+    if (isSubmitting) return
+    
+    setIsSubmitting(true)
+    
+    try {
+      // Calcular resultados
+      const results = calculateResults(answers)
+      const endTime = Date.now()
+      const duration = Math.round((endTime - startTime) / 1000)
+      
+      // Se não temos sessionId, criar uma nova sessão
+      let currentSessionId = sessionId
+      if (!currentSessionId) {
+        const sessionResponse = await fetch('/api/tests/sessions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            testId: 'cmehdpsrq00168wc06urx1lqb'
+          })
+        })
+        
+        if (sessionResponse.ok) {
+          const sessionData = await sessionResponse.json()
+          currentSessionId = sessionData.sessionId
+        }
+      }
+      
+      // Preparar dados para submissão
+      const submissionData = {
+        testId: 'cmehdpsrq00168wc06urx1lqb',
+        sessionId: currentSessionId,
+        answers: Object.entries(answers).map(([questionId, answer]) => {
+          const question = questions.find(q => q.id === parseInt(questionId))
+          return {
+            questionId: parseInt(questionId),
+            selectedOption: answer.toString(),
+            category: question?.category || ''
+          }
+        }),
+        results: {
+          categoryScores: results,
+          dominantValues: results.sort((a, b) => b.score - a.score).slice(0, 3)
+        },
+        duration,
+        metadata: {
+          testName: 'HumaniQ Valores – Mapa de Valores Pessoais e Profissionais',
+          totalQuestions: questions.length,
+          completedAt: new Date().toISOString()
+        }
+      }
+      
+      // Submeter para a API de resultados
+      const submitResponse = await fetch('/api/colaborador/resultados', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(submissionData)
+      })
+      
+      if (submitResponse.ok) {
+        const submitData = await submitResponse.json()
+        console.log('✅ Resultados salvos com sucesso:', submitData)
+        
+        // Salvar também no localStorage para compatibilidade
+        localStorage.setItem('humaniq-valores-results', JSON.stringify(results))
+        
+        // Redirecionar para página de resultados
+        if (submitData.success && submitData.testResult?.id) {
+          router.push(`/colaborador/resultados/${submitData.testResult.id}?saved=1`)
+        } else {
+          router.push('/colaborador/psicossociais/humaniq-valores/resultado')
+        }
+      } else {
+        throw new Error('Falha ao submeter resultados')
+      }
+      
+    } catch (error) {
+      console.error('❌ Erro ao finalizar teste:', error)
+      // Em caso de erro, salvar no localStorage e continuar
+      const results = calculateResults(answers)
+      localStorage.setItem('humaniq-valores-results', JSON.stringify(results))
+      router.push('/colaborador/psicossociais/humaniq-valores/resultado')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const calculateResults = (answers: Record<number, string>) => {
@@ -319,9 +457,10 @@ export default function HumaniqValoresTest() {
           <CardContent>
             <Button 
               onClick={handleFinish}
-              className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
+              disabled={isSubmitting}
+              className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 disabled:opacity-50"
             >
-              Ver Resultados
+              {isSubmitting ? 'Salvando resultados...' : 'Ver Resultados'}
             </Button>
           </CardContent>
         </Card>

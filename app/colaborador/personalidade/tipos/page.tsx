@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft, ArrowRight, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -151,6 +151,7 @@ export default function TiposTest() {
   const [results, setResults] = useState<Results | null>(null)
   const [startTime] = useState(Date.now())
   const [timeElapsed, setTimeElapsed] = useState(0)
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [autoAdvancing, setAutoAdvancing] = useState(false)
 
@@ -165,10 +166,13 @@ export default function TiposTest() {
 
   // Timer
   useEffect(() => {
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setTimeElapsed(Math.floor((Date.now() - startTime) / 1000))
     }, 1000)
-    return () => clearInterval(interval)
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current)
+    }
   }, [startTime])
 
   const calculateResults = (): Results => {
@@ -239,7 +243,15 @@ export default function TiposTest() {
   const handleSubmit = async () => {
     if (isSubmitting) return
     setIsSubmitting(true)
-    
+
+    // Captura tempo total antes de limpar o timer
+    const totalSeconds = Math.floor((Date.now() - startTime) / 1000)
+    setTimeElapsed(totalSeconds)
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+    }
+
     const calculatedResults = calculateResults()
     setResults(calculatedResults)
   }
@@ -516,6 +528,18 @@ export default function TiposTest() {
               <h4 className="text-lg font-semibold text-blue-700 mb-2">🏢 Ambiente de Trabalho Ideal</h4>
               <p className="text-gray-600 bg-blue-50 p-3 rounded-lg">{typeDescription.workEnvironment}</p>
             </div>
+          </Card>
+
+          {/* Resumo Profissional */}
+          <Card className="p-6 bg-white shadow-md">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">Resumo Profissional</h3>
+            <p className="text-gray-700 leading-relaxed">
+              {(() => {
+                const strengths = typeDescription.strengths.slice(0, 3).join(', ')
+                const challenges = typeDescription.challenges.slice(0, 2).join(', ')
+                return `Como ${typeDescription.name}, você tende a ${typeDescription.description.toLowerCase()}. Seus principais pontos fortes incluem ${strengths}. Por outro lado, desafios comuns podem envolver ${challenges}. Você geralmente se destaca em contextos onde ${typeDescription.workEnvironment.toLowerCase()}.`
+              })()}
+            </p>
           </Card>
 
           {/* Resultados por dicotomia */}

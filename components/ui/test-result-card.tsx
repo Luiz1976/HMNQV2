@@ -1,6 +1,6 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { MiniChart } from '@/components/ui/mini-chart'
@@ -13,7 +13,7 @@ interface TestResultCardProps {
   title: string
   category: string
   testType: string
-  completedAt: string
+  completedAt: string | null
   overallScore: number | null
   status: string
   chartData: any[]
@@ -50,6 +50,22 @@ export function TestResultCard({
   onView,
   onDownloadPDF
 }: TestResultCardProps) {
+  const [isClient, setIsClient] = useState(false)
+  
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+  
+  // console.log('🔥 TestResultCard renderizando:', {
+  //   id,
+  //   title,
+  //   category,
+  //   testType,
+  //   completedAt,
+  //   overallScore,
+  //   status,
+  //   chartDataLength: chartData?.length || 0
+  // });
   const getTestTypeIcon = (type: string) => {
     switch (type) {
       case 'PSYCHOSOCIAL': return Brain
@@ -157,21 +173,21 @@ export function TestResultCard({
   const statusIndicator = getStatusIndicator(overallScore, testType)
 
   return (
-    <Card className={`bg-white border-2 ${colors.border} hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 rounded-xl overflow-hidden`}>
+    <div className="bg-white rounded-lg shadow-lg p-4 hover:shadow-xl transition-shadow duration-200">
       {/* Header com cor temática */}
       <div className={`h-2 ${colors.primary}`}></div>
       
-      <CardHeader className="pb-3">
+      <div className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-3">
             <div className={`p-3 rounded-xl ${colors.light} ${colors.hover} transition-colors`}>
               <Icon className={`h-6 w-6 ${colors.text}`} />
             </div>
             <div className="flex-1">
-              <CardTitle className="text-lg font-bold text-gray-900 leading-tight">{title}</CardTitle>
-              <CardDescription className="text-sm text-gray-600 mt-1">
+              <h3 className="text-lg font-bold text-gray-900 leading-tight">{title}</h3>
+              <span className="text-sm text-gray-600 mt-1">
                 {category}
-              </CardDescription>
+              </span>
               {collaboratorName && (
                 <p className="text-xs text-gray-500 mt-1 flex items-center">
                   <Users className="h-3 w-3 mr-1" />
@@ -188,9 +204,9 @@ export function TestResultCard({
             {status === 'CONCLUIDO' ? 'Concluído' : 'Em Andamento'}
           </Badge>
         </div>
-      </CardHeader>
+      </div>
       
-      <CardContent className="space-y-4">
+      <div className="space-y-4">
         {/* Mini Gráfico */}
         <div className="h-40 bg-gray-50 rounded-lg p-3">
           <MiniChart 
@@ -264,7 +280,7 @@ export function TestResultCard({
                   {aiAnalysis?.hasAnalysis && (
                     <div className="text-right">
                       <p className="text-xs text-gray-500">
-                        {format(new Date(aiAnalysis.createdAt), 'dd/MM/yy', { locale: ptBR })}
+                        {isClient ? format(new Date(aiAnalysis.createdAt), 'dd/MM/yy', { locale: ptBR }) : 'Carregando...'}
                       </p>
                       <p className="text-xs text-purple-600 font-medium">
                         {aiAnalysis.analysisType === 'COMPREHENSIVE' ? 'Completa' : 
@@ -282,7 +298,7 @@ export function TestResultCard({
           <div className="flex items-center justify-between text-sm text-gray-600">
             <div className="flex items-center space-x-1">
               <Clock className="h-4 w-4" />
-              <span>{format(new Date(completedAt), 'dd/MM/yyyy \\à\\s HH:mm', { locale: ptBR })}</span>
+              <span>{isClient && completedAt ? format(new Date(completedAt), 'dd/MM/yyyy \\à\\s HH:mm', { locale: ptBR }) : 'Carregando...'}</span>
             </div>
           </div>
           
@@ -314,7 +330,7 @@ export function TestResultCard({
              </Button>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }

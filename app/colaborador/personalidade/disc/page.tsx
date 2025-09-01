@@ -287,19 +287,19 @@ export default function HumaniqDiscPage() {
     
     try {
       const calculatedResults = calculateResults()
-      setResults(calculatedResults)
-      setShowResults(true)
-      
-      // Salvar resultados na API
+      // Primeiro salvar na API
       const response = await fetch('/api/test-results', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          testId: `disc_${Date.now()}`,
+          sessionId: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           testType: 'disc',
           results: calculatedResults,
           answers,
+          duration: timeElapsed,
           timeElapsed,
           completedAt: new Date().toISOString()
         })
@@ -308,12 +308,25 @@ export default function HumaniqDiscPage() {
       if (!response.ok) {
         throw new Error('Erro ao salvar resultados')
       }
+
+      // Após salvar com sucesso, definir resultados e redirecionar
+      setResults(calculatedResults)
+      setShowResults(true)
+      // Salvar no localStorage e redirecionar para página de análise detalhada
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem('discResults', JSON.stringify(calculatedResults))
+      }
+      router.push('/colaborador/personalidade/humaniq-disc/resultado')
     } catch (error) {
       console.error('Erro ao submeter teste:', error)
       // Ainda assim mostrar resultados localmente
       const calculatedResults = calculateResults()
       setResults(calculatedResults)
       setShowResults(true)
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem('discResults', JSON.stringify(calculatedResults))
+      }
+      router.push('/colaborador/personalidade/humaniq-disc/resultado')
     } finally {
       setIsSubmitting(false)
     }
@@ -328,7 +341,7 @@ export default function HumaniqDiscPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Validando acesso...</p>
         </div>
       </div>
@@ -340,7 +353,7 @@ export default function HumaniqDiscPage() {
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="container mx-auto px-4 max-w-4xl">
           {/* Header */}
-          <div className="bg-purple-600 text-white p-6 rounded-t-lg">
+          <div className="bg-green-700 text-white p-6 rounded-t-lg">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -348,7 +361,7 @@ export default function HumaniqDiscPage() {
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold">HumaniQ DISC</h1>
-                  <p className="text-purple-100">Perfil Comportamental Profissional</p>
+                  <p className="text-green-100">Perfil Comportamental Profissional</p>
                 </div>
               </div>
               <div className="text-right">
@@ -361,7 +374,7 @@ export default function HumaniqDiscPage() {
           {/* Results Content */}
           <div className="bg-white p-6 rounded-b-lg shadow-lg">
             <div className="text-center mb-8">
-              <CheckCircle className="w-16 h-16 text-purple-600 mx-auto mb-4" />
+              <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-gray-800 mb-2">Teste Concluído!</h2>
               <p className="text-gray-600">Aqui está seu perfil comportamental DISC</p>
             </div>
@@ -433,7 +446,7 @@ export default function HumaniqDiscPage() {
               </Button>
               <Button
                 onClick={() => window.print()}
-                className="bg-purple-600 hover:bg-purple-700 flex items-center"
+                className="bg-green-700 hover:bg-green-800 flex items-center"
               >
                 <Trophy className="w-4 h-4 mr-2" />
                 Imprimir Resultados
@@ -448,7 +461,7 @@ export default function HumaniqDiscPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-purple-600 text-white p-4">
+      <div className="bg-green-700 text-white p-4">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -456,7 +469,7 @@ export default function HumaniqDiscPage() {
             </div>
             <div>
               <h1 className="text-xl font-bold">HumaniQ DISC</h1>
-              <p className="text-purple-100 text-sm">Perfil Comportamental Profissional</p>
+              <p className="text-green-100 text-sm">Perfil Comportamental Profissional</p>
             </div>
           </div>
           <div className="text-right">
@@ -492,11 +505,7 @@ export default function HumaniqDiscPage() {
           </CardHeader>
           <CardContent>
             <div className="mb-8">
-              <div className="flex justify-between text-sm text-gray-600 mb-4">
-                <span>Discordo</span>
-                <span>Neutro</span>
-                <span>Concordo</span>
-              </div>
+
               
               <LikertScale
                 value={currentAnswer}

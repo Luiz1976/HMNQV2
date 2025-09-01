@@ -453,7 +453,7 @@ export default function HumaniQEneagrama() {
       console.log('Enneagram test completed:', results)
       
       // Redirect to results page or dashboard
-      router.push('/colaborador/resultados')
+      router.push('/colaborador/resultados?saved=1')
     } catch (error) {
       console.error('Error submitting test:', error)
     } finally {

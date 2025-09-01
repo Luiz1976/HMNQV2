@@ -1,6 +1,21 @@
 {
+  "framework": "nextjs",
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
-  "framework": "nextjs",
-  "installCommand": "npm install"
+  "installCommand": "npm install",
+  "env": {
+    "NEXTAUTH_SECRET": "@nextauth-secret",
+    "NEXTAUTH_URL": "@nextauth-url",
+    "DATABASE_URL": "@database-url",
+    "GEMINI_API_KEY": "@gemini-api-key",
+    "REDIS_HOST": "@redis-host",
+    "REDIS_PORT": "@redis-port",
+    "REDIS_PASSWORD": "@redis-password"
+  },
+  "functions": {
+    "app/api/**/*.ts": {
+      "maxDuration": 30,
+      "memory": 1024
+    }
+  }
 }

@@ -10,7 +10,6 @@ import {
   Brain, 
   FileText, 
   TrendingUp,
-  Users,
   Target,
   Award
 } from 'lucide-react'
@@ -213,10 +212,6 @@ export default function ReportTabs({ activeTab, onTabChange, className }: Report
           <Button variant="outline" size="sm" className="text-xs">
             <FileText className="h-3 w-3 mr-1" />
             Exportar PDF
-          </Button>
-          <Button variant="outline" size="sm" className="text-xs">
-            <Users className="h-3 w-3 mr-1" />
-            Compartilhar
           </Button>
           <Button variant="outline" size="sm" className="text-xs">
             <Target className="h-3 w-3 mr-1" />

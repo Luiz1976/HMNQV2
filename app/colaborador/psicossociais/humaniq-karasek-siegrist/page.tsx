@@ -416,6 +416,160 @@ export default function HumaniqKarasekSiegristPage() {
             </CardContent>
           </Card>
 
+          {/* Avaliação Científica de Estresse Ocupacional */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-orange-600" />
+                Avaliação Científica de Estresse Ocupacional
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="prose max-w-none">
+              <div className="space-y-6 text-gray-700 leading-relaxed">
+                {/* 1. Introdução */}
+                <section>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">1. Importância da Avaliação do Estresse Ocupacional</h3>
+                  <p className="mb-3">
+                    O estresse ocupacional representa um dos principais fatores de risco psicossocial no ambiente de trabalho contemporâneo, 
+                    impactando significativamente a saúde mental, física e o desempenho profissional dos trabalhadores. A avaliação sistemática 
+                    deste fenômeno é fundamental para a identificação precoce de situações de risco e para o desenvolvimento de estratégias 
+                    preventivas eficazes.
+                  </p>
+                  <p>
+                    Estudos epidemiológicos demonstram que o estresse ocupacional está associado ao aumento da incidência de doenças 
+                    cardiovasculares, transtornos mentais, síndrome de burnout e redução da qualidade de vida no trabalho, 
+                    justificando a necessidade de instrumentos de avaliação cientificamente validados.
+                  </p>
+                </section>
+
+                {/* 2. Metodologia Científica */}
+                <section>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">2. Metodologia Científica Utilizada</h3>
+                  <p className="mb-3">
+                    Este teste baseia-se na integração de dois modelos teóricos consolidados na literatura científica internacional:
+                  </p>
+                  <div className="bg-gray-50 p-4 rounded-lg mb-3">
+                    <h4 className="font-semibold mb-2">Modelo Demanda-Controle de Karasek (1979)</h4>
+                    <p className="text-sm">
+                      Avalia a interação entre demandas psicológicas do trabalho e o grau de controle/autonomia do trabalhador, 
+                      identificando situações de alta tensão (high strain) que predispõem ao desenvolvimento de estresse ocupacional.
+                    </p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-lg mb-3">
+                    <h4 className="font-semibold mb-2">Modelo Esforço-Recompensa de Siegrist (1996)</h4>
+                    <p className="text-sm">
+                      Examina o desequilíbrio entre o esforço despendido no trabalho e as recompensas recebidas (salário, reconhecimento, 
+                      estabilidade), incluindo a avaliação do hipercomprometimento como fator de risco individual.
+                    </p>
+                  </div>
+                  <p>
+                    A combinação destes modelos permite uma avaliação multidimensional e abrangente dos fatores de risco psicossocial, 
+                    proporcionando maior precisão diagnóstica e direcionamento terapêutico.
+                  </p>
+                </section>
+
+                {/* 3. Análise Detalhada dos Resultados */}
+                <section>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">3. Análise Detalhada dos Resultados Obtidos</h3>
+                  <div className="bg-blue-50 p-4 rounded-lg mb-4">
+                    <h4 className="font-semibold text-blue-800 mb-2">Perfil de Risco Psicossocial</h4>
+                    <p className="text-blue-700 mb-2">
+                      Seu perfil apresenta um <strong>risco psicossocial geral de {results.generalRisk}%</strong>, 
+                      classificado como <strong>{results.generalRiskLevel === 'low' ? 'BAIXO' : results.generalRiskLevel === 'moderate' ? 'MODERADO' : 'CRÍTICO'}</strong> 
+                      segundo os parâmetros normativos estabelecidos.
+                    </p>
+                    <p className="text-blue-700">
+                      O nível de hipercomprometimento identificado foi de <strong>{results.overcommitment}%</strong>, 
+                      indicando um padrão <strong>{results.overcommitmentLevel === 'low' ? 'BAIXO' : results.overcommitmentLevel === 'moderate' ? 'MODERADO' : 'CRÍTICO'}</strong> 
+                      de envolvimento excessivo com as demandas profissionais.
+                    </p>
+                  </div>
+                  
+                  <h4 className="font-semibold mb-2">Análise Dimensional:</h4>
+                  <div className="space-y-3">
+                    {results.dimensions.map((dimension, index) => {
+                      const interpretations = {
+                        'Demanda Psicológica': 'Reflete a intensidade das exigências mentais e emocionais do trabalho',
+                        'Controle e Autonomia': 'Indica o grau de liberdade para tomar decisões e organizar o próprio trabalho',
+                        'Apoio Social': 'Avalia a qualidade das relações interpessoais e suporte recebido no ambiente laboral',
+                        'Esforço Exigido': 'Mensura a percepção de sobrecarga e pressão temporal no desempenho das funções',
+                        'Recompensas Recebidas': 'Examina a adequação entre esforço despendido e retorno obtido (financeiro, reconhecimento, estabilidade)',
+                        'Hipercomprometimento': 'Identifica padrões de envolvimento excessivo e dificuldade de desligamento do trabalho'
+                      }
+                      
+                      return (
+                        <div key={index} className="border-l-4 border-gray-300 pl-4">
+                          <h5 className="font-medium">{dimension.name} ({dimension.percentage}%)</h5>
+                          <p className="text-sm text-gray-600">
+                            {interpretations[dimension.name as keyof typeof interpretations]}. 
+                            Resultado classificado como <strong>{dimension.risk === 'low' ? 'baixo risco' : dimension.risk === 'moderate' ? 'risco moderado' : 'alto risco'}</strong>.
+                          </p>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </section>
+
+                {/* 4. Recomendações Profissionais */}
+                <section>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">4. Recomendações Profissionais Baseadas nos Resultados</h3>
+                  <div className="bg-green-50 p-4 rounded-lg mb-4">
+                    <h4 className="font-semibold text-green-800 mb-2">Intervenções Recomendadas:</h4>
+                    <div className="space-y-2">
+                      {results.recommendations.map((rec, index) => (
+                        <div key={index} className="flex items-start gap-2">
+                          <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                          <span className="text-green-700 text-sm">{rec}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="bg-yellow-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-yellow-800 mb-2">Estratégias Complementares:</h4>
+                    <ul className="text-yellow-700 text-sm space-y-1">
+                      <li>• Implementação de técnicas de mindfulness e relaxamento</li>
+                      <li>• Estabelecimento de limites claros entre vida pessoal e profissional</li>
+                      <li>• Desenvolvimento de habilidades de comunicação assertiva</li>
+                      <li>• Participação em programas de promoção da saúde mental no trabalho</li>
+                      <li>• Avaliação periódica das condições de trabalho e ajustes necessários</li>
+                    </ul>
+                  </div>
+                </section>
+
+                {/* 5. Considerações Finais */}
+                <section>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">5. Considerações Finais sobre o Gerenciamento do Estresse Ocupacional</h3>
+                  <p className="mb-3">
+                    O gerenciamento eficaz do estresse ocupacional requer uma abordagem multifacetada que envolva tanto 
+                    intervenções individuais quanto organizacionais. Os resultados obtidos nesta avaliação fornecem 
+                    direcionamentos específicos para o desenvolvimento de estratégias personalizadas de prevenção e manejo.
+                  </p>
+                  <p className="mb-3">
+                    É importante ressaltar que esta avaliação representa um diagnóstico situacional que deve ser 
+                    complementado por acompanhamento profissional especializado quando necessário. A reavaliação 
+                    periódica é recomendada para monitoramento da evolução do quadro e ajuste das intervenções.
+                  </p>
+                  <div className="bg-orange-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-orange-800 mb-2">⚠️ Importante:</h4>
+                    <p className="text-orange-700 text-sm">
+                      Esta avaliação tem caráter informativo e não substitui a consulta com profissionais de saúde mental 
+                      ou medicina do trabalho. Em casos de sintomas persistentes ou agravamento do quadro, 
+                      recomenda-se buscar acompanhamento especializado.
+                    </p>
+                  </div>
+                </section>
+
+                <div className="text-xs text-gray-500 mt-6 pt-4 border-t">
+                  <p><strong>Referências Científicas:</strong></p>
+                  <p>• Karasek, R. A. (1979). Job demands, job decision latitude, and mental strain. Administrative Science Quarterly, 24(2), 285-308.</p>
+                  <p>• Siegrist, J. (1996). Adverse health effects of high-effort/low-reward conditions. Journal of Occupational Health Psychology, 1(1), 27-41.</p>
+                  <p>• Johnson, J. V., & Hall, E. M. (1988). Job strain, work place social support, and cardiovascular disease. American Journal of Public Health, 78(10), 1336-1342.</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Informações do Teste */}
           <Card className="mb-6">
             <CardHeader>

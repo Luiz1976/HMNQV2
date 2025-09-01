@@ -186,9 +186,9 @@ export default function HumaniQRPOPage() {
     setAnswers(newAnswers)
   }
 
-  // Função para calcular o progresso baseado nas respostas dadas
+  // Função para calcular o progresso baseado na questão atual
   const getProgressPercentage = () => {
-    return (answers.length / questions.length) * 100
+    return ((currentQuestion + 1) / questions.length) * 100
   }
 
   const getCurrentAnswer = () => {
@@ -410,12 +410,214 @@ export default function HumaniQRPOPage() {
             </CardContent>
           </Card>
 
+          {/* Análise Detalhada: Riscos Psicossociais Ocupacionais */}
+          <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50">
+            <CardHeader>
+              <div className="flex items-center space-x-2">
+                <TrendingUp className="h-6 w-6 text-blue-600" />
+                <CardTitle className="text-blue-800">Análise Detalhada: Riscos Psicossociais Ocupacionais</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Contextualização Científica */}
+              <div className="bg-white p-6 rounded-lg border border-blue-100">
+                <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                  <Brain className="h-5 w-5 text-blue-600 mr-2" />
+                  Contextualização Científica
+                </h4>
+                <p className="text-gray-700 leading-relaxed mb-3">
+                  Os riscos psicossociais ocupacionais referem-se aos aspectos do ambiente de trabalho que podem 
+                  causar estresse psicológico, impactar a saúde mental e física dos trabalhadores, e influenciar 
+                  o desempenho organizacional. Segundo o modelo de Karasek e Theorell (1990), a combinação de 
+                  altas demandas com baixo controle constitui o principal fator de risco para o desenvolvimento 
+                  de transtornos relacionados ao trabalho.
+                </p>
+                <p className="text-gray-700 leading-relaxed">
+                  A Organização Internacional do Trabalho (OIT) reconhece que os fatores psicossociais no trabalho 
+                  são determinantes críticos da saúde ocupacional, podendo resultar em burnout, ansiedade, 
+                  depressão e outras condições que afetam tanto o bem-estar individual quanto a produtividade organizacional.
+                </p>
+              </div>
+
+              {/* Análise dos Resultados do Usuário */}
+              <div className="bg-white p-6 rounded-lg border border-blue-100">
+                <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                  <Target className="h-5 w-5 text-blue-600 mr-2" />
+                  Análise dos Seus Resultados
+                </h4>
+                {results.generalIndex >= 4.0 ? (
+                  <div className="space-y-3">
+                    <p className="text-green-700 font-medium">✓ Excelente Gestão de Riscos Psicossociais</p>
+                    <p className="text-gray-700 leading-relaxed">
+                      Seus resultados indicam um ambiente de trabalho com baixo risco psicossocial. As dimensões 
+                      avaliadas demonstram condições favoráveis que promovem o bem-estar ocupacional. Esta situação 
+                      está associada a maior satisfação no trabalho, melhor saúde mental e maior engajamento 
+                      profissional, conforme evidenciado por estudos longitudinais (Bakker & Demerouti, 2017).
+                    </p>
+                  </div>
+                ) : results.generalIndex >= 3.0 ? (
+                  <div className="space-y-3">
+                    <p className="text-blue-700 font-medium">⚠ Risco Psicossocial Moderado Identificado</p>
+                    <p className="text-gray-700 leading-relaxed">
+                      Seus resultados sugerem a presença de fatores de risco psicossocial em nível moderado. 
+                      Embora não configurem uma situação crítica, algumas dimensões requerem atenção preventiva. 
+                      Pesquisas indicam que intervenções precoces podem prevenir a escalada para níveis mais 
+                      problemáticos (Lamontagne et al., 2014).
+                    </p>
+                  </div>
+                ) : results.generalIndex >= 2.0 ? (
+                  <div className="space-y-3">
+                    <p className="text-yellow-700 font-medium">⚠ Alto Risco Psicossocial Detectado</p>
+                    <p className="text-gray-700 leading-relaxed">
+                      Os resultados revelam a presença significativa de fatores de risco psicossocial que podem 
+                      impactar sua saúde e bem-estar. Esta condição está associada a maior probabilidade de 
+                      desenvolvimento de sintomas de estresse, fadiga e redução da satisfação no trabalho. 
+                      Estudos epidemiológicos demonstram correlação entre estes níveis e aumento do absenteísmo 
+                      e rotatividade (Nieuwenhuijsen et al., 2010).
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <p className="text-red-700 font-medium">🚨 Situação Crítica de Risco Psicossocial</p>
+                    <p className="text-gray-700 leading-relaxed">
+                      Seus resultados indicam exposição a múltiplos fatores de risco psicossocial em níveis 
+                      preocupantes. Esta situação requer atenção imediata, pois está fortemente associada ao 
+                      desenvolvimento de transtornos mentais relacionados ao trabalho, incluindo burnout, 
+                      ansiedade e depressão ocupacional (Maslach & Leiter, 2016). A literatura científica 
+                      demonstra que a exposição prolongada a estes fatores pode resultar em consequências 
+                      graves para a saúde física e mental.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Recomendações Profissionais */}
+              <div className="bg-white p-6 rounded-lg border border-blue-100">
+                <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                  <Users className="h-5 w-5 text-blue-600 mr-2" />
+                  Recomendações Profissionais
+                </h4>
+                <div className="space-y-4">
+                  {results.generalIndex >= 4.0 ? (
+                    <div>
+                      <h5 className="font-medium text-green-700 mb-2">Estratégias de Manutenção:</h5>
+                      <ul className="list-disc list-inside text-gray-700 space-y-1 ml-4">
+                        <li>Continue desenvolvendo suas competências de enfrentamento adaptativo</li>
+                        <li>Mantenha práticas regulares de autocuidado e gestão do tempo</li>
+                        <li>Considere atuar como mentor para colegas em situações mais desafiadoras</li>
+                        <li>Participe de programas de promoção da saúde ocupacional</li>
+                      </ul>
+                    </div>
+                  ) : results.generalIndex >= 3.0 ? (
+                    <div>
+                      <h5 className="font-medium text-blue-700 mb-2">Intervenções Preventivas:</h5>
+                      <ul className="list-disc list-inside text-gray-700 space-y-1 ml-4">
+                        <li>Desenvolva estratégias de enfrentamento focadas no problema (Lazarus & Folkman, 1984)</li>
+                        <li>Busque feedback regular sobre seu desempenho e desenvolvimento</li>
+                        <li>Participe de treinamentos em gestão do estresse e resiliência</li>
+                        <li>Estabeleça limites claros entre vida pessoal e profissional</li>
+                        <li>Considere mentoring ou coaching profissional</li>
+                      </ul>
+                    </div>
+                  ) : results.generalIndex >= 2.0 ? (
+                    <div>
+                      <h5 className="font-medium text-yellow-700 mb-2">Intervenções Necessárias:</h5>
+                      <ul className="list-disc list-inside text-gray-700 space-y-1 ml-4">
+                        <li>Procure apoio psicológico especializado em saúde ocupacional</li>
+                        <li>Dialogue com a liderança sobre ajustes nas demandas de trabalho</li>
+                        <li>Implemente técnicas de relaxamento e mindfulness no cotidiano</li>
+                        <li>Avalie a necessidade de reorganização das atividades laborais</li>
+                        <li>Considere participar de grupos de apoio ou programas de bem-estar</li>
+                      </ul>
+                    </div>
+                  ) : (
+                    <div>
+                      <h5 className="font-medium text-red-700 mb-2">Intervenções Urgentes:</h5>
+                      <ul className="list-disc list-inside text-gray-700 space-y-1 ml-4">
+                        <li>Busque imediatamente apoio psicológico especializado</li>
+                        <li>Considere afastamento temporário se necessário para recuperação</li>
+                        <li>Documente situações de risco e comunique ao RH/liderança</li>
+                        <li>Ative sua rede de apoio social (família, amigos, colegas)</li>
+                        <li>Avalie mudanças significativas no ambiente ou função de trabalho</li>
+                        <li>Procure orientação médica para avaliação de sintomas físicos</li>
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Considerações Finais sobre Gestão do Estresse Ocupacional */}
+              <div className="bg-white p-6 rounded-lg border border-blue-100">
+                <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                  <Award className="h-5 w-5 text-blue-600 mr-2" />
+                  Gestão do Estresse Ocupacional: Considerações Finais
+                </h4>
+                <div className="space-y-4">
+                  <div>
+                    <h5 className="font-medium text-gray-800 mb-2">Estratégias Individuais de Enfrentamento:</h5>
+                    <p className="text-gray-700 leading-relaxed mb-2">
+                      Baseado no modelo transacional de Lazarus e Folkman (1984), recomenda-se o desenvolvimento 
+                      de estratégias de enfrentamento adaptativas, incluindo:
+                    </p>
+                    <ul className="list-disc list-inside text-gray-700 space-y-1 ml-4">
+                      <li><strong>Enfrentamento focado no problema:</strong> Identificação e modificação das fontes de estresse</li>
+                      <li><strong>Enfrentamento focado na emoção:</strong> Regulação emocional e técnicas de relaxamento</li>
+                      <li><strong>Busca de apoio social:</strong> Fortalecimento de redes de suporte profissional e pessoal</li>
+                    </ul>
+                  </div>
+                  
+                  <div>
+                    <h5 className="font-medium text-gray-800 mb-2">Intervenções Organizacionais:</h5>
+                    <p className="text-gray-700 leading-relaxed mb-2">
+                      Segundo o modelo Demanda-Controle-Apoio de Karasek e Theorell (1990), as organizações 
+                      devem focar em:
+                    </p>
+                    <ul className="list-disc list-inside text-gray-700 space-y-1 ml-4">
+                      <li><strong>Redesenho do trabalho:</strong> Equilibrio entre demandas e recursos disponíveis</li>
+                      <li><strong>Aumento da autonomia:</strong> Maior controle sobre métodos e ritmo de trabalho</li>
+                      <li><strong>Fortalecimento do apoio social:</strong> Melhoria das relações interpessoais no trabalho</li>
+                      <li><strong>Programas de bem-estar:</strong> Iniciativas sistemáticas de promoção da saúde mental</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <p className="text-blue-800 font-medium mb-2">Importante:</p>
+                    <p className="text-blue-700 text-sm leading-relaxed">
+                      Este instrumento oferece uma avaliação inicial dos riscos psicossociais. Para situações 
+                      de alto risco ou sintomas persistentes, recomenda-se buscar avaliação profissional 
+                      especializada em saúde ocupacional ou psicologia organizacional.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Referências Científicas */}
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h5 className="font-medium text-gray-800 mb-2">Referências Científicas:</h5>
+                <div className="text-xs text-gray-600 space-y-1">
+                  <p>• Bakker, A. B., & Demerouti, E. (2017). Job demands-resources theory. Wellbeing, 3, 1-28.</p>
+                  <p>• Karasek, R., & Theorell, T. (1990). Healthy work: Stress, productivity, and the reconstruction of working life. Basic Books.</p>
+                  <p>• Lamontagne, A. D., et al. (2014). Workplace mental health: Developing an integrated intervention approach. BMC Psychiatry, 14(1), 131.</p>
+                  <p>• Lazarus, R. S., & Folkman, S. (1984). Stress, appraisal, and coping. Springer Publishing Company.</p>
+                  <p>• Maslach, C., & Leiter, M. P. (2016). Understanding the burnout experience. World Psychiatry, 15(2), 103-111.</p>
+                  <p>• Nieuwenhuijsen, K., et al. (2010). Psychosocial work environment and stress-related disorders. Occupational Medicine, 60(4), 277-286.</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Ações */}
           <Card>
             <CardContent className="pt-6">
               <div className="flex justify-center space-x-4">
                 <Button onClick={() => router.push('/colaborador/psicossociais')} variant="outline">
                   Voltar aos Testes
+                </Button>
+                <Button 
+                  onClick={() => router.push('/colaborador/resultados?saved=1')}
+                  className="bg-green-600 hover:bg-green-700 text-white font-medium transition-all duration-200 hover:scale-[1.02]"
+                >
+                  Ver Todos os Resultados
                 </Button>
                 <Button 
                   onClick={() => window.print()} 

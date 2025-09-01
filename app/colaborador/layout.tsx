@@ -15,22 +15,12 @@ export default function ColaboradorLayout({
   const router = useRouter()
 
   useEffect(() => {
-    if (status === 'authenticated' && session && !['EMPLOYEE', 'CANDIDATE'].includes(session.user?.userType || '')) {
-      router.replace('/auth/login')
-    }
+
   }, [status, session, router])
 
-  if (status === 'loading') {
-    return <div className="flex items-center justify-center min-h-screen">
-      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-    </div>
-  }
 
-  if (!session || !['EMPLOYEE', 'CANDIDATE'].includes(session.user?.userType || '')) {
-    return <div className="flex items-center justify-center min-h-screen">
-      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-    </div>
-  }
+
+
 
   return (
     <div className="flex min-h-screen bg-gray-50">

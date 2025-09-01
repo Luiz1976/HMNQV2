@@ -320,19 +320,20 @@ export default function HumaniqValoresPage() {
     
     try {
       const calculatedResults = calculateResults()
-      setResults(calculatedResults)
-      setShowResults(true)
       
-      // Salvar resultados na API
+      // Primeiro salvar resultados na API
       const response = await fetch('/api/test-results', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          testId: `valores_${Date.now()}`,
+          sessionId: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           testType: 'valores',
           results: calculatedResults,
           answers,
+          duration: timeElapsed,
           timeElapsed,
           completedAt: new Date().toISOString()
         })
@@ -341,6 +342,10 @@ export default function HumaniqValoresPage() {
       if (!response.ok) {
         throw new Error('Erro ao salvar resultados')
       }
+
+      // Após salvar com sucesso, definir resultados
+      setResults(calculatedResults)
+      setShowResults(true)
     } catch (error) {
       console.error('Erro ao submeter teste:', error)
       // Ainda assim mostrar resultados localmente
@@ -369,6 +374,10 @@ export default function HumaniqValoresPage() {
   }
 
   if (showResults && results) {
+    // Determinar dimensões mais e menos pronunciadas para análise personalizada
+    const sortedDimensions = Object.entries(results).sort(([, a], [, b]) => b - a)
+    const [topDimensionKey, topDimensionScore] = sortedDimensions[0]
+    const [bottomDimensionKey, bottomDimensionScore] = sortedDimensions[sortedDimensions.length - 1]
     return (
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="container mx-auto px-4 max-w-4xl">
@@ -454,6 +463,32 @@ export default function HumaniqValoresPage() {
               })}
             </div>
 
+            {/* Análise Personalizada */}
+            <div className="mb-8 bg-gray-100 p-6 rounded-lg">
+              <h3 className="text-xl font-bold text-gray-800 mb-4">Análise Profunda dos Seus Valores</h3>
+              <p className="text-gray-700 leading-relaxed mb-2">
+                Seu valor mais proeminente é{" "}
+                <span className="font-semibold text-emerald-700">
+                  {dimensionConfig[topDimensionKey as keyof typeof dimensionConfig].name}
+                </span>{" "}
+                com <span className="font-semibold">{topDimensionScore}%</span> de alinhamento. Isso indica que você tem
+                uma forte tendência a priorizar esse aspecto no seu dia a dia, guiando decisões e comportamentos.
+              </p>
+              <p className="text-gray-700 leading-relaxed mb-2">
+                Por outro lado, o valor menos ativado foi{" "}
+                <span className="font-semibold text-red-700">
+                  {dimensionConfig[bottomDimensionKey as keyof typeof dimensionConfig].name}
+                </span>{" "}
+                ({bottomDimensionScore}%). Isso não significa que você desconsidere esse valor, mas que ele exerce menor
+                influência nas suas escolhas atuais.
+              </p>
+              <p className="text-gray-700 leading-relaxed">
+                Reflita sobre como esses resultados se alinham com suas metas pessoais e profissionais. Ao reconhecer
+                seus valores centrais, você poderá tomar decisões mais congruentes e buscar ambientes que respeitem e
+                potencializem aquilo que é realmente importante para você.
+              </p>
+            </div>
+
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
@@ -525,12 +560,6 @@ export default function HumaniqValoresPage() {
           </CardHeader>
           <CardContent>
             <div className="mb-8">
-              <div className="flex justify-between text-sm text-gray-600 mb-4">
-                <span>Discordo</span>
-                <span>Neutro</span>
-                <span>Concordo</span>
-              </div>
-              
               <LikertScale
                 value={currentAnswer}
                 onChange={handleAnswerChange}

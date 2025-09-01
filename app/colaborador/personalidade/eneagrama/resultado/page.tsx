@@ -2,208 +2,452 @@
 
 import React, { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { ArrowLeft, Download, Share2, RotateCcw, Home } from 'lucide-react'
+import Image from 'next/image'
+import { ArrowLeft, RotateCcw, Home, Printer, Star, TrendingUp, Target, Heart, Brain, Zap, Award, BookOpen, Users, Lightbulb, User, Briefcase } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import EnhancedStaticHDMandala from '@/components/EnhancedStaticHDMandala'
+import { Separator } from '@/components/ui/separator'
+import { Progress } from '@/components/ui/progress'
+import SubtypeDetails from '@/components/SubtypeDetails'
+import CompatibilityAnalysis from '@/components/CompatibilityAnalysis'
+// import DevelopmentRecommendations from '@/components/DevelopmentRecommendations'
+import { EnneagramSubtype, getSubtypeByCode } from '@/data/enneagram-subtypes'
 
 interface EnneagramResult {
   id: string
-  dominantType: number
-  scores: number[]
-  completedAt: string
   userId: string
+  testId: string
+  responses: any[]
+  scores: Record<string, number>
+  user?: {
+    firstName?: string
+    lastName?: string
+    email?: string
+  }
+  completedAt?: string
+  metadata: {
+    dominantType: {
+      type: number
+      percentage: number
+    }
+    dominantInstinct: 'sp' | 'so' | 'sx'
+    types: Array<{
+      type: number
+      percentage: number
+      description: string
+      characteristics: string[]
+      strengths: string[]
+      challenges: string[]
+      motivation: string
+      fear: string
+    }>
+    instincts?: Array<{
+      instinct: 'sp' | 'so' | 'sx'
+      percentage: number
+      description: string
+    }>
+  }
+  createdAt: string
+  updatedAt: string
 }
+
+
 
 interface EnneagramType {
   id: number
+  type: number
   name: string
-  title: string
   description: string
   characteristics: string[]
   strengths: string[]
   challenges: string[]
   motivation: string
   fear: string
+  color: string
 }
 
 const enneagramTypes: EnneagramType[] = [
   {
     id: 1,
+    type: 1,
     name: "O Perfeccionista",
-    title: "Tipo 1 - O Perfeccionista",
-    description: "Pessoas do Tipo 1 são racionais, idealistas e têm princípios sólidos. São motivadas pelo desejo de viver corretamente, melhorar tudo e todos, e evitar erros.",
-    characteristics: ["Organizados e detalhistas", "Críticos consigo mesmos e com outros", "Responsáveis e confiáveis", "Buscam a perfeição em tudo"],
-    strengths: ["Integridade moral", "Disciplina", "Senso de responsabilidade", "Capacidade de melhoria contínua"],
-    challenges: ["Perfeccionismo excessivo", "Crítica constante", "Rigidez", "Dificuldade em relaxar"],
-    motivation: "Ser bom, correto, perfeito e melhorar tudo",
-    fear: "Ser corrupto, defeituoso ou errado"
+    description: "Pessoas do Tipo 1 são racionais, idealistas e têm fortes princípios. São éticos, conscienciosos e têm um senso claro do certo e errado. São professores e cruzados, sempre se esforçando para melhorar as coisas, mas com medo de cometer erros. Bem organizados, ordenados e meticulosos, eles tentam manter altos padrões, mas podem se tornar críticos e perfeccionistas.",
+    characteristics: [
+      "Orientados por princípios e valores éticos",
+      "Busca constante pela perfeição e melhoria",
+      "Senso aguçado de responsabilidade",
+      "Tendência a ser crítico consigo mesmo e com outros",
+      "Organização e metodologia em suas ações"
+    ],
+    strengths: [
+      "Integridade e honestidade inabaláveis",
+      "Capacidade de ver o que precisa ser melhorado",
+      "Disciplina e autocontrole excepcionais",
+      "Senso de justiça e equidade",
+      "Habilidade para criar ordem e estrutura"
+    ],
+    challenges: [
+      "Tendência ao perfeccionismo excessivo",
+      "Dificuldade em aceitar imperfeições",
+      "Crítica interna constante",
+      "Rigidez em pensamentos e comportamentos",
+      "Dificuldade em relaxar e se divertir"
+    ],
+    motivation: "Ser bom, correto, perfeito e melhar tudo ao seu redor",
+    fear: "Ser corrupto, defeituoso ou errado",
+    color: "#FF6B6B"
   },
   {
     id: 2,
+    type: 2,
     name: "O Prestativo",
-    title: "Tipo 2 - O Prestativo",
-    description: "Pessoas do Tipo 2 são empáticas, sinceras e calorosas. São orientadas para as pessoas, mas podem ser sentimentais, lisonjeiras e possessivas.",
-    characteristics: ["Empáticos e carinhosos", "Focados nas necessidades dos outros", "Generosos com seu tempo e energia", "Buscam aprovação através da ajuda"],
-    strengths: ["Empatia natural", "Capacidade de cuidar", "Generosidade", "Habilidades interpessoais"],
-    challenges: ["Negligenciar próprias necessidades", "Manipulação emocional", "Dependência da aprovação", "Dificuldade em dizer não"],
+    description: "Pessoas do Tipo 2 são empáticas, sinceras e calorosas. São amigáveis, generosas e abnegadas, mas também podem ser sentimentais, lisonjeiras e complacentes. Querem ser amadas e valorizadas e temem ser rejeitadas ou indesejadas.",
+    characteristics: [
+      "Empáticos e compreensivos",
+      "Generosos e prestativos",
+      "Focados nas necessidades dos outros",
+      "Calorosos e afetuosos",
+      "Podem negligenciar suas próprias necessidades"
+    ],
+    strengths: [
+      "Capacidade excepcional de empatia",
+      "Habilidade natural para apoiar outros",
+      "Generosidade genuína",
+      "Intuição sobre necessidades emocionais",
+      "Capacidade de criar conexões profundas"
+    ],
+    challenges: [
+      "Dificuldade em reconhecer próprias necessidades",
+      "Tendência a manipular através da ajuda",
+      "Busca excessiva por aprovação",
+      "Dificuldade em dizer não",
+      "Pode se tornar possessivo nos relacionamentos"
+    ],
     motivation: "Sentir-se amado e necessário",
-    fear: "Ser rejeitado ou indesejado"
+    fear: "Ser rejeitado ou indesejado",
+    color: "#4ECDC4"
   },
   {
     id: 3,
+    type: 3,
     name: "O Realizador",
-    title: "Tipo 3 - O Realizador",
-    description: "Pessoas do Tipo 3 são adaptáveis, ambiciosas e orientadas para o sucesso. São energéticas e conscientes da própria imagem, mas podem ser competitivas e workaholics.",
-    characteristics: ["Orientados para objetivos", "Adaptáveis e versáteis", "Conscientes da imagem", "Competitivos e ambiciosos"],
-    strengths: ["Motivação para o sucesso", "Adaptabilidade", "Eficiência", "Liderança natural"],
-    challenges: ["Workaholism", "Superficialidade", "Competitividade excessiva", "Dificuldade com vulnerabilidade"],
-    motivation: "Sentir-se valioso e aceito",
-    fear: "Ser sem valor ou sem mérito"
+    description: "Pessoas do Tipo 3 são adaptáveis, ambiciosas e orientadas para o sucesso. São energéticas, pragmáticas e conscientes da própria imagem. Podem ser competitivas e workaholics, mas também charmosas e populares.",
+    characteristics: [
+      "Orientados para objetivos e resultados",
+      "Adaptáveis e versáteis",
+      "Conscientes da imagem pessoal",
+      "Energéticos e motivados",
+      "Podem priorizar aparências sobre autenticidade"
+    ],
+    strengths: [
+      "Capacidade excepcional de alcançar objetivos",
+      "Adaptabilidade em diferentes situações",
+      "Carisma e habilidades de liderança",
+      "Eficiência e produtividade",
+      "Capacidade de inspirar outros"
+    ],
+    challenges: [
+      "Tendência ao workaholismo",
+      "Dificuldade em conectar com emoções autênticas",
+      "Foco excessivo na imagem externa",
+      "Competitividade destrutiva",
+      "Dificuldade em aceitar fracassos"
+    ],
+    motivation: "Ser valorizado e admirado pelo sucesso",
+    fear: "Ser inútil ou sem valor",
+    color: "#FFD93D"
   },
   {
     id: 4,
+    type: 4,
     name: "O Individualista",
-    title: "Tipo 4 - O Individualista",
-    description: "Pessoas do Tipo 4 são expressivas, dramáticas, egocêntricas e temperamentais. São também criativas, emotivas e pessoais, mas podem ser mal-humoradas e autoconscientes.",
-    characteristics: ["Criativos e artísticos", "Emocionalmente intensos", "Buscam autenticidade", "Sentem-se diferentes dos outros"],
-    strengths: ["Criatividade", "Autenticidade", "Profundidade emocional", "Intuição"],
-    challenges: ["Instabilidade emocional", "Melancolia", "Autocomiseração", "Inveja"],
+    description: "Pessoas do Tipo 4 são criativas, emocionalmente honestas e pessoais. São também temperamentais e conscientes de si mesmas. Podem ser melancólicas e egocêntricas, mas também inspiradoras e altamente criativas.",
+    characteristics: [
+      "Criativos e artisticamente inclinados",
+      "Emocionalmente profundos e intensos",
+      "Buscam autenticidade e singularidade",
+      "Introspectivos e autoconscientes",
+      "Podem ser melancólicos e dramáticos"
+    ],
+    strengths: [
+      "Criatividade e expressão artística excepcionais",
+      "Profundidade emocional e intuição",
+      "Autenticidade e originalidade",
+      "Capacidade de transformar dor em beleza",
+      "Empatia com o sofrimento dos outros"
+    ],
+    challenges: [
+      "Tendência à melancolia e depressão",
+      "Foco excessivo no que está faltando",
+      "Dramatização de situações",
+      "Dificuldade em manter estabilidade emocional",
+      "Comparação constante com outros"
+    ],
     motivation: "Encontrar a si mesmo e seu significado",
-    fear: "Não ter identidade ou significado pessoal"
+    fear: "Não ter identidade ou significado pessoal",
+    color: "#9B59B6"
   },
   {
     id: 5,
+    type: 5,
     name: "O Investigador",
-    title: "Tipo 5 - O Investigador",
-    description: "Pessoas do Tipo 5 são alertas, perspicazes e curiosas. São capazes de se concentrar e focar em desenvolver ideias e habilidades complexas.",
-    characteristics: ["Observadores e analíticos", "Independentes e autossuficientes", "Reservados e privados", "Buscam conhecimento e compreensão"],
-    strengths: ["Pensamento analítico", "Independência", "Objetividade", "Expertise técnica"],
-    challenges: ["Isolamento social", "Avareza emocional", "Dificuldade em se conectar", "Procrastinação"],
+    description: "Pessoas do Tipo 5 são intensas, cerebrais, perceptivas, inovadoras, reservadas e independentes. São capazes de se concentrar e focar em desenvolver ideias e habilidades complexas. Independentes e inventivas, podem se tornar preocupadas com seus pensamentos e construções imaginárias.",
+    characteristics: [
+      "Intelectuais e analíticos",
+      "Independentes e autossuficientes",
+      "Observadores e perceptivos",
+      "Reservados e privados",
+      "Podem se isolar excessivamente"
+    ],
+    strengths: [
+      "Capacidade analítica e pensamento profundo",
+      "Independência e autossuficiência",
+      "Objetividade e imparcialidade",
+      "Capacidade de concentração intensa",
+      "Inovação e pensamento original"
+    ],
+    challenges: [
+      "Tendência ao isolamento social",
+      "Dificuldade em expressar emoções",
+      "Acúmulo excessivo de conhecimento sem ação",
+      "Resistência a demandas externas",
+      "Dificuldade em compartilhar recursos"
+    ],
     motivation: "Ser competente e compreender o mundo",
-    fear: "Ser incompetente ou invadido"
+    fear: "Ser invadido ou incapaz de lidar com demandas",
+    color: "#3498DB"
   },
   {
     id: 6,
+    type: 6,
     name: "O Leal",
-    title: "Tipo 6 - O Leal",
-    description: "Pessoas do Tipo 6 são confiáveis, trabalhadoras e responsáveis, mas também podem ser defensivas, evasivas e altamente ansiosas.",
-    characteristics: ["Leais e comprometidos", "Responsáveis e confiáveis", "Ansiosos e cautelosos", "Buscam segurança e apoio"],
-    strengths: ["Lealdade", "Responsabilidade", "Trabalho em equipe", "Preparação para problemas"],
-    challenges: ["Ansiedade crônica", "Dúvida constante", "Procrastinação", "Dependência de autoridade"],
+    description: "Pessoas do Tipo 6 são comprometidas, responsáveis, ansiosas e desconfiadas. São excelentes solucionadoras de problemas, leais e defensivas, mas também podem ser evasivas e altamente ansiosas, correndo entre ser desafiadoras e complacentes.",
+    characteristics: [
+      "Leais e comprometidos",
+      "Responsáveis e confiáveis",
+      "Orientados para segurança",
+      "Podem ser ansiosos e desconfiados",
+      "Buscam orientação e apoio"
+    ],
+    strengths: [
+      "Lealdade excepcional e comprometimento",
+      "Capacidade de antecipar problemas",
+      "Trabalho em equipe e colaboração",
+      "Responsabilidade e confiabilidade",
+      "Coragem em defender outros"
+    ],
+    challenges: [
+      "Ansiedade e preocupação excessivas",
+      "Dificuldade em tomar decisões",
+      "Tendência à desconfiança",
+      "Procrastinação por medo de errar",
+      "Dependência excessiva de autoridades"
+    ],
     motivation: "Ter segurança e apoio",
-    fear: "Ficar sem apoio ou orientação"
+    fear: "Ficar sem apoio ou orientação",
+    color: "#E74C3C"
   },
   {
     id: 7,
+    type: 7,
     name: "O Entusiasta",
-    title: "Tipo 7 - O Entusiasta",
-    description: "Pessoas do Tipo 7 são versáteis, espontâneas e adquirem muitas habilidades. São alegres e animadas, mas podem ser dispersas e indisciplinadas.",
-    characteristics: ["Otimistas e entusiasmados", "Versáteis e espontâneos", "Aventureiros e curiosos", "Evitam dor e limitações"],
-    strengths: ["Otimismo", "Versatilidade", "Entusiasmo", "Capacidade de inspirar"],
-    challenges: ["Impulsividade", "Superficialidade", "FOMO", "Dificuldade com compromisso"],
+    description: "Pessoas do Tipo 7 são espontâneas, versáteis, distraídas e dispersas. São alegres, práticas, prolíficas e enérgicas, mas também podem ser indisciplinadas e impulsivas. Constantemente buscam novas e excitantes experiências.",
+    characteristics: [
+      "Entusiastas e otimistas",
+      "Versáteis e adaptáveis",
+      "Buscam variedade e estimulação",
+      "Energéticos e espontâneos",
+      "Podem evitar dor e limitações"
+    ],
+    strengths: [
+      "Otimismo contagiante e energia",
+      "Versatilidade e adaptabilidade",
+      "Capacidade de inspirar e motivar",
+      "Pensamento rápido e criativo",
+      "Habilidade de ver possibilidades"
+    ],
+    challenges: [
+      "Dificuldade em focar e completar projetos",
+      "Evitação de emoções negativas",
+      "Impulsividade e falta de disciplina",
+      "Superficialidade em relacionamentos",
+      "Dificuldade em lidar com limitações"
+    ],
     motivation: "Manter felicidade e satisfação",
-    fear: "Ficar preso na dor ou privação"
+    fear: "Ficar preso na dor ou privação",
+    color: "#F39C12"
   },
   {
     id: 8,
+    type: 8,
     name: "O Desafiador",
-    title: "Tipo 8 - O Desafiador",
-    description: "Pessoas do Tipo 8 são autoconfiantes, fortes e assertivas. São protetoras, decididas e controladoras, mas também podem ser orgulhosas e confrontativas.",
-    characteristics: ["Assertivos e confiantes", "Protetores dos outros", "Controladores e dominantes", "Buscam justiça e poder"],
-    strengths: ["Liderança natural", "Proteção dos vulneráveis", "Decisão rápida", "Coragem"],
-    challenges: ["Agressividade", "Dificuldade com vulnerabilidade", "Impaciência", "Tendência ao controle"],
+    description: "Pessoas do Tipo 8 são autoconfiantes, fortes e assertivas. Protetoras, engenhosas e decisivas, mas também podem ser orgulhosas e dominadoras. Sentem que devem controlar seu ambiente, especialmente as pessoas, às vezes se tornando confrontativas e intimidadoras.",
+    characteristics: [
+      "Assertivos e confiantes",
+      "Líderes naturais",
+      "Protetores dos vulneráveis",
+      "Diretos e honestos",
+      "Podem ser dominadores e confrontativos"
+    ],
+    strengths: [
+      "Liderança natural e carisma",
+      "Coragem e determinação",
+      "Capacidade de tomar decisões difíceis",
+      "Proteção dos mais fracos",
+      "Honestidade e franqueza"
+    ],
+    challenges: [
+      "Tendência ao controle excessivo",
+      "Dificuldade em mostrar vulnerabilidade",
+      "Confrontação desnecessária",
+      "Impaciência com fraqueza",
+      "Dificuldade em aceitar autoridade"
+    ],
     motivation: "Ser autossuficiente e controlar o próprio destino",
-    fear: "Ser controlado ou vulnerável"
+    fear: "Ser controlado ou vulnerável",
+    color: "#2C3E50"
   },
   {
     id: 9,
+    type: 9,
     name: "O Pacificador",
-    title: "Tipo 9 - O Pacificador",
-    description: "Pessoas do Tipo 9 são receptivas, tranquilizadoras e agradáveis. São estáveis, criativas e otimistas, mas também podem ser complacentes e minimalistas.",
-    characteristics: ["Pacíficos e harmoniosos", "Receptivos e empáticos", "Estáveis e consistentes", "Evitam conflitos"],
-    strengths: ["Mediação", "Estabilidade", "Aceitação", "Capacidade de ver múltiplas perspectivas"],
-    challenges: ["Procrastinação", "Passividade", "Evitação de conflitos", "Dificuldade em tomar decisões"],
-    motivation: "Manter harmonia interna e externa",
-    fear: "Perda de conexão e fragmentação"
+    description: "Pessoas do Tipo 9 são receptivas, tranquilizadoras e agradáveis. São estáveis, criativas e otimistas, mas também podem ser complacentes e minimizar qualquer coisa que as perturbe. Querem que tudo corra bem e sem conflitos, mas também podem ser teimosas.",
+    characteristics: [
+      "Pacíficos e harmoniosos",
+      "Empáticos e compreensivos",
+      "Estáveis e consistentes",
+      "Evitam conflitos",
+      "Podem ser passivos e procrastinadores"
+    ],
+    strengths: [
+      "Capacidade de criar harmonia e paz",
+      "Empatia e compreensão natural",
+      "Estabilidade e consistência",
+      "Habilidade de ver múltiplas perspectivas",
+      "Natureza tranquilizadora e acolhedora"
+    ],
+    challenges: [
+      "Procrastinação e inércia",
+      "Dificuldade em expressar raiva",
+      "Evitação de conflitos necessários",
+      "Tendência a se fundir com outros",
+      "Dificuldade em priorizar próprias necessidades"
+    ],
+    motivation: "Manter paz interior e exterior",
+    fear: "Perda de conexão e fragmentação",
+    color: "#27AE60"
   }
 ]
 
 export default function EnneagramResultsPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const resultId = searchParams.get('id')
+  
   const [result, setResult] = useState<EnneagramResult | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
-  const resultId = searchParams.get('id')
+  const [activeSection, setActiveSection] = useState('hero')
+  const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
-    if (resultId) {
-      fetchResults(resultId)
-    } else {
-      setError('ID do resultado não encontrado')
+    setIsVisible(true)
+  }, [])
+
+  useEffect(() => {
+    if (!resultId) {
+      setError('ID do resultado não fornecido')
       setLoading(false)
+      return
     }
+
+    const fetchResult = async () => {
+      try {
+        const response = await fetch(`/api/test-results/${resultId}`)
+        if (!response.ok) {
+          throw new Error('Resultado não encontrado')
+        }
+        const json = await response.json()
+ 
+        if (json?.success) {
+          let resultData: any = json.data
+
+          // Normalizar formato legado se não houver campos esperados
+          if (resultData?.metadata && !('dominantType' in resultData.metadata)) {
+            const legacy = (resultData.metadata as any).results
+            if (legacy) {
+              const ranked = legacy.rankedTypes ?? []
+
+              resultData.metadata = {
+                dominantType: {
+                  type: parseInt((legacy.dominantType?.match(/\d+/) || ['0'])[0]),
+                  percentage: legacy.dominantTypePercentage ?? 0
+                },
+                dominantInstinct: legacy.dominantInstinct ?? 'sp',
+                types: ranked.map((rt: any) => ({
+                  type: parseInt(rt.type.replace('type', '')),
+                  percentage: rt.percentage,
+                  description: '',
+                  characteristics: [],
+                  strengths: [],
+                  challenges: [],
+                  motivation: '',
+                  fear: ''
+                }))
+              }
+            }
+          }
+
+          setResult(resultData)
+        } else {
+          throw new Error(json?.error || 'Resultado não encontrado')
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Erro ao carregar resultado')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchResult()
   }, [resultId])
 
-  const fetchResults = async (id: string) => {
-    try {
-      setLoading(true)
-      // Simular chamada da API - substituir pela API real
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      // Dados simulados - substituir pela resposta real da API
-      const mockResult: EnneagramResult = {
-        id: id,
-        dominantType: Math.floor(Math.random() * 9) + 1,
-        scores: Array.from({ length: 9 }, () => Math.floor(Math.random() * 100) + 1),
-        completedAt: new Date().toISOString(),
-        userId: 'user123'
-      }
-      
-      setResult(mockResult)
-    } catch (err) {
-      setError('Erro ao carregar resultados')
-    } finally {
-      setLoading(false)
+  const getDominantType = () => {
+    if (!result?.metadata?.dominantType) return null
+    const found = enneagramTypes.find(type => type.type === result.metadata?.dominantType?.type)
+    return found
+  }
+
+  // Função utilitária para formatar a data do teste
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return ''
+    return new Date(dateStr).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+  }
+
+
+
+
+
+
+
+  // Handler: Imprimir resultado
+  const handlePrint = () => {
+    if (typeof window !== 'undefined') {
+      window.print()
     }
-  }
-
-  const getDominantType = (): EnneagramType | null => {
-    if (!result) return null
-    return enneagramTypes.find(type => type.id === result.dominantType) || null
-  }
-
-  const getScoreColor = (score: number): string => {
-    if (score >= 80) return 'bg-green-500'
-    if (score >= 60) return 'bg-green-400'
-    if (score >= 40) return 'bg-yellow-400'
-    if (score >= 20) return 'bg-orange-400'
-    return 'bg-red-400'
-  }
-
-  const handleDownloadPDF = () => {
-    // Implementar download do PDF
-    console.log('Download PDF')
-  }
-
-  const handleShare = () => {
-    // Implementar compartilhamento
-    console.log('Compartilhar resultados')
-  }
-
-  const handleNewTest = () => {
-    router.push('/colaborador/personalidade/eneagrama')
-  }
-
-  const handleBackToDashboard = () => {
-    router.push('/colaborador/dashboard')
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Carregando seus resultados...</p>
+          <div className="relative">
+            <div className="w-20 h-20 border-4 border-purple-200 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
+          </div>
+          <p className="text-white text-lg font-medium">Revelando sua personalidade...</p>
+          <p className="text-purple-200 text-sm mt-2">Preparando insights únicos para você</p>
         </div>
       </div>
     )
@@ -211,193 +455,204 @@ export default function EnneagramResultsPage() {
 
   if (error || !result) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-600 mb-4">{error || 'Resultado não encontrado'}</p>
-          <button
-            onClick={handleBackToDashboard}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-          >
-            Voltar ao Dashboard
-          </button>
+      <div className="min-h-screen bg-gradient-to-br from-red-900 via-pink-900 to-purple-900 flex items-center justify-center">
+        <div className="text-center bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20">
+          <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Target className="w-8 h-8 text-red-300" />
+          </div>
+          <p className="text-white text-lg mb-4">{error || 'Resultado não encontrado'}</p>
+          <Button onClick={() => router.back()} className="bg-white/20 hover:bg-white/30 text-white border-white/30">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Voltar
+          </Button>
         </div>
       </div>
     )
   }
 
   const dominantType = getDominantType()
-
+  // Obter subtipo dominante (ex.: 3sp)
+  const dominantSubtype = result?.metadata ? getSubtypeByCode(`${result.metadata.dominantType.type}${result.metadata.dominantInstinct}`) : null
+  const dominantPercentage = result.metadata?.types?.find(t => Number(t.type) === Number(result.metadata.dominantType.type))?.percentage ?? result.metadata.dominantType.percentage
+ 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-green-800 to-green-600 text-white">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => router.back()}
-                className="p-2 hover:bg-green-700 rounded-lg transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-              <div>
-                <h1 className="text-2xl font-bold">HumaniQ Eneagrama</h1>
-                <p className="text-green-100">Resultados do Teste</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="text-sm text-green-100">Concluído em</p>
-              <p className="font-semibold">{new Date(result.completedAt).toLocaleDateString('pt-BR')}</p>
-            </div>
+    <div className={`min-h-screen transition-all duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+      {/* Hero Section */}
+      <div className="relative min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 overflow-hidden">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-purple-500/5 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-pink-500/5 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+        </div>
+
+        {/* Navigation */}
+        <div className="relative z-10 flex items-center justify-between p-6">
+          <button
+            onClick={() => router.back()}
+            className="p-3 bg-gray-100 hover:bg-gray-200 rounded-xl backdrop-blur-lg border border-gray-300 transition-all duration-300 group"
+          >
+            <ArrowLeft className="w-5 h-5 text-gray-700 group-hover:scale-110 transition-transform" />
+          </button>
+          
+          <div className="flex gap-3">
+
+            <Button onClick={handlePrint} className="bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300 backdrop-blur-lg">
+              <Printer className="w-4 h-4 mr-2" />
+              Imprimir
+            </Button>
           </div>
         </div>
+
+        {/* Main Content */}
+        <div className="relative z-10 container mx-auto px-6 pt-12 pb-20">
+          {/* Logo e informações do usuário */}
+          {result && (
+            <div className="flex flex-col items-center mb-10">
+              <Image src="/humaniq-logo.svg" alt="HumaniQ AI" width={180} height={40} priority />
+              <div className="mt-2 text-purple-100 text-sm font-medium text-center">
+                 {result.user ? `${result.user.firstName || ''} ${result.user.lastName || ''}`.trim() : 'Usuário'} • {result.user?.email || 'N/A'} • {formatDate(result.completedAt || result.createdAt)}
+               </div>
+            </div>
+          )}
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-3 rounded-full text-sm font-semibold mb-6 shadow-lg">
+              <Star className="w-4 h-4" />
+              Análise Completa de Personalidade
+            </div>
+            
+            <h1 className="text-6xl md:text-7xl font-bold text-white mb-6 leading-tight">
+              Seu Perfil{' '}
+              <span className="bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent">
+                {dominantType?.name ?? `Tipo ${result.metadata?.dominantType?.type || ''}`}
+              </span>
+            </h1>
+            
+            <p className="text-xl text-purple-100 max-w-2xl mx-auto mb-8 leading-relaxed">
+              {dominantType?.description || 'Descobrindo os aspectos únicos da sua personalidade através do Eneagrama.'}
+            </p>
+
+            <div className="text-center">
+              <Badge className="bg-white/20 text-white border-white/30 text-lg px-6 py-2">
+                Tipo {result.metadata?.dominantType?.type || 'N/A'} - {Math.round(dominantPercentage ?? 0)}% de correspondência
+              </Badge>
+            </div>
+
+            <div className="text-center">
+              <Badge className="bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0 text-lg px-6 py-2 mt-4">
+                Instinto {result.metadata?.dominantInstinct?.toUpperCase() || 'N/A'}
+              </Badge>
+            </div>
+            {dominantSubtype && (
+              <div className="text-center">
+                <Badge className="bg-white/20 text-white border-white/30 text-lg px-6 py-2 mt-4">
+                  {dominantSubtype.name} • {dominantSubtype.instinctName}
+                </Badge>
+                <p className="text-purple-200 text-sm mt-2 max-w-xl mx-auto">
+                  {`${dominantSubtype.description} Este é o subtipo ${dominantSubtype.instinct.toUpperCase()} (Autopreservação) do Instinto ${dominantSubtype.instinct.toUpperCase()}.`}
+                </p>
+              </div>
+            )}
+
+            <div className="text-center">
+              
+            </div>
+          </div>
+
+          {/* Mandala Visualization */}
+          <div className="flex justify-center mt-[15%] mb-0">
+            <div className="relative w-full max-w-4xl">
+              <EnhancedStaticHDMandala
+                dominantType={result.metadata?.dominantType?.type || 1}
+                dominantInstinct={result.metadata?.dominantInstinct || 'sp'}
+                typeScores={(() => {
+                  // Criar array ordenado de 1 a 9 com as porcentagens corretas
+                  const orderedScores = new Array(9).fill(0)
+                  result.metadata?.types?.forEach(type => {
+                    if (type.type >= 1 && type.type <= 9) {
+                      orderedScores[type.type - 1] = type.percentage
+                    }
+                  })
+                  return orderedScores
+                })()}
+                percentageScores={result.metadata?.types?.reduce((acc, type) => {
+                  acc[`type${type.type}`] = type.percentage
+                  return acc
+                }, {} as Record<string, number>) || {}}
+                className="w-full max-w-3xl mx-auto"
+              />
+            </div>
+          </div>
+
+          {/* Análise Profunda e Profissional */}
+          {dominantType && (
+            <div className="mt-24 max-w-5xl mx-auto text-center bg-white/10 backdrop-blur-lg rounded-3xl p-12 shadow-2xl border border-white/20">
+              <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-6">Análise Profunda do Seu Perfil</h2>
+              <p className="text-lg md:text-xl text-purple-100 leading-relaxed max-w-3xl mx-auto">
+                {`Como um(a) ${dominantType.name}, você tende a apresentar características centrais como ${dominantType.characteristics?.[0] || 'foco, disciplina e busca de excelência'}. `}
+                {dominantSubtype ? `No subtipo ${dominantSubtype.name}, essas qualidades se manifestam principalmente através do instinto de ${dominantSubtype.instinctName.toLowerCase()}, evidenciando uma motivação forte para ${dominantSubtype.description || 'garantir segurança pessoal e bem-estar'}. ` : ''}
+                Sua combinação única de tipo e instinto sugere um estilo de tomada de decisão que equilibra suas necessidades internas com as demandas do ambiente, demonstrando ${dominantType.strengths?.[0] || 'responsabilidade, consistência e atenção aos detalhes'}. Ao mesmo tempo, é comum observar desafios relacionados a ${dominantType.challenges?.[0] || 'perfeccionismo e autocrítica'}. Reconhecer essas tendências permitirá que você desenvolva estratégias de crescimento focadas em superar limitações e potencializar seus pontos fortes. Essa compreensão aprofunda sua jornada de autoconhecimento e potencializa seu sucesso em contextos pessoais e profissionais.
+              </p>
+            </div>
+          )}        </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        {/* Tipo Dominante */}
-        {dominantType && (
-          <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
-            <div className="text-center mb-6">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-full text-3xl font-bold mb-4">
-                {dominantType.id}
-              </div>
-              <h2 className="text-3xl font-bold text-gray-800 mb-2">{dominantType.title}</h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">{dominantType.description}</p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8">
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Características Principais</h3>
-                <ul className="space-y-2">
-                  {dominantType.characteristics.map((char, index) => (
-                    <li key={index} className="flex items-start space-x-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span className="text-gray-700">{char}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Pontos Fortes</h3>
-                <ul className="space-y-2">
-                  {dominantType.strengths.map((strength, index) => (
-                    <li key={index} className="flex items-start space-x-2">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                      <span className="text-gray-700">{strength}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            <div className="mt-8 p-6 bg-gray-50 rounded-lg">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="font-semibold text-gray-800 mb-2">Motivação Principal</h4>
-                  <p className="text-gray-700">{dominantType.motivation}</p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-800 mb-2">Medo Básico</h4>
-                  <p className="text-gray-700">{dominantType.fear}</p>
-                </div>
-              </div>
-            </div>
+      {/* Development Recommendations Section - Temporarily commented out */}
+      {/* {result?.metadata?.dominantType && (
+        <div className="bg-gradient-to-br from-slate-50 to-blue-50 py-20">
+          <div className="container mx-auto px-6">
+            <DevelopmentRecommendations
+              dominantType={result.metadata.dominantType.type}
+              dominantInstinct={result.metadata.dominantInstinct}
+            />
           </div>
-        )}
+        </div>
+      )} */}
 
-        {/* Gráfico de Pontuações */}
-        <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
-          <h3 className="text-2xl font-bold text-gray-800 mb-6">Suas Pontuações por Tipo</h3>
-          <div className="space-y-4">
-            {result.scores.map((score, index) => {
-              const type = enneagramTypes[index]
-              const isHighest = score === Math.max(...result.scores)
-              return (
-                <div key={index} className="flex items-center space-x-4">
-                  <div className="w-12 text-center">
-                    <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold ${
-                      isHighest ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700'
-                    }`}>
-                      {type.id}
-                    </span>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-gray-700">{type.name}</span>
-                      <span className="text-sm font-semibold text-gray-900">{score}%</span>
+      {/* Content sections would continue here */}
+      <div className="bg-white py-20">
+        <div className="container mx-auto px-6">
+          <div className="text-center">
+            <h2 className="text-4xl font-bold text-gray-900 mb-8">Análise Detalhada</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-16">
+              Explore os aspectos fundamentais da sua personalidade e descubra como aplicar esses insights em sua vida pessoal e profissional.
+            </p>
+          </div>
+
+          {/* Lista de Tipos e Percentuais */}
+          {result?.metadata?.types && result.metadata.types.length > 0 && (
+            <div className="max-w-3xl mx-auto mt-8 space-y-6">
+              {result.metadata.types.map((type) => {
+                const typeInfo = enneagramTypes.find(t => t.type === type.type)
+                const isDominant = type.type === result.metadata.dominantType.type
+                return (
+                  <div key={type.type} className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className={`font-semibold ${isDominant ? 'text-purple-700' : 'text-gray-700'}`}>Tipo {type.type}{typeInfo?.name ? ` - ${typeInfo.name}` : ''}</span>
+                      <span className={`font-bold ${isDominant ? 'text-purple-700' : 'text-gray-700'}`}>{Math.round(type.percentage)}%</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                       <div
-                        className={`h-3 rounded-full transition-all duration-500 ${getScoreColor(score)}`}
-                        style={{ width: `${score}%` }}
-                      ></div>
+                        className={`${isDominant ? 'bg-gradient-to-r from-purple-400 to-purple-600' : 'bg-gradient-to-r from-gray-300 to-gray-500'} h-full rounded-full`}
+                        style={{ width: `${type.percentage}%` }}
+                      />
                     </div>
                   </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* Interpretação e Próximos Passos */}
-        <div className="grid md:grid-cols-2 gap-8 mb-8">
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">Interpretação dos Resultados</h3>
-            <div className="space-y-3 text-gray-700">
-              <p>Seu tipo dominante representa sua personalidade principal, mas lembre-se de que todos nós temos aspectos de todos os tipos.</p>
-              <p>As pontuações mais altas indicam características mais presentes em sua personalidade atual.</p>
-              <p>Use estes insights para desenvolvimento pessoal e melhor autoconhecimento.</p>
+                )
+              })}
             </div>
-          </div>
+          )}
 
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">Próximos Passos</h3>
-            <div className="space-y-3 text-gray-700">
-              <p>• Estude mais sobre seu tipo dominante</p>
-              <p>• Observe os padrões em seu comportamento</p>
-              <p>• Trabalhe no desenvolvimento de pontos fracos</p>
-              <p>• Use os pontos fortes a seu favor</p>
-              <p>• Considere coaching ou terapia para aprofundamento</p>
+          {/* Análise de Subtipo */}
+          {result?.metadata?.dominantType && (
+            <div className="mt-20 max-w-4xl mx-auto">
+              <h3 className="text-3xl font-bold text-gray-800 mb-8 text-center">Análise de Subtipo</h3>
+              <SubtypeDetails
+                dominantType={result.metadata.dominantType.type}
+                dominantInstinct={result.metadata.dominantInstinct}
+              />
             </div>
-          </div>
-        </div>
-
-        {/* Botões de Ação */}
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <div className="flex flex-wrap gap-4 justify-center">
-            <button
-              onClick={handleDownloadPDF}
-              className="flex items-center space-x-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-            >
-              <Download className="w-5 h-5" />
-              <span>Baixar PDF</span>
-            </button>
-            
-            <button
-              onClick={handleShare}
-              className="flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <Share2 className="w-5 h-5" />
-              <span>Compartilhar</span>
-            </button>
-            
-            <button
-              onClick={handleNewTest}
-              className="flex items-center space-x-2 px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
-            >
-              <RotateCcw className="w-5 h-5" />
-              <span>Fazer Novo Teste</span>
-            </button>
-            
-            <button
-              onClick={handleBackToDashboard}
-              className="flex items-center space-x-2 px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-            >
-              <Home className="w-5 h-5" />
-              <span>Dashboard</span>
-            </button>
-          </div>
+          )}
         </div>
       </div>
     </div>

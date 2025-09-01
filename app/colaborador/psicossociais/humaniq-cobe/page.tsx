@@ -34,7 +34,7 @@ const questions: Question[] = [
   // 1. Liderança & Confiança (itens 1-5)
   { id: 1, text: "Confio na capacidade da minha liderança para tomar decisões acertadas.", dimension: "Liderança & Confiança" },
   { id: 2, text: "Meu gestor demonstra interesse genuíno no meu desenvolvimento profissional.", dimension: "Liderança & Confiança" },
-  { id: 3, text: "Sinto que posso contar com o apoio da liderança quando preciso.", dimension: "Liderança & Confiança" },
+  { id: 3, text: "Sinto que posco contar com o apoio da liderança quando preciso.", dimension: "Liderança & Confiança" },
   { id: 4, text: "A liderança age de forma consistente com os valores que prega.", dimension: "Liderança & Confiança" },
   { id: 5, text: "Meu gestor me trata com respeito e dignidade.", dimension: "Liderança & Confiança" },
 
@@ -68,7 +68,7 @@ const questions: Question[] = [
 
   // 6. Colaboração & Trabalho em Equipe (itens 26-30)
   { id: 26, text: "Existe boa colaboração entre os membros da minha equipe.", dimension: "Colaboração & Trabalho em Equipe" },
-  { id: 27, text: "Sinto que posso contar com meus colegas quando preciso de ajuda.", dimension: "Colaboração & Trabalho em Equipe" },
+  { id: 27, text: "Sinto que posco contar com meus colegas quando preciso de ajuda.", dimension: "Colaboração & Trabalho em Equipe" },
   { id: 28, text: "Trabalhamos bem juntos para alcançar objetivos comuns.", dimension: "Colaboração & Trabalho em Equipe" },
   { id: 29, text: "Há espírito de cooperação e apoio mútuo na equipe.", dimension: "Colaboração & Trabalho em Equipe" },
   { id: 30, text: "As diferentes áreas da empresa colaboram efetivamente.", dimension: "Colaboração & Trabalho em Equipe" },
@@ -622,7 +622,7 @@ export default function HumaniQCOBEPage() {
       
       // Redirecionar para página de resultados após delay
       setTimeout(() => {
-        router.push(`/colaborador/psicossociais/humaniq-cobe/resultados?sessionId=${sessionId}`)
+        router.push(`/colaborador/psicossociais/humaniq-cobe/resultados?sessionId=${sessionId}&saved=1`)
       }, 3000)
       
     } catch (error) {

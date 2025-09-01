@@ -122,14 +122,26 @@ class TestResultIndexer {
     
     const testTypeEntry = index.index.entries[testResult.testType];
     
-    if (!testTypeEntry.tests[testResult.testId]) {
-      testTypeEntry.tests[testResult.testId] = {
+    // Verificar se testTypeEntry existe, se não, criar uma entrada padrão
+    if (!testTypeEntry) {
+      console.warn(`Tipo de teste '${testResult.testType}' não encontrado no índice. Criando entrada padrão.`);
+      index.index.entries[testResult.testType] = {
+        name: `Testes ${testResult.testType}`,
+        count: 0,
+        tests: {}
+      };
+    }
+    
+    const entry = index.index.entries[testResult.testType];
+    
+    if (!entry.tests[testResult.testId]) {
+      entry.tests[testResult.testId] = {
         count: 0,
         results: []
       };
     }
     
-    testTypeEntry.tests[testResult.testId].results.push({
+    entry.tests[testResult.testId].results.push({
       id: testResult.id,
       userId: testResult.userId,
       completedAt: testResult.completedAt,
@@ -138,8 +150,8 @@ class TestResultIndexer {
       status: testResult.status
     });
     
-    testTypeEntry.tests[testResult.testId].count++;
-    testTypeEntry.count++;
+    entry.tests[testResult.testId].count++;
+    entry.count++;
     index.totalEntries++;
     index.lastUpdated = new Date().toISOString();
     

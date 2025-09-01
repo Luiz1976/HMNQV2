@@ -1,4 +1,11 @@
 {
-  "/auth/login/page": "app/auth/login/page.js",
-  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js"
+  "/resultados/page": "app/resultados/page.js",
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/api/tests/sessions/route": "app/api/tests/sessions/route.js",
+  "/api/tests/submit/route": "app/api/tests/submit/route.js",
+  "/api/colaborador/resultados/route": "app/api/colaborador/resultados/route.js",
+  "/colaborador/page": "app/colaborador/page.js",
+  "/colaborador/personalidade/page": "app/colaborador/personalidade/page.js",
+  "/colaborador/personalidade/bolie/introducao/page": "app/colaborador/personalidade/bolie/introducao/page.js",
+  "/colaborador/personalidade/bolie/page": "app/colaborador/personalidade/bolie/page.js"
 }

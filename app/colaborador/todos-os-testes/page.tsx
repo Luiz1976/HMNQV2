@@ -217,7 +217,9 @@ export default function TodosOsTestesPage() {
       }
 
       const result = await response.json()
-      setData(result)
+      // A API retorna { success: true, data: { results: [...], availableTests: [...] } }
+      // Então precisamos acessar result.data ao invés de result diretamente
+      setData(result.data || result)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro desconhecido')
     } finally {
@@ -266,7 +268,7 @@ export default function TodosOsTestesPage() {
   const combineTests = (): CombinedTest[] => {
     if (!data) return []
 
-    const completed: CombinedTest[] = data.results.map(result => ({
+    const completed: CombinedTest[] = (data.results || []).map(result => ({
       id: result.test.id,
       name: result.test.name,
       description: result.test.description,
@@ -281,7 +283,7 @@ export default function TodosOsTestesPage() {
       statistics: result.statistics
     }))
 
-    const available: CombinedTest[] = data.availableTests.map(test => ({
+    const available: CombinedTest[] = (data.availableTests || []).map(test => ({
       id: test.id,
       name: test.name,
       description: test.description,
@@ -295,7 +297,8 @@ export default function TodosOsTestesPage() {
   }
 
   // Filtrar testes (IDs reais do banco de dados)
-  const allowedPsychosocialTests = [
+  const allowedTests = [
+    // Testes Psicossociais
     'cme216bcl00018wg05iydpwsz', // HumaniQ Insight – Clima Organizacional e Bem-Estar Psicológico
     'cme216bde00038wg0xkau0ea0', // HumaniQ Pesquisa de Clima – Clima Organizacional e Bem-Estar Psicológico
     'cme216bem00058wg0rqpxnh40', // HumaniQ QVT – Qualidade de Vida no Trabalho
@@ -303,15 +306,17 @@ export default function TodosOsTestesPage() {
     'cme7u1z2w00058w1w9k11srma', // HumaniQ RPO – Riscos Psicossociais Ocupacionais
     'cme216bjq00098wg0yz7ly97k', // HumaniQ EO – Estresse Ocupacional, Burnout e Resiliência
     'cme216blq000b8wg0viq7ta6k', // HumaniQ PAS – Percepção de Assédio Moral e Sexual
-    'cme216boc000d8wg02vj91skk'  // HumaniQ MGRP – Maturidade em Gestão de Riscos Psicossociais
+    'cme216boc000d8wg02vj91skk', // HumaniQ MGRP – Maturidade em Gestão de Riscos Psicossociais
+    // Testes de Perfil
+    'cme216bpk000f8wg0qlm8xqzk'  // HumaniQ BOLIE – Inteligência Emocional
   ]
   const filteredTests = combineTests().filter(test => {
     const matchesSearch = !searchTerm || 
       test.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       test.description.toLowerCase().includes(searchTerm.toLowerCase())
-    // Exibir apenas os testes psicossociais reais
-    const matchesAllowed = allowedPsychosocialTests.includes(test.id)
-    const matchesCategory = test.category?.name === 'Psicossociais'
+    // Exibir testes permitidos (psicossociais e de perfil)
+    const matchesAllowed = allowedTests.includes(test.id)
+    const matchesCategory = test.category?.name === 'Psicossociais' || test.category?.name === 'Perfil'
     const matchesStatus = filterStatus === 'ALL' || test.status === filterStatus
     return matchesSearch && matchesAllowed && matchesCategory && matchesStatus
   })

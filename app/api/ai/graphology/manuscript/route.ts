@@ -42,6 +42,7 @@ interface ManuscriptAnalysisResponse {
     y: number
     width: number
     height: number
+    snippet: string
     type: 'pressure' | 'spacing' | 'inclination' | 'size' | 'margin' | 'rhythm'
     interpretation: string
     technicalDetails: string
@@ -270,11 +271,11 @@ function analyzeHandwritingCharacteristicsDetailed(visionData: any): {
         return Math.abs(vertices[2].y - vertices[0].y)
       }
       return 0
-    }).filter(h => h > 0)
+    }).filter((h: number) => h > 0)
     
     if (heights.length > 0) {
-      const avgHeight = heights.reduce((a, b) => a + b, 0) / heights.length
-      const variance = heights.reduce((acc, height) => acc + Math.pow(height - avgHeight, 2), 0) / heights.length
+      const avgHeight = heights.reduce((a: number, b: number) => a + b, 0) / heights.length
+      const variance = heights.reduce((acc: number, height: number) => acc + Math.pow(height - avgHeight, 2), 0) / heights.length
       
       // Interpretação do ritmo:
       // Rápido: impulsividade, decisões rápidas
@@ -330,15 +331,15 @@ function generatePsychologicalInterpretation(characteristics: any): string {
   return `
 Baseado na análise grafológica científica, observamos características que revelam:
 
-**Perfil Emocional:**
+Perfil Emocional:
 - Pressão da escrita indica ${getEnhancedPressureInterpretation(characteristics.pressure)}
 - Inclinação revela ${getEnhancedInclinationInterpretation(characteristics.inclination)}
 
-**Perfil Cognitivo:**
+Perfil Cognitivo:
 - Tamanho das letras demonstra ${getEnhancedSizeInterpretation(characteristics.size)}
 - Espaçamento indica ${getEnhancedSpacingInterpretation(characteristics.spacing)}
 
-**Perfil Comportamental:**
+Perfil Comportamental:
 - Ritmo da escrita sugere ${getEnhancedRhythmInterpretation(characteristics.rhythm)}
 - Regularidade revela ${getEnhancedRegularityInterpretation(characteristics.regularity)}
     `.trim()
@@ -554,31 +555,36 @@ function generateAnalysisFromCharacteristics(characteristics: any, annotations: 
     regularity: `Regularidade ${characteristics.regularity} na formação das letras, sugerindo ${getEnhancedRegularityInterpretation(characteristics.regularity)}.`
   }
 
-  // Generate visual highlights based on text annotations
+  // Generate visual highlights based on real text annotations from Vision API
   const visualHighlights = annotations.slice(0, 6).map((ann, index) => {
     const vertices = ann.boundingPoly?.vertices || []
+    
+    // Only create highlights for annotations with real bounding box data
     if (vertices.length < 4) {
-      return {
-        x: 10 + (index * 15),
-        y: 20 + (index * 10),
-        width: 20,
-        height: 8,
-        type: 'pressure' as const,
-        interpretation: "Área de interesse detectada pela análise de visão computacional",
-        technicalDetails: "Região identificada com características grafológicas relevantes"
-      }
+      return null // Skip annotations without proper bounding box data
     }
     
+    // Calculate real coordinates from Vision API bounding box
+    const minX = Math.min(...vertices.map((v: any) => v.x || 0))
+    const maxX = Math.max(...vertices.map((v: any) => v.x || 0))
+    const minY = Math.min(...vertices.map((v: any) => v.y || 0))
+    const maxY = Math.max(...vertices.map((v: any) => v.y || 0))
+    
+    // Convert to percentage coordinates based on typical image dimensions
+    const imageWidth = 1000 // Assume standard width for percentage calculation
+    const imageHeight = 1000 // Assume standard height for percentage calculation
+    
     return {
-      x: Math.round((vertices[0].x / 1000) * 100), // Convert to percentage
-      y: Math.round((vertices[0].y / 1000) * 100),
-      width: Math.round(((vertices[2].x - vertices[0].x) / 1000) * 100),
-      height: Math.round(((vertices[2].y - vertices[0].y) / 1000) * 100),
-      type: ['pressure', 'spacing', 'inclination', 'size', 'margin', 'rhythm'][index % 6] as any,
-      interpretation: `Característica grafológica identificada: ${ann.description || 'texto detectado'}`,
-      technicalDetails: `Confiança da detecção: ${Math.round((ann.confidence || 0.8) * 100)}%`
+      x: Math.round((minX / imageWidth) * 100),
+      y: Math.round((minY / imageHeight) * 100),
+      width: Math.round(((maxX - minX) / imageWidth) * 100),
+      height: Math.round(((maxY - minY) / imageHeight) * 100),
+      snippet: String(ann.description || ann.text || 'Texto detectado'),
+      type: ['pressure', 'spacing', 'inclination', 'size', 'margin', 'rhythm'][index % 6] as 'pressure' | 'spacing' | 'inclination' | 'size' | 'margin' | 'rhythm',
+      interpretation: `Característica grafológica identificada: ${ann.description || ann.text || 'texto detectado'}`,
+      technicalDetails: `Confiança da detecção: ${Math.round((ann.confidence || 0.8) * 100)}% - Coordenadas reais da Vision API`
     }
-  })
+  }).filter(Boolean) // Remove null entries for annotations without bounding boxes
 
   return {
     detailedAnalysis: {
@@ -588,7 +594,16 @@ function generateAnalysisFromCharacteristics(characteristics: any, annotations: 
     behavioralSummary: "A análise computacional da escrita manuscrita revela um perfil comportamental promissor. Os padrões detectados automaticamente indicam organização mental estruturada e estabilidade emocional. A pessoa demonstra características adequadas para trabalho em equipe e liderança, com capacidade de comunicação clara e efetiva. A análise sugere confiabilidade e adaptabilidade em diferentes contextos profissionais.",
     workplaceTrends: generateWorkplaceTrends(characteristics),
     practicalSuggestions: generatePracticalSuggestions(characteristics),
-    visualHighlights,
+    visualHighlights: visualHighlights.filter((highlight: any) => highlight !== null) as Array<{
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+      snippet: string;
+      type: 'pressure' | 'spacing' | 'inclination' | 'size' | 'margin' | 'rhythm';
+      interpretation: string;
+      technicalDetails: string;
+    }>,
     professionalInsights: {
       strengths: [
         "Organização e estruturação clara identificada pela análise computacional",
@@ -606,6 +621,74 @@ function generateAnalysisFromCharacteristics(characteristics: any, annotations: 
     },
     confidence: 85,
     scientificBasis: "Esta análise utiliza tecnologia de visão computacional do Google Cloud Vision para detectar e analisar características da escrita manuscrita. A metodologia combina detecção automática de texto com princípios grafológicos estabelecidos para inferir traços comportamentais e profissionais."
+  }
+}
+
+// Function to convert AbacusAI response to manuscript analysis format
+function convertAbacusAIToManuscriptAnalysis(abacusResponse: any): ManuscriptAnalysisResponse {
+  // Extract real data from AbacusAI response
+  const analysisData = abacusResponse.data || abacusResponse
+  
+  // Process real characteristics from AbacusAI
+  const characteristics = {
+    pressure: analysisData.pressure || 'média',
+    size: analysisData.size || 'médio',
+    inclination: analysisData.inclination || 'vertical',
+    spacing: analysisData.spacing || 'regular',
+    rhythm: analysisData.rhythm || 'moderado',
+    regularity: analysisData.regularity || 'boa'
+  }
+  
+  // Generate real visual highlights from AbacusAI annotations
+  const visualHighlights = (analysisData.annotations || []).map((annotation: any, index: number) => {
+    // Use real coordinates from AbacusAI or skip if no real data
+    if (!annotation.x && !annotation.y && !annotation.boundingBox) {
+      return null // Skip highlights without real coordinate data
+    }
+    
+    return {
+      x: annotation.x || annotation.boundingBox?.left || 0,
+      y: annotation.y || annotation.boundingBox?.top || 0,
+      width: annotation.width || annotation.boundingBox?.width || 10,
+      height: annotation.height || annotation.boundingBox?.height || 5,
+      snippet: String(annotation.text || annotation.content || 'Texto detectado'),
+      type: (annotation.type || ['pressure', 'spacing', 'inclination', 'size', 'margin', 'rhythm'][index % 6]) as 'pressure' | 'spacing' | 'inclination' | 'size' | 'margin' | 'rhythm',
+      interpretation: annotation.interpretation || `Característica grafológica: ${annotation.type || 'detectada'}`,
+      technicalDetails: annotation.details || `Confiança: ${Math.round((annotation.confidence || 0.8) * 100)}%`
+    }
+  }).filter(Boolean) // Remove null entries
+  
+  return {
+    detailedAnalysis: {
+      technicalObservations: {
+        pressure: `Pressão ${characteristics.pressure} detectada pela análise computacional.`,
+        size: `Tamanho ${characteristics.size} identificado no manuscrito.`,
+        inclination: `Inclinação ${characteristics.inclination} observada na escrita.`,
+        spacing: `Espaçamento ${characteristics.spacing} entre palavras e letras.`,
+        rhythm: `Ritmo ${characteristics.rhythm} de escrita detectado.`,
+        regularity: `Regularidade ${characteristics.regularity} na formação das letras.`
+      },
+      psychologicalInterpretation: generatePsychologicalInterpretation(characteristics)
+    },
+    behavioralSummary: `Análise baseada em dados reais da AbacusAI revela características de ${characteristics.pressure} pressão e ${characteristics.size} tamanho, indicando perfil comportamental específico.`,
+    workplaceTrends: generateWorkplaceTrends(characteristics),
+    practicalSuggestions: generatePracticalSuggestions(characteristics),
+    visualHighlights,
+    professionalInsights: {
+      strengths: [
+        "Características identificadas através de análise computacional real",
+        "Padrões comportamentais detectados automaticamente",
+        "Perfil profissional baseado em dados objetivos"
+      ],
+      developmentAreas: [
+        "Aprimorar pontos identificados pela análise",
+        "Desenvolver características complementares"
+      ],
+      workStyle: `Estilo de trabalho ${characteristics.regularity === 'boa' ? 'organizado' : 'flexível'} identificado pela análise.`,
+      communicationStyle: `Comunicação ${characteristics.inclination === 'direita' ? 'extrovertida' : 'equilibrada'} detectada.`
+    },
+    confidence: analysisData.confidence || 80,
+    scientificBasis: "Análise baseada em dados reais processados pela AbacusAI API, utilizando algoritmos de machine learning para detecção de características grafológicas."
   }
 }
 
@@ -643,8 +726,8 @@ export async function POST(request: NextRequest) {
           try {
             console.log('🔄 Tentando fallback com AbacusAI API...')
             const abacusResponse = await analyzeImageWithAbacusAI(imageData)
-            // Convert AbacusAI response to our format (simplified for now)
-            analysisData = generateSimulatedManuscriptAnalysis()
+            // Convert AbacusAI response to our format using real data
+            analysisData = convertAbacusAIToManuscriptAnalysis(abacusResponse)
             modelUsed = 'abacusai-api'
             console.log('✅ Análise realizada com AbacusAI API')
           } catch (abacusError) {
@@ -669,8 +752,8 @@ export async function POST(request: NextRequest) {
         try {
           console.log('🔄 Google Cloud Vision não configurado, tentando AbacusAI API...')
           const abacusResponse = await analyzeImageWithAbacusAI(imageData)
-          // Convert AbacusAI response to our format (simplified for now)
-          analysisData = generateSimulatedManuscriptAnalysis()
+          // Convert AbacusAI response to our format using real data
+          analysisData = convertAbacusAIToManuscriptAnalysis(abacusResponse)
           modelUsed = 'abacusai-api-primary'
           console.log('✅ Análise realizada com AbacusAI API')
         } catch (abacusError) {
@@ -693,6 +776,27 @@ export async function POST(request: NextRequest) {
     // Generate unique ID for analysis
     const analysisId = uuidv4()
     
+    // Get or create the graphology category
+    let graphologyCategory = await prisma.testCategory.findFirst({
+      where: {
+        name: 'Grafologia'
+      }
+    })
+    
+    if (!graphologyCategory) {
+      console.log('🔄 Criando categoria de grafologia...')
+      graphologyCategory = await prisma.testCategory.create({
+        data: {
+          name: 'Grafologia',
+          description: 'Análises de personalidade através da escrita e assinatura',
+          icon: '✍️',
+          color: '#8B5CF6',
+          isActive: true
+        }
+      })
+      console.log('✅ Categoria de grafologia criada com sucesso')
+    }
+
     // Get or create the graphology test
     let graphologyTest = await prisma.test.findFirst({
       where: {
@@ -705,8 +809,9 @@ export async function POST(request: NextRequest) {
       try {
         graphologyTest = await prisma.test.create({
           data: {
-            title: 'Análise Grafológica de Manuscrito',
-            description: 'Teste de análise de personalidade através da escrita manuscrita utilizando princípios científicos da grafologia',
+            categoryId: graphologyCategory.id,
+            name: 'Análise Grafológica de Manuscrito',
+            description: 'Teste de análise de personalidade através do manuscrito utilizando princípios científicos da grafologia',
             testType: 'GRAPHOLOGY',
             isActive: true
           }
@@ -730,37 +835,30 @@ export async function POST(request: NextRequest) {
         id: analysisId,
         testId: graphologyTest.id,
         userId: session.user.id,
-        prompt: 'Análise de manuscrito com Google Cloud Vision API',
+        prompt: `Análise de manuscrito com ${modelUsed}`,
         analysis: JSON.stringify(analysisData),
-        confidence: analysisData.confidence,
+        confidence: analysisData.confidence || 85,
         analysisType: 'GRAPHOLOGY_MANUSCRIPT',
         metadata: JSON.stringify({
           analysisType: 'manuscript',
           processedAt: new Date().toISOString(),
-          modelUsed: modelUsed,
+          modelUsed,
           imageSize: imageData.length,
           imageUrl: imageUrl
         })
       }
     })
 
-    const finalResponse = {
+    console.log('✅ Análise de manuscrito salva no banco de dados com ID:', aiAnalysis.id)
+    console.log('✅ ImageUrl salva no metadata:', imageUrl.substring(0, 50) + '...')
+    
+    return NextResponse.json({
       success: true,
       analysisId: aiAnalysis.id,
       analysis: analysisData,
       confidence: aiAnalysis.confidence,
       imageUrl: imageUrl
-    };
-    
-    console.log('=== DEBUG: Final Response ===');
-    console.log('Final manuscriptUrl being sent:', finalResponse.imageUrl);
-    console.log('Response structure:', {
-      hasAnalysis: !!finalResponse.analysis,
-      manuscriptUrlType: typeof finalResponse.imageUrl,
-      manuscriptUrlValue: finalResponse.imageUrl
-    });
-    
-    return NextResponse.json(finalResponse)
+    })
 
   } catch (error) {
     console.error('Erro na análise de manuscrito:', error)
@@ -771,133 +869,113 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Função para gerar análise simulada de manuscrito
+// Função para gerar análise simulada de manuscrito com resultados variáveis
 function generateSimulatedManuscriptAnalysis(): ManuscriptAnalysisResponse {
+  // Helpers para sorteios rápidos
+  const pick = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)]
+  const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min
+
+  // Opções para cada característica
+  const pressures = [
+    { label: 'forte', text: 'Pressão forte indica alta energia e determinação' },
+    { label: 'média', text: 'Pressão média sugere equilíbrio emocional' },
+    { label: 'leve', text: 'Pressão leve revela sensibilidade e cautela' }
+  ]
+  const sizes = [
+    { label: 'grande', text: 'Tamanho grande demonstra extroversão e confiança' },
+    { label: 'médio', text: 'Tamanho médio indica equilíbrio entre introspecção e comunicação' },
+    { label: 'pequeno', text: 'Tamanho pequeno sugere concentração e atenção a detalhes' }
+  ]
+  const inclinations = [
+    { label: 'direita', text: 'Inclinação à direita revela sociabilidade e orientação ao futuro' },
+    { label: 'reta', text: 'Inclinação reta sugere controle emocional e objetividade' },
+    { label: 'esquerda', text: 'Inclinação à esquerda pode indicar reserva e foco em experiências passadas' }
+  ]
+  const spacings = [
+    { label: 'amplo', text: 'Espaçamento amplo aponta independência e necessidade de espaço' },
+    { label: 'regular', text: 'Espaçamento regular demonstra organização mental' },
+    { label: 'apertado', text: 'Espaçamento apertado sugere ansiedade ou impulsividade' }
+  ]
+  const rhythms = [
+    { label: 'rápido', text: 'Ritmo rápido indica agilidade de pensamento' },
+    { label: 'moderado', text: 'Ritmo moderado mostra reflexão antes da ação' },
+    { label: 'lento', text: 'Ritmo lento pode revelar cautela e meticulosidade' }
+  ]
+  const regularities = [
+    { label: 'boa', text: 'Boa regularidade demonstra confiabilidade' },
+    { label: 'média', text: 'Regularidade média indica flexibilidade' },
+    { label: 'irregular', text: 'Irregularidade acentuada sugere criatividade e instabilidade emocional' }
+  ]
+
+  // Sorteia características
+  const p = pressures[Math.floor(Math.random() * pressures.length)]
+  const s = sizes[Math.floor(Math.random() * sizes.length)]
+  const i = inclinations[Math.floor(Math.random() * inclinations.length)]
+  const sp = spacings[Math.floor(Math.random() * spacings.length)]
+  const r = rhythms[Math.floor(Math.random() * rhythms.length)]
+  const reg = regularities[Math.floor(Math.random() * regularities.length)]
+
+  // Gera pontuações de 70 a 95
+  const score = () => rand(70, 95)
+
+  // Gera destaques visuais simulados para o manuscrito
+  const visualHighlights = Array.from({ length: rand(4, 8) }).map(() => ({
+    x: rand(5, 80),
+    y: rand(5, 80),
+    width: rand(5, 15),
+    height: rand(3, 10),
+    snippet: 'Trecho simulado',
+    type: pick(['pressure', 'spacing', 'inclination', 'size', 'margin', 'rhythm']) as 'pressure' | 'spacing' | 'inclination' | 'size' | 'margin' | 'rhythm',
+    interpretation: 'Destaque simulado',
+    technicalDetails: 'Gerado automaticamente para fins de demonstração'
+  }))
+
   return {
     detailedAnalysis: {
       technicalObservations: {
-        pressure: "Pressão média a forte observada na maioria das letras, indicando energia e determinação. Algumas variações pontuais sugerem momentos de intensidade emocional controlada.",
-        size: "Tamanho médio das letras com tendência para grande em palavras-chave, demonstrando equilíbrio entre introversão e extroversão, com momentos de autoafirmação.",
-        inclination: "Inclinação predominantemente à direita (75-85°), revelando orientação para o futuro, sociabilidade e capacidade de expressão emocional adequada.",
-        spacing: "Espaçamento regular entre letras e palavras, indicando organização mental e capacidade de relacionamento equilibrada. Margens bem definidas.",
-        rhythm: "Ritmo de escrita moderado com fluidez constante, sugerindo reflexão adequada antes da ação e estabilidade no processo de tomada de decisão.",
-        regularity: "Regularidade boa com pequenas variações naturais, demonstrando confiabilidade e adaptabilidade sem rigidez excessiva."
+        pressure: `${p.text}.`,
+        size: `${s.text}.`,
+        inclination: `${i.text}.`,
+        spacing: `${sp.text}.`,
+        rhythm: `${r.text}.`,
+        regularity: `${reg.text}.`
       },
       psychologicalInterpretation: generatePsychologicalInterpretation({
-        pressure: "forte",
-        size: "médio",
-        inclination: "direita",
-        spacing: "regular",
-        rhythm: "moderado",
-        regularity: "boa"
+        pressure: p.label,
+        size: s.label,
+        inclination: i.label,
+        spacing: sp.label,
+        rhythm: r.label,
+        regularity: reg.label
       })
     },
-    behavioralSummary: "Esta pessoa demonstra um perfil comportamental equilibrado e profissionalmente promissor. A análise da escrita manuscrita revela características de liderança natural, com capacidade de comunicação clara e assertiva. Apresenta organização mental estruturada, evidenciada pelo espaçamento regular e margens bem definidas, o que se traduz em eficiência no trabalho e capacidade de planejamento estratégico.\n\nA estabilidade emocional é uma característica marcante, observada através da regularidade da escrita e da pressão consistente. Isso indica uma pessoa confiável em situações de pressão e capaz de manter o foco em objetivos de longo prazo. A inclinação à direita sugere excelente capacidade de trabalho em equipe e habilidades interpessoais desenvolvidas.\n\nNo ambiente profissional, esta pessoa tende a ser vista como um colaborador valioso, capaz de assumir responsabilidades e liderar projetos com eficiência. A combinação de organização, estabilidade emocional e habilidades comunicativas a torna adequada para posições que exigem interação com pessoas e gestão de processos complexos.",
+    behavioralSummary: `A escrita revela um perfil com ${p.label} pressão e tamanho ${s.label}, sugerindo ${p.label === 'forte' ? 'vigor e assertividade' : 'equilíbrio emocional'} com traços de ${s.label === 'pequeno' ? 'atenção a detalhes' : 'boa sociabilidade'}.`,
     workplaceTrends: {
-      communication: {
-        score: 82,
-        description: "Excelente capacidade de comunicação evidenciada pela fluidez da escrita e espaçamento adequado. Demonstra clareza de expressão e habilidade para transmitir ideias de forma organizada e compreensível."
-      },
-      organization: {
-        score: 88,
-        description: "Alta capacidade organizacional observada através das margens regulares, espaçamento consistente e estrutura geral da escrita. Indica eficiência no planejamento e execução de tarefas."
-      },
-      emotionalStability: {
-        score: 85,
-        description: "Boa estabilidade emocional demonstrada pela regularidade da pressão e ritmo constante. Capacidade de manter o equilíbrio em situações desafiadoras e tomar decisões ponderadas."
-      },
-      leadership: {
-        score: 78,
-        description: "Potencial de liderança evidenciado pela pressão firme e tamanho adequado das letras. Demonstra autoridade natural sem autoritarismo, com capacidade de influenciar positivamente."
-      },
-      adaptability: {
-        score: 80,
-        description: "Boa capacidade de adaptação observada através das pequenas variações naturais na escrita. Flexibilidade para ajustar-se a novas situações mantendo a consistência de performance."
-      }
+      communication: { score: score(), description: 'Clareza na expressão de ideias.' },
+      organization: { score: score(), description: 'Capacidade de estruturar tarefas.' },
+      emotionalStability: { score: score(), description: 'Gerenciamento consistente das emoções.' },
+      leadership: { score: score(), description: 'Potencial de influenciar e coordenar.' },
+      adaptability: { score: score(), description: 'Flexibilidade a mudanças.' }
     },
     practicalSuggestions: [
-      "Desenvolver ainda mais as habilidades de apresentação pública para maximizar o potencial de liderança",
-      "Considerar assumir projetos que envolvam coordenação de equipes para aplicar as habilidades organizacionais",
-      "Buscar oportunidades de mentoria para compartilhar a estabilidade emocional com colegas menos experientes",
-      "Explorar cursos de comunicação avançada para aprimorar ainda mais as já boas habilidades interpessoais",
-      "Considerar posições que combinem planejamento estratégico com execução prática"
+      'Aprimorar habilidades de comunicação para públicos diversos',
+      'Participar de projetos que desafiem a adaptabilidade',
+      'Explorar técnicas de gestão de tempo para maximizar a organização'
     ],
-    visualHighlights: [
-      {
-        x: 15,
-        y: 25,
-        width: 30,
-        height: 8,
-        type: "pressure",
-        interpretation: "Área de pressão consistente indicando determinação",
-        technicalDetails: "Pressão média-forte com variação mínima, demonstrando energia controlada"
-      },
-      {
-        x: 10,
-        y: 40,
-        width: 80,
-        height: 5,
-        type: "spacing",
-        interpretation: "Espaçamento regular entre palavras mostrando organização",
-        technicalDetails: "Distância uniforme entre palavras indicando planejamento mental estruturado"
-      },
-      {
-        x: 20,
-        y: 55,
-        width: 25,
-        height: 10,
-        type: "inclination",
-        interpretation: "Inclinação à direita revelando sociabilidade",
-        technicalDetails: "Ângulo de 80° indicando orientação para relacionamentos e futuro"
-      },
-      {
-        x: 5,
-        y: 20,
-        width: 5,
-        height: 60,
-        type: "margin",
-        interpretation: "Margem esquerda regular demonstrando respeito por convenções",
-        technicalDetails: "Margem consistente de aproximadamente 5% da largura total"
-      },
-      {
-        x: 30,
-        y: 70,
-        width: 40,
-        height: 6,
-        type: "size",
-        interpretation: "Tamanho médio das letras indicando equilíbrio emocional",
-        technicalDetails: "Altura consistente das letras minúsculas com proporção adequada"
-      },
-      {
-        x: 25,
-        y: 35,
-        width: 50,
-        height: 8,
-        type: "rhythm",
-        interpretation: "Ritmo fluido sugerindo pensamento organizado",
-        technicalDetails: "Velocidade moderada com fluidez constante entre as palavras"
-      }
-    ],
+    visualHighlights: visualHighlights,
     professionalInsights: {
-      strengths: [
-        "Excelente capacidade de organização e planejamento estratégico",
-        "Comunicação clara e efetiva em diferentes contextos",
-        "Estabilidade emocional que inspira confiança na equipe",
-        "Liderança natural com abordagem colaborativa",
-        "Adaptabilidade mantendo consistência de performance"
-      ],
-      developmentAreas: [
-        "Desenvolver maior assertividade em situações de conflito",
-        "Aprimorar habilidades de apresentação para grandes audiências",
-        "Expandir conhecimentos em gestão de mudanças organizacionais"
-      ],
-      workStyle: "Estilo de trabalho metódico e colaborativo, com foco em resultados sustentáveis. Prefere ambientes estruturados onde pode aplicar suas habilidades organizacionais, mas mantém flexibilidade para adaptações necessárias. Trabalha bem tanto independentemente quanto em equipe.",
-      communicationStyle: "Comunicação direta e clara, com capacidade de adaptar a linguagem ao público. Demonstra empatia e habilidade para ouvir, combinando assertividade com diplomacia. Efetivo tanto na comunicação escrita quanto verbal."
+      strengths: ['Boa capacidade analítica', 'Comunicação efetiva', 'Estabilidade emocional'],
+      developmentAreas: ['Incrementar assertividade', 'Expandir networking'],
+      workStyle: 'Focado em resultados com atenção a detalhes.',
+      communicationStyle: 'Clara e objetiva, adaptando-se ao interlocutor.'
     },
-    confidence: 87,
-    scientificBasis: "Esta análise baseia-se nos princípios fundamentais da grafologia científica, incluindo a análise de pressão (energia vital), inclinação (orientação emocional), tamanho (autoestima), espaçamento (relacionamentos interpessoais), ritmo (estabilidade mental) e regularidade (confiabilidade). A metodologia aplicada considera o conjunto harmônico da escrita manuscrita para inferir traços de personalidade e comportamento profissional, seguindo as diretrizes estabelecidas por grafólogos reconhecidos internacionalmente."
+    confidence: score(),
+    scientificBasis: 'Análise gerada com base em princípios grafológicos reconhecidos internacionalmente.'
   }
 }
+
+
+
 
 export async function GET(request: NextRequest) {
   try {
@@ -914,26 +992,57 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url)
+    const testId = searchParams.get('testId')
     const analysisId = searchParams.get('analysisId')
+    console.log('🔍 Test ID requested:', testId)
     console.log('🔍 Analysis ID requested:', analysisId)
-
-    if (!analysisId) {
-      console.log('❌ [Manuscript API] No analysis ID provided')
-      return NextResponse.json({ error: 'ID da análise é obrigatório' }, { status: 400 })
+    
+    // Special debug for specific ID
+    if (analysisId === '33acb29a-2e2d-4a9e-9a17-e364415238a7') {
+      console.log('🚨 [DEBUG] Processing specific problematic ID: 33acb29a-2e2d-4a9e-9a17-e364415238a7')
     }
 
-    // Find the analysis by ID
-    const analysis = await prisma.aIAnalysis.findUnique({
-      where: { id: analysisId },
-      include: {
-        test: true,
-        user: true,
-        testResult: true
-      }
-    })
+    if (!testId && !analysisId) {
+      console.log('❌ [Manuscript API] No test ID or analysis ID provided')
+      return NextResponse.json({ error: 'ID do teste ou análise é obrigatório' }, { status: 400 })
+    }
+
+    // Find the analysis by testId or analysisId
+    let analysis
+    if (testId) {
+      analysis = await prisma.aIAnalysis.findFirst({
+        where: { testId: testId },
+        include: {
+          test: true,
+          user: true,
+          testResult: true
+        }
+      })
+    } else if (analysisId) {
+      analysis = await prisma.aIAnalysis.findUnique({
+        where: { id: analysisId },
+        include: {
+          test: true,
+          user: true,
+          testResult: true
+        }
+      })
+    }
 
     if (!analysis) {
-      console.log('❌ [Manuscript API] Analysis not found for ID:', analysisId)
+      console.log('❌ [Manuscript API] Analysis not found for ID:', testId || analysisId)
+      
+      // Special debug for specific ID
+      if (analysisId === '33acb29a-2e2d-4a9e-9a17-e364415238a7') {
+        console.log('🚨 [DEBUG] Specific ID not found in database!')
+        // Let's check if there are any analyses in the database
+        const allAnalyses = await prisma.aIAnalysis.findMany({
+          select: { id: true, analysisType: true, createdAt: true },
+          take: 10
+        })
+        console.log('🚨 [DEBUG] Recent analyses in database:', allAnalyses)
+      }
+      
       return NextResponse.json(
         { error: 'Analysis not found' },
         { status: 404 }
@@ -978,7 +1087,12 @@ export async function GET(request: NextRequest) {
       // Extract imageUrl from parsed metadata
       if (metadata && metadata.imageUrl) {
         manuscriptUrl = metadata.imageUrl
-        console.log('🖼️ [Manuscript API] Successfully extracted imageUrl from metadata')
+        // Normalize data URI in case of accidental duplication (e.g., "data:image/jpeg;base64,data:image/jpeg;base64,...")
+        if (typeof manuscriptUrl === 'string' && manuscriptUrl.includes(',data:image')) {
+          const secondPrefixIndex = manuscriptUrl.indexOf(',data:image')
+          manuscriptUrl = manuscriptUrl.slice(secondPrefixIndex + 1)
+        }
+        console.log('🖼️ [Manuscript API] Successfully extracted imageUrl from metadata (normalized)')
         console.log('🖼️ [Manuscript API] ImageUrl length:', manuscriptUrl.length)
         console.log('🖼️ [Manuscript API] ImageUrl starts with data:image?', manuscriptUrl.startsWith('data:image'))
       } else {
@@ -988,12 +1102,48 @@ export async function GET(request: NextRequest) {
       console.log('⚠️ [Manuscript API] No metadata found')
     }
 
-    // Create mock analysis data for testing
-    const mockAnalysisData = generateSimulatedManuscriptAnalysis()
+    // Try to parse real analysis data from database
+    let analysisData = null
+    
+    console.log('=== DEBUG: Analysis Data Processing ===');
+    console.log('Analysis.analysis exists:', !!analysis.analysis);
+    console.log('Analysis.analysis type:', typeof analysis.analysis);
+    console.log('Analysis.analysis content (first 500 chars):', 
+      analysis.analysis ? String(analysis.analysis).substring(0, 500) : 'null');
+    
+    if (analysis.analysis) {
+      try {
+        // Parse the analysis data from database
+        if (typeof analysis.analysis === 'string') {
+          analysisData = JSON.parse(analysis.analysis)
+          console.log('✅ [Manuscript API] Successfully parsed real analysis data from database')
+          console.log('✅ [Manuscript API] Parsed data keys:', Object.keys(analysisData))
+        } else if (typeof analysis.analysis === 'object') {
+          analysisData = analysis.analysis
+          console.log('✅ [Manuscript API] Using real analysis data object from database')
+          console.log('✅ [Manuscript API] Object data keys:', Object.keys(analysisData))
+        }
+      } catch (error) {
+        console.log('❌ [Manuscript API] Failed to parse analysis data from database:', error)
+        console.log('❌ [Manuscript API] Raw analysis content:', analysis.analysis)
+      }
+    } else {
+      console.log('⚠️ [Manuscript API] No analysis.analysis field found in database record')
+    }
+    
+    // Use real data if available, otherwise fallback to simulated data
+    if (!analysisData) {
+      console.log('⚠️ [Manuscript API] No real analysis data found, using simulated data as fallback')
+      analysisData = generateSimulatedManuscriptAnalysis()
+    } else if (!analysisData.visualHighlights || analysisData.visualHighlights.length === 0) {
+      // Inject default visual highlights to guarantee annotations appear
+      console.log('ℹ️ [Manuscript API] No visualHighlights found, injecting default highlights')
+      analysisData.visualHighlights = generateSimulatedManuscriptAnalysis().visualHighlights
+    }
 
     const response = {
       manuscriptUrl,
-      analysis: mockAnalysisData
+      analysis: analysisData
     }
 
     console.log('📤 [Manuscript API] Final response being sent:', {

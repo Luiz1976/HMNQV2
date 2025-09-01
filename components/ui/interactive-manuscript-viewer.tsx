@@ -15,9 +15,18 @@ interface VisualHighlight {
   height: number
   type: 'pressure' | 'spacing' | 'inclination' | 'size' | 'margin' | 'rhythm'
   interpretation: string
-
+  // Optional richer shape support
+  shape?: 'rect' | 'circle' | 'underline' | 'arrow'
+  // Thickness for strokes like underline/arrow (pixels)
+  strokeWidth?: number
+  // Circle radius (if provided, overrides width/height to draw circle)
+  radius?: number
+  // Arrow specific coordinates within the bounding box (0-100 relative to the highlight box)
+  arrow?: { x1: number; y1: number; x2: number; y2: number }
   technicalDetails?: string
-}
+  // Texto extraído real do manuscrito
+  snippet?: string
+ }
 
 interface InteractiveManuscriptViewerProps {
   imageUrl: string
@@ -52,6 +61,26 @@ const highlightLabels = {
   rhythm: 'Ritmo'
 }
 
+// Hex colors to use with SVG strokes/fills
+const highlightHex: Record<keyof typeof highlightLabels, string> = {
+  pressure: '#ef4444', // red-500
+  spacing: '#3b82f6', // blue-500
+  inclination: '#22c55e', // green-500
+  size: '#eab308', // yellow-500
+  margin: '#a855f7', // purple-500
+  rhythm: '#f97316' // orange-500
+}
+
+// Utility to convert HEX to rgba string with given alpha
+function rgba(hex: string, alpha = 0.6) {
+  const m = hex.replace('#', '')
+  const bigint = parseInt(m, 16)
+  const r = (bigint >> 16) & 255
+  const g = (bigint >> 8) & 255
+  const b = bigint & 255
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`
+}
+
 export function InteractiveManuscriptViewer({ 
   imageUrl, 
   highlights, 
@@ -75,7 +104,84 @@ export function InteractiveManuscriptViewer({
     height: `${highlight.height}%`,
   })
 
-  
+  // Render inner content depending on shape
+  const renderShape = (highlight: VisualHighlight, index: number) => {
+    const type = highlight.type as keyof typeof highlightHex
+    const color = highlightHex[type]
+    const strokeW = highlight.strokeWidth ?? 4
+
+    switch (highlight.shape) {
+      case 'circle': {
+        // Use width/height or radius to define circle size
+        const dimension = highlight.radius ? `${highlight.radius}%` : undefined
+        return (
+          <div
+            className="absolute inset-0"
+            style={{
+              border: `2px solid ${color}`,
+              backgroundColor: rgba(color, 0.15),
+              borderRadius: '9999px',
+              width: dimension,
+              height: dimension,
+              // Center circle if radius provided
+              left: dimension ? `calc(50% - ${Number(highlight.radius)}%)` : undefined,
+              top: dimension ? `calc(50% - ${Number(highlight.radius)}%)` : undefined,
+            }}
+          />
+        )
+      }
+      case 'underline': {
+        return (
+          <div className="absolute inset-0">
+            <div
+              className="absolute left-0 right-0"
+              style={{
+                bottom: 0,
+                height: `${strokeW}px`,
+                backgroundColor: color,
+                boxShadow: `0 2px 8px ${rgba(color, 0.45)}`,
+                borderRadius: 2
+              }}
+            />
+          </div>
+        )
+      }
+      case 'arrow': {
+        const { x1, y1, x2, y2 } = highlight.arrow ?? { x1: 10, y1: 50, x2: 90, y2: 50 }
+        return (
+          <svg className="absolute inset-0" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <defs>
+              <marker id={`arrowhead-${index}`} markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <polygon points="0 0, 6 3, 0 6" fill={color} />
+              </marker>
+            </defs>
+            <line
+              x1={x1}
+              y1={y1}
+              x2={x2}
+              y2={y2}
+              stroke={color}
+              strokeWidth={strokeW}
+              markerEnd={`url(#arrowhead-${index})`}
+              opacity={0.9}
+            />
+          </svg>
+        )
+      }
+      // default rectangle (backward compatible)
+      default: {
+        return (
+          <div
+            className={cn(
+              'absolute inset-0 border-2 rounded-lg backdrop-blur-sm',
+              highlightColors[highlight.type]
+            )}
+            style={{ boxShadow: `0 0 0 2px ${rgba(color, 0.2)}` }}
+          />
+        )
+      }
+    }
+  }
 
   return (
     <div className={cn('space-y-4', className)}>
@@ -200,11 +306,11 @@ export function InteractiveManuscriptViewer({
                     <motion.div
                       key={index}
                       className={cn(
-                        'absolute border-2 rounded-lg cursor-pointer transition-all duration-300 backdrop-blur-sm',
-                        highlightColors[highlight.type],
-                        selectedHighlight === index 
-                          ? cn('border-4 z-20 ring-2 ring-white/50', highlightGlowColors[highlight.type])
-                          : 'hover:border-4 hover:shadow-lg hover:backdrop-blur-none'
+                        'absolute cursor-pointer transition-all duration-300',
+                        // Keep a minimal visual border only for rectangular-like shapes
+                        highlight.shape === 'rect' || !highlight.shape
+                          ? cn('border-2 rounded-lg backdrop-blur-sm', highlightColors[highlight.type])
+                          : ''
                       )}
                       style={getHighlightStyle(highlight)}
                       onClick={() => setSelectedHighlight(
@@ -238,6 +344,9 @@ export function InteractiveManuscriptViewer({
                       >
                         {index + 1}
                       </motion.div>
+
+                      {/* Shape content */}
+                      {renderShape(highlight, index)}
                       
                       {/* Efeito de pulso para destaque selecionado */}
                       {selectedHighlight === index && (

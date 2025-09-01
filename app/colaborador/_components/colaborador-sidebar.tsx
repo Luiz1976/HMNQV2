@@ -30,7 +30,7 @@ export function ColaboradorSidebar() {
 
   const menuItems = [
     {
-      name: 'Personalidade',
+      name: 'Teste de Perfil',
       href: '/colaborador/personalidade',
       icon: User,
       description: 'Testes de personalidade'
@@ -48,27 +48,27 @@ export function ColaboradorSidebar() {
       description: 'Avaliações de liderança e competências'
     },
     {
-      name: 'Grafologia',
+      name: 'Teste Grafológico',
       href: '/colaborador/grafologia',
       icon: FileText,
       description: 'Análise de personalidade através da escrita'
     },
     {
-      name: 'Resultados',
-      href: '/colaborador/resultados',
+      name: 'Meus Resultados',
+      href: '/resultados',
       icon: TrendingUp,
-      description: 'Resultados recentes dos testes realizados'
+      description: 'Visualize todos os seus resultados de testes'
     },
   ]
 
   const isActive = (href: string) => pathname === href
 
   const getUserType = () => {
-    return session?.user?.userType === 'EMPLOYEE' ? 'Colaborador' : 'Candidato'
+    return session?.user?.userType === 'CANDIDATE' ? 'Candidato' : 'Colaborador'
   }
 
   const getUserTypeColor = () => {
-    return session?.user?.userType === 'EMPLOYEE' ? 'text-purple-600' : 'text-blue-600'
+    return session?.user?.userType === 'CANDIDATE' ? 'text-blue-600' : 'text-purple-600'
   }
 
   return (

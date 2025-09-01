@@ -22,7 +22,7 @@ export const TEST_QUESTIONS_COUNT = {
   'eneagrama': 100, // HumaniQ Eneagrama - Tipos de Personalidade
   'mbti': 30, // HumaniQ TIPOS - Perfil Cognitivo (MBTI)
   'motivacao-profissional': 55, // HumaniQ MOTIVA - Perfil de Motivação (baseado no mock atual)
-  'adaptabilidade': 25, // HumaniQ FLEX - Avaliação de Adaptabilidade
+  // Removido: 'adaptabilidade': 25, // HumaniQ FLEX - Avaliação de Adaptabilidade
   'quociente-inteligencia': 60, // HumaniQ QI - Quociente de Inteligência
   'atencao-raciocinio': 40, // HumaniQ TAR - Teste de Atenção e Raciocínio
   '16-personalidades': 60, // HumaniQ 16P - 16 Tipos de Personalidade
@@ -57,7 +57,7 @@ export const TEST_QUESTIONS_COUNT = {
   'humaniq-valores': 50, // HumaniQ Valores - Mapa de Valores
   'humaniq-motiva': 55, // HumaniQ MOTIVA - Perfil de Motivação
   'humaniq-bolie': 70, // HumaniQ BOLIE - Inteligência Emocional
-  'humaniq-flex': 25, // HumaniQ FLEX - Avaliação de Adaptabilidade
+  // Removido: 'humaniq-flex': 25, // HumaniQ FLEX - Avaliação de Adaptabilidade
 } as const
 
 // Função helper para obter o número de questões de um teste
@@ -85,7 +85,7 @@ export const TEST_ID_TO_KEY_MAP = {
   'disc-comportamento': 'disc',
   'inteligencia-emocional': 'inteligencia-emocional',
   'eneagrama-personalidade': 'eneagrama',
-  'humaniq-enneagram-test': 'eneagrama', // HumaniQ Eneagrama - ID específico usado no frontend
+  'humaniq_eneagrama': 'eneagrama', // HumaniQ Eneagrama - ID específico usado no frontend
   'mbti-cognitivo': 'mbti',
   'motivacao-profissional': 'motivacao-profissional',
   'adaptabilidade-flex': 'adaptabilidade',

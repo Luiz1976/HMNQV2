@@ -7,8 +7,8 @@ generator client {
 }
 
 datasource db {
-    provider = "sqlite"
-    url      = "file:./dev.db"
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 // ===== AUTHENTICATION & USER MANAGEMENT =====
@@ -51,6 +51,10 @@ model User {
   answers       Answer[]
   testResults   TestResult[]
   aiAnalyses    AIAnalysis[]
+  
+  // LGPD Compliant Storage
+  humaniqResultados HumaniqResultados[]
+  humaniqAuditorias HumaniqAuditoria[]
   
   // NextAuth
   accounts      Account[]
@@ -575,4 +579,71 @@ enum TestSessionStatus {
   COMPLETED
   ABANDONED
   EXPIRED
+}
+
+// ===== LGPD COMPLIANT UNIQUE STORAGE SYSTEM =====
+
+model HumaniqResultados {
+  idResultado                String   @id @default(cuid()) @map("id_resultado")
+  idUsuario                  String   @map("id_usuario")
+  tipoTeste                  String   @map("tipo_teste")
+  respostasCriptografadas    String   @map("respostas_criptografadas")
+  resultadoFinalCriptografado String  @map("resultado_final_criptografado")
+  dataCriacao                DateTime @default(now()) @map("data_criacao")
+  ipOrigem                   String   @map("ip_origem")
+  dispositivo                String?
+  metadata                   String?
+  createdAt                  DateTime @default(now()) @map("created_at")
+  updatedAt                  DateTime @updatedAt @map("updated_at")
+  
+  // Relacionamentos
+  usuario                    User     @relation(fields: [idUsuario], references: [id], onDelete: Cascade)
+  auditorias                 HumaniqAuditoria[]
+  
+  @@map("humaniq_resultados")
+}
+
+model HumaniqAuditoria {
+  idEvento        String   @id @default(cuid()) @map("id_evento")
+  idUsuario       String   @map("id_usuario")
+  idResultado     String?  @map("id_resultado")
+  acao            String
+  dataEvento      DateTime @default(now()) @map("data_evento")
+  ipOrigem        String   @map("ip_origem")
+  dispositivo     String?
+  metadataEvento  String?  @map("metadata_evento")
+  nivelSeguranca  String   @default("NORMAL") @map("nivel_seguranca")
+  createdAt       DateTime @default(now()) @map("created_at")
+  
+  // Relacionamentos
+  usuario         User              @relation(fields: [idUsuario], references: [id], onDelete: Cascade)
+  resultado       HumaniqResultados? @relation(fields: [idResultado], references: [idResultado], onDelete: SetNull)
+  
+  @@map("humaniq_auditoria")
+}
+
+enum TipoTesteHumaniq {
+  DISC
+  BIG_FIVE
+  ENEAGRAMA
+  GRAFOLOGIA
+  CORPORATIVO
+}
+
+enum AcaoAuditoria {
+  ARMAZENAMENTO_RESULTADO
+  CONSULTA_RESULTADO
+  EXPORTACAO_DADOS
+  TENTATIVA_ACESSO_NAO_AUTORIZADO
+  LOGIN_USUARIO
+  LOGOUT_USUARIO
+  MODIFICACAO_DADOS
+  EXCLUSAO_DADOS
+}
+
+enum NivelSeguranca {
+  BAIXO
+  NORMAL
+  ALTO
+  CRITICO
 }

@@ -412,7 +412,7 @@ export default function ManuscritoIntroPage() {
                 <Button
                   onClick={handleGoBack}
                   variant="outline"
-                  className="border-gray-600 text-gray-300 hover:bg-gray-700/50 hover:text-white transition-all duration-500 transform hover:scale-105 hover:shadow-lg hover:shadow-gray-500/30 relative overflow-hidden group"
+                  className="border-white/80 text-white bg-gray-800/50 hover:bg-white hover:text-gray-900 hover:border-white transition-all duration-500 transform hover:scale-105 hover:shadow-lg hover:shadow-white/30 relative overflow-hidden group"
                 >
                   {/* Ripple effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-gray-400/20 to-gray-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

@@ -96,6 +96,18 @@ export async function GET(
 
     console.log(`[API /test-results/[id]] GET - Resultado encontrado: ${id}`)
 
+    // Importar dados dos subtipos se for teste do Eneagrama
+    let subtypeData = null
+    const metadata = testResult.metadata as any
+    if (testResult.test.testType === 'PERSONALITY' && metadata?.subtype) {
+      try {
+        const { getSubtypeByCode } = await import('@/data/enneagram-subtypes')
+        subtypeData = getSubtypeByCode(metadata.subtype.code)
+      } catch (error) {
+        console.log('Erro ao carregar dados do subtipo:', error)
+      }
+    }
+
     // Formatar resposta
     const response = {
       id: testResult.id,
@@ -132,6 +144,7 @@ export async function GET(
       interpretation: testResult.interpretation,
       recommendations: testResult.recommendations,
       metadata: testResult.metadata,
+      subtype: subtypeData, // Dados detalhados do subtipo
       createdAt: testResult.createdAt,
       updatedAt: testResult.updatedAt,
       aiAnalyses: includeAI ? testResult.aiAnalyses?.map(analysis => ({

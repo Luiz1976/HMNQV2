@@ -5,11 +5,19 @@ import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { FileText, PenTool, Upload, Brain, ArrowRight, CheckCircle, Clock, Users } from 'lucide-react'
+import { FileText, Upload, Brain, ArrowRight, CheckCircle, Clock, Users } from 'lucide-react'
 
 // Componente de Partículas Flutuantes
 const FloatingParticles = ({ count = 15, containerClass = '' }) => {
-  const [particles, setParticles] = useState([])
+  const [particles, setParticles] = useState<Array<{
+    id: number;
+    left: number;
+    animationDelay: number;
+    animationDuration: number;
+    size: number;
+    opacity: number;
+    horizontalMovement: number;
+  }>>([])
 
   useEffect(() => {
     const newParticles = Array.from({ length: count }, (_, i) => ({
@@ -78,10 +86,7 @@ export default function GrafologiaPage() {
     router.push('/colaborador/grafologia/manuscrito')
   }
 
-  const handleSignatureAnalysis = () => {
-    setIsLoading(true)
-    router.push('/colaborador/grafologia/assinatura')
-  }
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -108,8 +113,8 @@ export default function GrafologiaPage() {
           {/* Estatísticas */}
           <div className="grid grid-cols-3 gap-8 text-center">
             <div>
-              <div className="text-4xl font-bold mb-2">2</div>
-              <div className="text-gray-200 text-sm">Testes</div>
+              <div className="text-4xl font-bold mb-2">1</div>
+              <div className="text-gray-200 text-sm">Teste</div>
             </div>
             <div>
               <div className="text-4xl font-bold mb-2">10-15</div>
@@ -129,10 +134,10 @@ export default function GrafologiaPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Testes Disponíveis</h2>
           <p className="text-gray-600 mb-8">Escolha um teste para desenvolver suas competências de liderança</p>
 
-          {/* Cards Grid */}
-          <div className="grid md:grid-cols-2 gap-6">
+          {/* Card único centralizado */}
+          <div className="flex justify-center">
             {/* Análise de Manuscrito Card */}
-            <Card className="bg-gradient-to-br from-gray-700 to-gray-800 text-white border-0 hover:shadow-xl transition-all duration-300 relative overflow-hidden">
+            <Card className="bg-gradient-to-br from-gray-700 to-gray-800 text-white border-0 hover:shadow-xl transition-all duration-300 relative overflow-hidden max-w-md w-full">
               <FloatingParticles count={8} />
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between mb-4">
@@ -164,47 +169,6 @@ export default function GrafologiaPage() {
                 </div>
                 <Button 
                   onClick={handleManuscriptAnalysis}
-                  disabled={isLoading}
-                  className="w-full bg-white text-gray-700 hover:bg-gray-100 font-semibold py-2 rounded-lg transition-all duration-300"
-                >
-                  {isLoading ? 'Carregando...' : '▶ Iniciar Teste'}
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Análise de Assinatura Card */}
-            <Card className="bg-gradient-to-br from-gray-700 to-gray-800 text-white border-0 hover:shadow-xl transition-all duration-300 relative overflow-hidden">
-              <FloatingParticles count={8} />
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="bg-white/20 p-3 rounded-lg">
-                    <PenTool className="h-6 w-6 text-white" />
-                  </div>
-                  <span className="bg-white/20 text-white text-xs px-2 py-1 rounded-full">Disponível</span>
-                </div>
-                <CardTitle className="text-xl font-bold mb-2">
-                  Análise de Assinatura
-                </CardTitle>
-                <CardDescription className="text-gray-100 text-sm">
-                  Análise de liderança auditiva
-                </CardDescription>
-                <CardDescription className="text-gray-200 text-xs mt-2">
-                  Avaliação de liderança auditiva através da análise da assinatura pessoal
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between text-sm text-gray-200 mb-4">
-                  <div className="flex items-center">
-                    <PenTool className="h-4 w-4 mr-1" />
-                    <span>Assinatura</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Clock className="h-4 w-4 mr-1" />
-                    <span>5 min</span>
-                  </div>
-                </div>
-                <Button 
-                  onClick={handleSignatureAnalysis}
                   disabled={isLoading}
                   className="w-full bg-white text-gray-700 hover:bg-gray-100 font-semibold py-2 rounded-lg transition-all duration-300"
                 >

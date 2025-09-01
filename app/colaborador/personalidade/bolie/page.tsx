@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, ArrowRight, Clock, CheckCircle, Brain, Zap, Heart, Users, Award, Target } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Clock, CheckCircle, Brain, Zap, Heart, Users, Award, Target, Printer, Download } from 'lucide-react'
 import { LikertScale } from '@/components/ui/likert-scale'
 
 interface Question {
@@ -89,12 +89,14 @@ export default function HumaniqBOLIETest() {
   const progress = ((currentQuestion + 1) / questions.length) * 100
 
   useEffect(() => {
+    if (showResults) return // Don't start timer if showing results
+    
     const timer = setInterval(() => {
       setTimeElapsed(prev => prev + 1)
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [])
+  }, [showResults])
 
   useEffect(() => {
     // Finalizar automaticamente apenas quando a última pergunta for respondida
@@ -200,19 +202,65 @@ export default function HumaniqBOLIETest() {
   const getClassificationColor = (classification: string) => {
     switch (classification) {
       case "Inteligência emocional excepcional":
-        return "text-green-600 bg-green-50"
+        return "bg-green-600 text-white"
       case "Inteligência emocional desenvolvida":
-        return "text-blue-600 bg-blue-50"
+        return "bg-green-500 text-white"
       case "Inteligência emocional moderada":
-        return "text-yellow-600 bg-yellow-50"
+        return "bg-yellow-500 text-white"
       case "Inteligência emocional baixa":
-        return "text-orange-600 bg-orange-50"
-      case "Dificuldades emocionais severas":
-        return "text-red-600 bg-red-50"
+        return "bg-orange-500 text-white"
       default:
-        return "text-gray-600 bg-gray-50"
+        return "bg-red-500 text-white"
     }
   }
+
+  const handlePrint = () => {
+    window.print()
+  }
+
+  const handleDownload = async () => {
+    try {
+      // Importação dinâmica para evitar problemas de SSR
+      const { jsPDF } = await import('jspdf')
+      const html2canvas = (await import('html2canvas')).default
+
+      const element = document.getElementById('bolie-results')
+      if (!element) return
+
+      // Captura do conteúdo em canvas
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff'
+      })
+
+      const imgData = canvas.toDataURL('image/png')
+      const pdf = new jsPDF('p', 'mm', 'a4')
+      const pageWidth = pdf.internal.pageSize.getWidth()
+      const pageHeight = pdf.internal.pageSize.getHeight()
+      const imgWidth = pageWidth - 20 // margens de 10mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width
+
+      let heightLeft = imgHeight
+      let position = 10
+
+      pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight)
+      heightLeft -= pageHeight - 20
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight + 10
+        pdf.addPage()
+        pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight)
+        heightLeft -= pageHeight - 20
+      }
+
+      pdf.save('resultado-bolie.pdf')
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error)
+    }
+  }
+
+
 
   const getDimensionDescription = (dimension: string) => {
     const descriptions: Record<string, string> = {
@@ -230,6 +278,8 @@ export default function HumaniqBOLIETest() {
   }
 
   const getTestIcon = (test: string) => {
+    // Retorna ícones específicos para cada teste
+    
     switch (test) {
       case "TOHE": return Brain
       case "VE": return Zap
@@ -238,6 +288,33 @@ export default function HumaniqBOLIETest() {
       default: return Brain
     }
   }
+
+  const professionalInsights = useMemo(() => {
+    if (!results) return [] as string[]
+    const insights: string[] = []
+
+    // Insight geral
+    if (results.overallScore >= 4.5) {
+      insights.push("Excelente domínio da inteligência emocional, capaz de liderar e inspirar equipes em ambientes de alta pressão.")
+    } else if (results.overallScore >= 4) {
+      insights.push("Boa inteligência emocional, recomendável assumir responsabilidades que exijam empatia e tomada de decisão equilibrada.")
+    } else if (results.overallScore >= 3) {
+      insights.push("Inteligência emocional moderada; investir em programas de coaching pode alavancar ainda mais seu potencial.")
+    } else {
+      insights.push("Há oportunidades significativas de desenvolvimento emocional; considerar treinamentos específicos e mentoring.")
+    }
+
+    // Insights por dimensão
+    Object.entries(results.dimensionScores).forEach(([dimension, score]) => {
+      if (score < 3) {
+        insights.push(`${dimension}: pontuação abaixo da média, recomenda-se atenção especial para melhorar essa competência.`)
+      } else if (score > 4) {
+        insights.push(`${dimension}: excelente desempenho, continue fortalecendo essa habilidade.`)
+      }
+    })
+
+    return insights
+  }, [results])
 
   const completeTest = async (testResults: TestResults) => {
     setIsSubmitting(true)
@@ -250,7 +327,7 @@ export default function HumaniqBOLIETest() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          testId: 'bolie-test-id' // ID específico do teste BOLIE
+          testId: 'cmehdpsox000o8wc0yuai0swa' // ID específico do teste BOLIE
         })
       })
 
@@ -263,7 +340,7 @@ export default function HumaniqBOLIETest() {
 
       // 2. Preparar dados para submissão
       const submissionData = {
-        testId: 'bolie-test-id',
+        testId: 'cmehdpsox000o8wc0yuai0swa',
         sessionId: sessionId,
         answers: Object.entries(answers).map(([questionId, answer]) => {
           const question = questions.find(q => q.id === parseInt(questionId))
@@ -307,10 +384,17 @@ export default function HumaniqBOLIETest() {
       setResults(testResults)
       setShowResults(true)
       
-      // 5. Redirecionar para página de resultados após um delay
-      setTimeout(() => {
-        window.location.href = '/colaborador/resultados'
-      }, 3000)
+      // 5. Redirecionar para página individual do resultado após um delay
+      if (submitData.success && submitData.testResult?.id) {
+        setTimeout(() => {
+          router.push(`/colaborador/personalidade/bolie/${submitData.testResult.id}?saved=1`)
+        }, 3000)
+      } else {
+        // Fallback para página de resultados se não conseguir o ID
+        setTimeout(() => {
+          router.push('/colaborador/resultados')
+        }, 3000)
+      }
       
     } catch (error) {
       console.error('Erro ao completar teste:', error)
@@ -327,7 +411,7 @@ export default function HumaniqBOLIETest() {
     
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-4">
-        <div className="max-w-6xl mx-auto">
+        <div id="bolie-results" className="max-w-6xl mx-auto">
           <div className="mb-6">
             <Button
               variant="ghost"
@@ -458,6 +542,23 @@ export default function HumaniqBOLIETest() {
             </CardContent>
           </Card>
 
+          {/* Análise Profissional Detalhada */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="w-5 h-5 text-purple-600" />
+                Análise Profissional Detalhada
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="list-disc pl-5 space-y-2 text-gray-700">
+                {professionalInsights.map((insight, idx) => (
+                  <li key={idx}>{insight}</li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
           {/* Informações Importantes */}
           <Card className="mb-6">
             <CardHeader>
@@ -474,7 +575,25 @@ export default function HumaniqBOLIETest() {
             </CardContent>
           </Card>
 
-          <div className="flex gap-4 justify-center">
+          <div className="flex flex-wrap gap-4 justify-center">
+            <Button
+              onClick={handlePrint}
+              size="lg"
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <Printer className="w-4 h-4 mr-2" />
+              Imprimir
+            </Button>
+
+            <Button
+              onClick={handleDownload}
+              size="lg"
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Baixar PDF
+            </Button>
+
             <Button
               variant="outline"
               onClick={() => router.push('/colaborador/personalidade')}
@@ -562,18 +681,18 @@ export default function HumaniqBOLIETest() {
                   <button
                     key={value}
                     onClick={() => handleAnswer(value)}
-                    className={`w-16 h-16 border-2 font-bold text-lg transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg ${
+                    className={`w-16 h-16 font-bold text-lg transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg rounded-2xl ${
                       answers[questions[currentQuestion].id] === value
-                        ? value === 1 ? 'bg-red-500 border-red-600 text-white shadow-xl scale-110 ring-2 ring-red-300 animate-pulse'
-                        : value === 2 ? 'bg-orange-400 border-orange-500 text-white shadow-xl scale-110 ring-2 ring-orange-300 animate-pulse'
-                        : value === 3 ? 'bg-yellow-400 border-yellow-500 text-white shadow-xl scale-110 ring-2 ring-yellow-300 animate-pulse'
-                        : value === 4 ? 'bg-lime-400 border-lime-500 text-white shadow-xl scale-110 ring-2 ring-lime-300 animate-pulse'
-                        : 'bg-green-500 border-green-600 text-white shadow-xl scale-110 ring-2 ring-green-300 animate-pulse'
-                        : value === 1 ? 'bg-red-100 border-red-400 text-red-800 hover:bg-red-200 hover:border-red-500 hover:shadow-lg'
-                        : value === 2 ? 'bg-orange-100 border-orange-400 text-orange-800 hover:bg-orange-200 hover:border-orange-500 hover:shadow-lg'
-                        : value === 3 ? 'bg-yellow-100 border-yellow-400 text-yellow-800 hover:bg-yellow-200 hover:border-yellow-500 hover:shadow-lg'
-                        : value === 4 ? 'bg-lime-100 border-lime-400 text-lime-800 hover:bg-lime-200 hover:border-lime-500 hover:shadow-lg'
-                        : 'bg-green-100 border-green-400 text-green-800 hover:bg-green-200 hover:border-green-500 hover:shadow-lg'
+                        ? value === 1 ? 'bg-red-500 text-white shadow-xl scale-110 ring-2 ring-red-300 animate-pulse'
+                        : value === 2 ? 'bg-orange-400 text-white shadow-xl scale-110 ring-2 ring-orange-300 animate-pulse'
+                        : value === 3 ? 'bg-yellow-400 text-white shadow-xl scale-110 ring-2 ring-yellow-300 animate-pulse'
+                        : value === 4 ? 'bg-lime-400 text-white shadow-xl scale-110 ring-2 ring-lime-300 animate-pulse'
+                        : 'bg-green-500 text-white shadow-xl scale-110 ring-2 ring-green-300 animate-pulse'
+                        : value === 1 ? 'bg-red-100 text-red-800 hover:bg-red-200 hover:shadow-lg'
+                        : value === 2 ? 'bg-orange-100 text-orange-800 hover:bg-orange-200 hover:shadow-lg'
+                        : value === 3 ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200 hover:shadow-lg'
+                        : value === 4 ? 'bg-lime-100 text-lime-800 hover:bg-lime-200 hover:shadow-lg'
+                        : 'bg-green-100 text-green-800 hover:bg-green-200 hover:shadow-lg'
                     }`}
                   >
                     {value}

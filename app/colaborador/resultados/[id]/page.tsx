@@ -1,13 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+
 import { Progress } from '@/components/ui/progress'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { InteractiveManuscriptViewer } from '@/components/ui/interactive-manuscript-viewer'
@@ -51,7 +51,8 @@ interface VisualHighlight {
   height: number
   type: 'pressure' | 'spacing' | 'inclination' | 'size' | 'margin' | 'rhythm'
   interpretation: string
-
+  snippet?: string
+ 
   technicalDetails?: string
 }
 
@@ -151,6 +152,8 @@ interface TestResult {
 export default function ResultDetailPage() {
   const params = useParams()
   const resultId = params.id as string
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [result, setResult] = useState<TestResult | null>(null)
   const [loading, setLoading] = useState(true)
   const [loadingReport, setLoadingReport] = useState(false)
@@ -167,16 +170,38 @@ export default function ResultDetailPage() {
     }
   }, [resultId])
 
+  // Toast de sucesso quando saved=1 na query e limpeza da URL
+  useEffect(() => {
+    const saved = searchParams.get('saved')
+    if (saved === '1') {
+      toast.success('Resultado salvo com sucesso!')
+      const params = new URLSearchParams(searchParams.toString())
+      params.delete('saved')
+      const qs = params.toString()
+      router.replace(`${window.location.pathname}${qs ? `?${qs}` : ''}`, { scroll: false })
+    }
+  }, [searchParams, router])
+
   const loadResult = async () => {
     try {
+      console.log('🔍 [DEBUG] Frontend - Iniciando carregamento do resultado')
+      console.log('🔍 [DEBUG] Frontend - Result ID:', resultId)
+      
       setLoading(true)
       const response = await fetch(`/api/colaborador/resultados/${resultId}`)
       
+      console.log('🔍 [DEBUG] Frontend - Response status:', response.status)
+      console.log('🔍 [DEBUG] Frontend - Response ok:', response.ok)
+      
       if (!response.ok) {
+        const errorText = await response.text()
+        console.log('❌ [DEBUG] Frontend - Error response:', errorText)
         throw new Error('Erro ao carregar resultado')
       }
 
       const data = await response.json()
+      console.log('🔍 [DEBUG] Frontend - Data received:', data ? 'SIM' : 'NÃO')
+      console.log('🔍 [DEBUG] Frontend - Test name:', data?.test?.name)
       setResult(data)
       
       if (data.aiAnalysis?.professionalReport) {
@@ -191,9 +216,14 @@ export default function ResultDetailPage() {
         setManuscriptData(data.manuscriptData)
       }
     } catch (error) {
-      console.error('Erro ao carregar resultado:', error)
+      console.error('❌ [DEBUG] Frontend - Erro ao carregar resultado:', error)
+      console.log('❌ [DEBUG] Frontend - Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      })
       toast.error('Erro ao carregar resultado')
     } finally {
+      console.log('🔍 [DEBUG] Frontend - Finalizando carregamento, setLoading(false)')
       setLoading(false)
     }
   }
@@ -243,44 +273,59 @@ export default function ResultDetailPage() {
     }
   }
 
+  const getBase64FromUrl = async (url: string): Promise<string> => {
+    const response = await fetch(url)
+    const blob = await response.blob()
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        const base64String = (reader.result as string).split(',')[1]
+        resolve(base64String)
+      }
+      reader.onerror = reject
+      reader.readAsDataURL(blob)
+    })
+  }
+
   const generateGraphologyAnalysis = async () => {
-    console.log(`Botão 'Gerar Análise Grafológica' clicado. Iniciando análise para o resultId: ${resultId}`);
-    if (!resultId) {
-      toast.error('ID do resultado não encontrado');
-      return;
+    if (!resultId || !result || !manuscriptData) {
+      toast.error('Dados insuficientes para gerar análise grafológica')
+      return
     }
 
     try {
-      setLoadingGraphologyAnalysis(true);
-      const response = await fetch('/api/ai/analyze', {
+      setLoadingGraphologyAnalysis(true)
+
+      const imageBase64 = await getBase64FromUrl(manuscriptData.imageUrl)
+
+      const response = await fetch('/api/ai/graphology-analysis', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          resultId: resultId,
-        }),
-      });
+          imageBase64,
+          testId: result.test.id,
+          manuscriptType: manuscriptData.manuscriptType
+        })
+      })
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: 'Erro desconhecido' }));
-        throw new Error(errorData.message || 'Falha ao gerar análise grafológica');
+        const errorData = await response.json().catch(() => ({ message: 'Erro desconhecido' }))
+        throw new Error(errorData.error || errorData.message || 'Falha ao gerar análise grafológica')
       }
 
-      const data = await response.json();
-      
-      toast.success('Análise grafológica gerada e salva com sucesso!');
-      
-      // Recarrega os dados da página para exibir a análise salva
-      await loadResult();
+      const data = await response.json()
+      setGraphologyAnalysis(data)
+      toast.success('Análise grafológica gerada com sucesso!')
 
     } catch (error: any) {
-      console.error('Erro ao gerar análise grafológica:', error);
-      toast.error(error.message || 'Ocorreu um erro ao gerar a análise.');
+      console.error('Erro ao gerar análise grafológica:', error)
+      toast.error(error.message || 'Ocorreu um erro ao gerar a análise.')
     } finally {
-      setLoadingGraphologyAnalysis(false);
+      setLoadingGraphologyAnalysis(false)
     }
-  };
+  }
 
   const downloadReport = async (format: 'md' | 'pdf' = 'pdf') => {
     try {
@@ -394,7 +439,7 @@ export default function ResultDetailPage() {
   }
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto p-6">
+    <div className="space-y-6 max-w-6xl mx-auto p-6 scroll-smooth">
       {/* Header */}
       <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl p-6 text-white">
         <div className="flex items-start justify-between">
@@ -441,7 +486,6 @@ export default function ResultDetailPage() {
             
             {result.test.testType === 'GRAPHOLOGY' && (
               <ReportActions
-                testId={result.id}
                 userName={`${result.user.firstName} ${result.user.lastName}`}
                 testDate={new Date(result.completedAt).toLocaleDateString('pt-BR')}
               />
@@ -458,18 +502,19 @@ export default function ResultDetailPage() {
         </div>
       </div>
 
-      <Tabs defaultValue="overview" className="w-full">
-        <TabsList className={`grid w-full ${result.test.testType === 'GRAPHOLOGY' ? 'grid-cols-4' : 'grid-cols-3'}`}>
-          <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-          {result.test.testType === 'GRAPHOLOGY' && (
-            <TabsTrigger value="manuscript">Manuscrito</TabsTrigger>
-          )}
-          <TabsTrigger value="behavioral">Comportamental</TabsTrigger>
-          <TabsTrigger value="details">Detalhes</TabsTrigger>
-          <TabsTrigger value="report">Relatório</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-6">
+      <div className="w-full space-y-10">
+        <div className="overflow-x-auto py-4">
+          <nav className="flex space-x-4">
+            <a href="#overview" className="px-3 py-2 rounded-md text-sm font-medium bg-gray-100 hover:bg-gray-200">Visão Geral</a>
+            {result.test.testType === 'GRAPHOLOGY' && (
+              <a href="#manuscript" className="px-3 py-2 rounded-md text-sm font-medium bg-gray-100 hover:bg-gray-200">Manuscrito</a>
+            )}
+            <a href="#behavioral" className="px-3 py-2 rounded-md text-sm font-medium bg-gray-100 hover:bg-gray-200">Comportamental</a>
+            <a href="#details" className="px-3 py-2 rounded-md text-sm font-medium bg-gray-100 hover:bg-gray-200">Detalhes</a>
+            <a href="#report" className="px-3 py-2 rounded-md text-sm font-medium bg-gray-100 hover:bg-gray-200">Relatório</a>
+          </nav>
+        </div>
+        <section id="overview" className="space-y-6">
           {result.overallScore !== null && (
             <Card>
               <CardHeader>
@@ -546,7 +591,7 @@ export default function ResultDetailPage() {
             </CardContent>
           </Card>
 
-          {Object.keys(result.dimensionScores).length > 0 && (
+          {result.dimensionScores && Object.keys(result.dimensionScores).length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
@@ -555,7 +600,7 @@ export default function ResultDetailPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {Object.entries(result.dimensionScores).map(([dimension, score]) => {
+                {result.dimensionScores && Object.entries(result.dimensionScores).map(([dimension, score]) => {
                   // Verificar se score é um número ou um objeto aninhado
                   if (typeof score === 'object' && score !== null) {
                     // Para testes como HumaniQ TIPOS que têm estrutura aninhada
@@ -594,10 +639,10 @@ export default function ResultDetailPage() {
               </CardContent>
             </Card>
           )}
-        </TabsContent>
+        </section>
 
         {result.test.testType === 'GRAPHOLOGY' && (
-          <TabsContent value="manuscript" className="space-y-6">
+          <section id="manuscript" className="space-y-6">
             {manuscriptData ? (
               <Card>
                 <CardHeader>
@@ -647,10 +692,10 @@ export default function ResultDetailPage() {
                 </CardContent>
               </Card>
             )}
-          </TabsContent>
+          </section>
         )}
 
-        <TabsContent value="behavioral" className="space-y-6">
+        <section id="behavioral" className="space-y-6">
           {graphologyAnalysis ? (
             <AdvancedBehavioralAnalysis
               analysis={{
@@ -704,11 +749,11 @@ export default function ResultDetailPage() {
               </CardContent>
             </Card>
           )}
-        </TabsContent>
+        </section>
 
 
 
-        <TabsContent value="details" className="space-y-6">
+        <section id="details" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -737,9 +782,9 @@ export default function ResultDetailPage() {
               ))}
             </CardContent>
           </Card>
-        </TabsContent>
+        </section>
 
-        <TabsContent value="report" className="space-y-6">
+        <section id="report" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -794,8 +839,8 @@ export default function ResultDetailPage() {
               </CardContent>
             </Card>
           )}
-        </TabsContent>
-      </Tabs>
+        </section>
+      </div>
 
       {/* Share Dialog */}
       <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>

@@ -71,7 +71,9 @@ export default function ClimaOrganizacionalResult() {
   }
 
   const handleDownload = () => {
-    toast.success('Relatório será enviado por email em breve')
+    if (typeof window !== 'undefined') {
+      window.print()
+    }
   }
 
   const handleShare = () => {

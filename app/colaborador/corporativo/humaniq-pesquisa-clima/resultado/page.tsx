@@ -152,8 +152,9 @@ export default function ResultadoPage() {
   };
 
   const handleBaixarRelatorio = () => {
-    // Implementar download do relatório
-    alert('Funcionalidade de download será implementada em breve!');
+    if (typeof window !== 'undefined') {
+      window.print();
+    }
   };
 
   if (loading) {

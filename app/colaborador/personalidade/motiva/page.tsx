@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, CheckCircle, Brain, Target, Users, Heart, Zap, AlertTriangle, Clock, Play, Trophy, TrendingUp, TrendingDown } from 'lucide-react'
+import { ArrowLeft, CheckCircle, Brain, Target, Users, Heart, Zap, AlertTriangle, Clock, Play, Trophy, TrendingUp, TrendingDown, Info } from 'lucide-react'
 import { LikertScale } from '@/components/ui/likert-scale'
 
 interface Question {
@@ -105,6 +105,41 @@ const dimensionDescriptions = {
   relacionamentos: 'Valorização de conexões sociais e ambiente colaborativo',
   desafios: 'Busca por inovação, complexidade e superação de limites'
 }
+
+const detailedInsights = {
+  autonomia: {
+    high: 'Você valoriza profundamente a liberdade e a independência no trabalho. Buscar projetos em que possa tomar decisões e definir seu próprio ritmo tende a aumentar ainda mais seu engajamento.',
+    low: 'Talvez você se sinta mais confortável com orientações claras e supervisão próxima. Estruturar rotinas mais definidas pode ajudar a manter a produtividade.'
+  },
+  reconhecimento: {
+    high: 'Feedbacks positivos e reconhecimento público são grandes propulsores da sua motivação. Procure contextos onde seu esforço seja visto e celebrado.',
+    low: 'Você não depende tanto de elogios frequentes para manter o desempenho, mas destacar conquistas pontuais pode reforçar seu senso de valor.'
+  },
+  crescimento: {
+    high: 'Aprendizado contínuo e desafios intelectuais são essenciais para você. Busque cursos, mentorias e projetos que ampliem seu repertório.',
+    low: 'Talvez esteja satisfeito com seu conjunto atual de habilidades. Estabelecer metas de desenvolvimento específicas pode reacender a curiosidade.'
+  },
+  seguranca: {
+    high: 'Estabilidade e previsibilidade geram o ambiente perfeito para sua alta performance. Planos de carreira claros e contratos longos lhe trazem tranquilidade.',
+    low: 'Mudanças e ambientes dinâmicos não lhe assustam tanto. Ainda assim, garantir alguns pontos de estabilidade pode evitar stress desnecessário.'
+  },
+  proposito: {
+    high: 'Contribuir para um impacto social maior dá sentido ao seu trabalho. Engajar-se em missões alinhadas aos seus valores torna-se imprescindível.',
+    low: 'Você pode focar mais em resultados práticos do que em propósito. Identificar pequenas conexões de impacto pode aumentar satisfação.'
+  },
+  recompensa: {
+    high: 'Reconhecimento financeiro e benefícios tangíveis impulsionam sua dedicação. Negociar pacotes competitivos reforça seu compromisso.',
+    low: 'Recompensas monetárias não são seu principal combustível. Ainda assim, revisar periodicamente seu pacote pode evitar insatisfações futuras.'
+  },
+  relacionamentos: {
+    high: 'Relacionamentos saudáveis e colaboração são centrais para você. Atividades de equipe e cultura aberta elevarão seu desempenho.',
+    low: 'Você é capaz de trabalhar bem de forma independente. Porém, construir pontes estratégicas fortalece resultados coletivos.'
+  },
+  desafios: {
+    high: 'Desafios complexos e inovação constante mantêm sua energia em alta. Procure papéis com autonomia para experimentar.',
+    low: 'Processos estruturados e previsíveis trazem conforto. Introduzir melhorias incrementais pode adicionar variedade sem causar desconforto.'
+  }
+};
 
 const dimensionColors = {
   autonomia: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-600', progress: 'bg-blue-500' },
@@ -267,7 +302,7 @@ export default function HumaniqMotivaPage() {
 
   if (showResults && results) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 p-4">
+      <div id="motiva-results" className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 p-4">
         <div className="max-w-6xl mx-auto">
           {/* Header dos Resultados */}
           <div className="text-center mb-8">
@@ -369,8 +404,8 @@ export default function HumaniqMotivaPage() {
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-3">
                       <div 
-                        className="h-3 rounded-full transition-all duration-1000 ease-out"
-                        style={{ width: `${score}%`, backgroundColor: colors.progress }}
+                        className={`h-3 rounded-full transition-all duration-1000 ease-out ${colors.progress}`}
+                        style={{ width: `${score}%` }}
                       ></div>
                     </div>
                   </CardContent>
@@ -378,6 +413,55 @@ export default function HumaniqMotivaPage() {
               )
             })}
           </div>
+
+          {/* Descritivo do Perfil Motivacional */}
+          {(() => {
+            const profile = getMotivationalProfile(results);
+            return (
+              <Card className="mb-8 p-6 bg-white/90 border">
+                <CardContent>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <Info className="w-5 h-5 text-green-600" />
+                    Visão Geral do Seu Perfil
+                  </h3>
+                  <p className="text-gray-700 text-sm leading-relaxed">
+                    Seu perfil indica que seus principais motivadores são <strong>{profile.topMotivators.map(m => m.name).join(', ')}</strong>. Por outro lado, os motivadores menos ativos são <strong>{profile.leastActive.map(m => m.name).join(', ')}</strong>. Considere focar em oportunidades que valorizem seus motivadores principais e em estratégias para desenvolver aqueles menos ativos.
+                  </p>
+                </CardContent>
+              </Card>
+            );
+          })()}
+
+          {/* Insights Detalhados */}
+          {(() => {
+            const profile = getMotivationalProfile(results);
+            const renderInsight = (item: {dimension: keyof Results; name: string; score: number}) => {
+              const interpretation = getScoreInterpretation(item.score);
+              const level = item.score >= 50 ? 'high' : 'low';
+              const text = detailedInsights[item.dimension][level];
+              return (
+                <div key={item.dimension} className="mb-6">
+                  <h4 className="font-semibold text-gray-800 flex items-center gap-2">
+                    <span className={`px-2 py-1 rounded border text-xs ${interpretation.color}`}>{interpretation.label}</span>
+                    {item.name} ({item.score}%)
+                  </h4>
+                  <p className="text-gray-700 text-sm leading-relaxed mt-1">{text}</p>
+                </div>
+              );
+            };
+            return (
+              <Card className="mb-8 p-6 bg-white/90 border">
+                <CardContent>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <Info className="w-5 h-5 text-indigo-600" />
+                    Insights Detalhados
+                  </h3>
+                  {profile.topMotivators.map(renderInsight)}
+                  {profile.leastActive.map(renderInsight)}
+                </CardContent>
+              </Card>
+            );
+          })()}
 
           {/* Botões de Ação */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

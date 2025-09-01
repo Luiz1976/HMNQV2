@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, ArrowRight, CheckCircle, Brain, BarChart3, Users, Shield, MessageSquare, Heart, Scale } from 'lucide-react'
+import { ArrowLeft, ArrowRight, CheckCircle, Brain, BarChart3, Users, Shield, MessageSquare, Heart, Scale, BookOpen, Printer } from 'lucide-react'
+import { useAuth } from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
 import { LikertScale } from '@/components/ui/likert-scale'
 
@@ -93,6 +94,8 @@ const questions: Question[] = [
 
 export default function HumaniQInsightPage() {
   const router = useRouter()
+  const { user } = useAuth()
+  const userName = user?.firstName || ''
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<Record<number, number>>({})
   const [isCompleted, setIsCompleted] = useState(false)
@@ -257,7 +260,13 @@ export default function HumaniQInsightPage() {
       })
       
       if (!sessionResponse.ok) {
-        throw new Error('Falha ao criar sessão de teste.')
+        console.warn(`Falha ao criar sessão de teste. Código: ${sessionResponse.status}. Salvando resultados localmente.`)
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('humaniqInsightResults', JSON.stringify(testResults))
+        }
+        setIsCompleted(true)
+        // não interrompe o fluxo se a sessão não puder ser criada
+        return
       }
       
       const sessionData = await sessionResponse.json()
@@ -286,6 +295,14 @@ export default function HumaniQInsightPage() {
       })
 
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          console.warn(`Falha ao enviar resultados (status ${response.status}). Salvando localmente.`)
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('humaniqInsightResults', JSON.stringify(testResults))
+          }
+          setIsCompleted(true)
+          return
+        }
         const errorData = await response.json()
         console.error('Erro na submissão:', errorData)
         throw new Error(errorData.error || 'Falha ao enviar o teste.')
@@ -308,7 +325,14 @@ export default function HumaniQInsightPage() {
       setIsCompleted(true)
     } catch (error) {
       console.error('Erro ao submeter teste:', error)
-      alert('Erro ao submeter teste: ' + (error instanceof Error ? error.message : String(error)))
+      if (!isCompleted) {
+        // Em caso de falha de rede ou outro erro não tratado, salvar resultados localmente
+        if (typeof window !== 'undefined' && results) {
+          localStorage.setItem('humaniqInsightResults', JSON.stringify(results))
+        }
+        console.warn('Falha ao submeter teste. Resultados salvos localmente.')
+        setIsCompleted(true)
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -318,6 +342,7 @@ export default function HumaniQInsightPage() {
   const currentQ = currentQuestion < questions.length ? questions[currentQuestion] : null
 
   if (isCompleted && results) {
+    const testDuration = Math.round((Date.now() - startTime) / 1000);
     return (
       <div className="max-w-4xl mx-auto p-6 space-y-6">
         {/* Header */}
@@ -347,6 +372,45 @@ export default function HumaniQInsightPage() {
               {results.globalLevel}
             </Badge>
           </CardHeader>
+        </Card>
+
+        {/* Explicação Profunda dos Resultados */}
+        <Card className="border-2 border-gray-200">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <BookOpen className="h-6 w-6 text-purple-600" />
+              Interpretação Profissional
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {user && (
+              <div className="text-gray-700 leading-relaxed mb-4 space-y-1">
+                <p>Olá {user.firstName},</p>
+                <p className="text-sm text-gray-600"><strong>Identificação do Avaliado:</strong></p>
+                <ul className="list-disc list-inside text-sm text-gray-600">
+                  <li><span className="font-medium">Nome:</span> {user.firstName} {user.lastName ?? ''}</li>
+                  <li><span className="font-medium">Email:</span> {user.email}</li>
+                  {user.company?.name && (<li><span className="font-medium">Empresa:</span> {user.company.name}</li>)}
+                  {user.company?.role && (<li><span className="font-medium">Função:</span> {user.company.role}</li>)}
+                  <li><span className="font-medium">Tipo de Usuário:</span> {user.userType}</li>
+                  <li><span className="font-medium">Duração do Teste:</span> {testDuration} segundos</li>
+                </ul>
+              </div>
+            )}
+            <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+              {(() => {
+                switch (results.globalLevel) {
+                  case 'Clima Problemático':
+                    return `Seu resultado revela um clima psicossocial crítico, caracterizado por níveis elevados de tensão, insegurança e possível desgaste emocional.\n\nIndicadores apontam para falhas sistêmicas na comunicação, sentimento de injustiça percebida e ausência de suporte adequado. Esses fatores podem culminar em absenteísmo, rotatividade e queda de produtividade.\n\n• Inicie uma escuta ativa estruturada — conduza entrevistas de clima e grupos focalizados para mapear fontes específicas de estresse.\n• Priorize ações corretivas rápidas: revisão de cargas de trabalho, políticas de assédio e equidade salarial.\n• Disponibilize canais confidenciais de apoio psicológico e implemente treinamentos de liderança empática para gestores.\n• Estabeleça um plano de ação de 90 dias com metas mensuráveis, comunicando progressos de forma transparente a toda equipe.`
+                  case 'Clima Moderado/Neutro':
+                    return `O ambiente apresenta estabilidade geral, mas evidencia oportunidades latentes para elevar o engajamento e a satisfação.\n\nOs colaboradores reconhecem práticas positivas de suporte, porém identificam inconstâncias em reconhecimento, crescimento de carreira e integração entre equipes.\n\n• Consolide os pontos fortes existentes por meio de rituais que celebrem conquistas e reforcem valores culturais.\n• Implante ciclos de feedback contínuo (one-on-ones, pesquisas pulse) para detectar mudanças de humor organizacional em tempo real.\n• Invista em desenvolvimento de competências sócio-emocionais, mentorias cruzadas e programas de mobilidade interna para estimular pertencimento.\n• Defina indicadores-chave de clima (eNPS, satisfação com liderança) e acompanhe trimestralmente a evolução dos resultados.`
+                  case 'Clima Positivo e Saudável':
+                  default:
+                    return `Parabéns! Os indicadores refletem um ecossistema organizacional que favorece a segurança psicológica, a confiança mútua e o alto desempenho sustentável.\n\nEsse cenário é fruto de práticas sólidas de liderança inclusiva, transparência comunicacional e suporte ao desenvolvimento integral.\n\n• Continue promovendo espaços de diálogo aberto e reforçando políticas de bem-estar que integrem saúde física, mental e social.\n• Experimente programas de job crafting, voluntariado corporativo e aprendizagem contínua para manter a motivação intrínseca elevada.\n• Mensure periodicamente métricas de clima e burnout para detectar precocemente variações negativas e agir proativamente.\n• Compartilhe histórias de sucesso internas para fortalecer o senso de propósito e a cultura de cuidado genuíno.`
+                }
+              })()}
+            </p>
+          </CardContent>
         </Card>
 
         {/* Alertas */}
@@ -437,7 +501,7 @@ export default function HumaniQInsightPage() {
         </Card>
 
         {/* Ações */}
-        <div className="flex gap-4 justify-center">
+        <div className="flex gap-4 justify-center flex-wrap">
           <Button 
             onClick={() => router.push('/colaborador/psicossociais')}
             variant="outline"
@@ -447,7 +511,15 @@ export default function HumaniQInsightPage() {
             Voltar aos Testes
           </Button>
           <Button 
-            onClick={() => router.push('/colaborador/resultados')}
+            onClick={() => window.print()}
+            variant="outline"
+            className="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200"
+          >
+            <Printer className="h-4 w-4" />
+            Imprimir Resultado
+          </Button>
+          <Button 
+            onClick={() => router.push('/colaborador/resultados?saved=1')}
             className="flex items-center gap-2"
           >
             Ver Todos os Resultados

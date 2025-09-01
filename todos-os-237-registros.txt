@@ -1,0 +1,2482 @@
+
+=== LISTAGEM COMPLETA DOS 237 REGISTROS DO BANCO DE DADOS ===
+
+
+📊 RESULTADOS DE TESTES (TestResult) - 33 registros
+
+================================================================================
+1. ID: cmeuqe8tb00038wuc6wja1lc4
+   Teste: HumaniQ BOLIE – Inteligência Emocional ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 27/08/2025, 22:34:42
+   Criado em: 27/08/2025, 22:34:42
+   Score: N/A
+------------------------------------------------------------
+2. ID: cmeunue50000b8w042nd4m0rq
+   Teste: HumaniQ BOLIE – Inteligência Emocional ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 27/08/2025, 21:23:17
+   Criado em: 27/08/2025, 21:23:17
+   Score: N/A
+------------------------------------------------------------
+3. ID: cmeunk12a00078w04ac0qnz3c
+   Teste: HumaniQ BOLIE – Inteligência Emocional ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 27/08/2025, 21:15:13
+   Criado em: 27/08/2025, 21:15:13
+   Score: N/A
+------------------------------------------------------------
+4. ID: cmeuncruk00038w04ok1l2kod
+   Teste: HumaniQ BOLIE – Inteligência Emocional ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 27/08/2025, 21:09:35
+   Criado em: 27/08/2025, 21:09:35
+   Score: N/A
+------------------------------------------------------------
+5. ID: cmeukc5oi001a8wk8fxahcasj
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 27/08/2025, 19:45:07
+   Criado em: 27/08/2025, 19:45:07
+   Score: N/A
+------------------------------------------------------------
+6. ID: cmeu0w1hx00058wwciz3ficq1
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 27/08/2025, 10:40:43
+   Criado em: 27/08/2025, 10:40:43
+   Score: N/A
+------------------------------------------------------------
+7. ID: cmet5gamj000r8ww4zpd9d5eb
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 26/08/2025, 20:00:40
+   Criado em: 26/08/2025, 20:00:40
+   Score: N/A
+------------------------------------------------------------
+8. ID: cmet40fxw000h8ww4isa5uvab
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 26/08/2025, 19:20:21
+   Criado em: 26/08/2025, 19:20:21
+   Score: N/A
+------------------------------------------------------------
+9. ID: cmesy954s00058wq40smkhvgl
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 26/08/2025, 16:39:09
+   Criado em: 26/08/2025, 16:39:09
+   Score: N/A
+------------------------------------------------------------
+10. ID: cmesjag5c000b8wksqds5zth4
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 26/08/2025, 09:40:15
+   Criado em: 26/08/2025, 09:40:15
+   Score: N/A
+------------------------------------------------------------
+11. ID: cmeshcmr500058wks7mu6cnhh
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 26/08/2025, 08:45:58
+   Criado em: 26/08/2025, 08:45:58
+   Score: N/A
+------------------------------------------------------------
+12. ID: cmesf7jjz00058wlgtxssixjr
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 26/08/2025, 07:46:01
+   Criado em: 26/08/2025, 07:46:01
+   Score: N/A
+------------------------------------------------------------
+13. ID: cmeruvrxb00058wywc84j85aq
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 25/08/2025, 22:17:00
+   Criado em: 25/08/2025, 22:17:00
+   Score: N/A
+------------------------------------------------------------
+14. ID: cmeqbdd5u00058wawna78c90v
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 24/08/2025, 20:23:02
+   Criado em: 24/08/2025, 20:23:02
+   Score: N/A
+------------------------------------------------------------
+15. ID: cmeq6cwsb000b8wekjo438f2x
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 24/08/2025, 18:02:43
+   Criado em: 24/08/2025, 18:02:43
+   Score: N/A
+------------------------------------------------------------
+16. ID: cmeq5sm4s00058wek3l7qmfe7
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 24/08/2025, 17:46:56
+   Criado em: 24/08/2025, 17:46:56
+   Score: N/A
+------------------------------------------------------------
+17. ID: cmeq4n7k3000t8wjkipkqtbr1
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 24/08/2025, 17:14:44
+   Criado em: 24/08/2025, 17:14:44
+   Score: N/A
+------------------------------------------------------------
+18. ID: cmeq4lzb6000n8wjky6kpmhwx
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 24/08/2025, 17:13:47
+   Criado em: 24/08/2025, 17:13:47
+   Score: N/A
+------------------------------------------------------------
+19. ID: cmeq3feup00058wjkcj6lla51
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 24/08/2025, 16:40:41
+   Criado em: 24/08/2025, 16:40:41
+   Score: N/A
+------------------------------------------------------------
+20. ID: cmeq1olmn000b8wfkigouma0l
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 24/08/2025, 15:06:50
+   Criado em: 24/08/2025, 15:51:50
+   Score: N/A
+------------------------------------------------------------
+21. ID: cmeq1olm100078wfkh3brkz7d
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 24/08/2025, 15:21:50
+   Criado em: 24/08/2025, 15:51:50
+   Score: N/A
+------------------------------------------------------------
+22. ID: cmeq1ollb00038wfk135lx6r1
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 24/08/2025, 15:46:50
+   Criado em: 24/08/2025, 15:51:50
+   Score: N/A
+------------------------------------------------------------
+23. ID: cmeq1fjrx000f8w1c1o2zrl2l
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 24/08/2025, 15:44:48
+   Criado em: 24/08/2025, 15:44:48
+   Score: N/A
+------------------------------------------------------------
+24. ID: cmepxzzvi00058w1cvo0l062n
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 24/08/2025, 14:08:43
+   Criado em: 24/08/2025, 14:08:43
+   Score: N/A
+------------------------------------------------------------
+25. ID: cmepsyj9j001l8wqox8swfhqm
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 24/08/2025, 11:47:37
+   Criado em: 24/08/2025, 11:47:37
+   Score: N/A
+------------------------------------------------------------
+26. ID: cmepsdc0c001b8wqo0umxm0k8
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 24/08/2025, 11:31:08
+   Criado em: 24/08/2025, 11:31:08
+   Score: N/A
+------------------------------------------------------------
+27. ID: cmeps0qgm00118wqo1feeyd9m
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 24/08/2025, 11:21:20
+   Criado em: 24/08/2025, 11:21:20
+   Score: N/A
+------------------------------------------------------------
+28. ID: cmeprxft2000r8wqo4jm5bkhu
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 24/08/2025, 11:18:46
+   Criado em: 24/08/2025, 11:18:46
+   Score: N/A
+------------------------------------------------------------
+29. ID: cmeprv26z000l8wqob3cmufsg
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 24/08/2025, 11:16:56
+   Criado em: 24/08/2025, 11:16:56
+   Score: N/A
+------------------------------------------------------------
+30. ID: cmeppjzei000h8wz05hfm7uqg
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 24/08/2025, 10:12:19
+   Criado em: 24/08/2025, 10:12:19
+   Score: N/A
+------------------------------------------------------------
+31. ID: cmeppjadq000d8wz0b9108aiu
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 24/08/2025, 10:11:47
+   Criado em: 24/08/2025, 10:11:47
+   Score: N/A
+------------------------------------------------------------
+32. ID: cmeppifvd00098wz039azun1b
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 24/08/2025, 10:11:07
+   Criado em: 24/08/2025, 10:11:07
+   Score: N/A
+------------------------------------------------------------
+33. ID: cmeppe9hu00058wz0mwxg65ht
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: undefined
+   Iniciado em: N/A
+   Concluído em: 24/08/2025, 10:07:53
+   Criado em: 24/08/2025, 10:07:53
+   Score: N/A
+------------------------------------------------------------
+
+
+🎯 SESSÕES DE TESTE (TestSession) - 96 registros
+
+================================================================================
+1. ID: cmeuqe78d00018wuctrznl78f
+   Teste: HumaniQ BOLIE – Inteligência Emocional ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 27/08/2025, 22:34:40
+   Concluído em: 27/08/2025, 22:34:42
+   Criado em: 27/08/2025, 22:34:40
+   Atualizado em: 27/08/2025, 22:34:42
+   Progresso: 0/0
+------------------------------------------------------------
+2. ID: cmeunud9x00098w04urg43h75
+   Teste: HumaniQ BOLIE – Inteligência Emocional ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 27/08/2025, 21:23:16
+   Concluído em: 27/08/2025, 21:23:17
+   Criado em: 27/08/2025, 21:23:16
+   Atualizado em: 27/08/2025, 21:23:17
+   Progresso: 0/0
+------------------------------------------------------------
+3. ID: cmeunjzv800058w04mxo8dxwk
+   Teste: HumaniQ BOLIE – Inteligência Emocional ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 27/08/2025, 21:15:12
+   Concluído em: 27/08/2025, 21:15:13
+   Criado em: 27/08/2025, 21:15:12
+   Atualizado em: 27/08/2025, 21:15:13
+   Progresso: 0/0
+------------------------------------------------------------
+4. ID: cmeuncqd200018w04a0qyhz60
+   Teste: HumaniQ BOLIE – Inteligência Emocional ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 27/08/2025, 21:09:33
+   Concluído em: 27/08/2025, 21:09:35
+   Criado em: 27/08/2025, 21:09:33
+   Atualizado em: 27/08/2025, 21:09:35
+   Progresso: 0/0
+------------------------------------------------------------
+5. ID: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Status: COMPLETED
+   Iniciado em: 27/08/2025, 19:44:46
+   Concluído em: 27/08/2025, 19:45:07
+   Criado em: 27/08/2025, 19:44:46
+   Atualizado em: 27/08/2025, 19:45:07
+   Progresso: 0/45
+------------------------------------------------------------
+6. ID: cmeuk7eu200028wkwnzqr7jzh
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 27/08/2025, 19:41:26
+   Concluído em: N/A
+   Criado em: 27/08/2025, 19:41:26
+   Atualizado em: 27/08/2025, 19:41:26
+   Progresso: 0/45
+------------------------------------------------------------
+7. ID: cmeuk7eu400038wkw6iqddzx4
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 27/08/2025, 19:41:26
+   Concluído em: N/A
+   Criado em: 27/08/2025, 19:41:26
+   Atualizado em: 27/08/2025, 19:41:26
+   Progresso: 0/45
+------------------------------------------------------------
+8. ID: cmeujzd1b00018wn4hloen37j
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Status: STARTED
+   Iniciado em: 27/08/2025, 19:35:10
+   Concluído em: N/A
+   Criado em: 27/08/2025, 19:35:10
+   Atualizado em: 27/08/2025, 19:35:10
+   Progresso: 0/45
+------------------------------------------------------------
+9. ID: cmeu0vbnw00038wwcjhkzgjnh
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 27/08/2025, 10:40:09
+   Concluído em: N/A
+   Criado em: 27/08/2025, 10:40:09
+   Atualizado em: 27/08/2025, 10:40:09
+   Progresso: 0/0
+------------------------------------------------------------
+10. ID: cmeu0vbnw00028wwcx5rgon4e
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 27/08/2025, 10:40:09
+   Concluído em: 27/08/2025, 10:40:43
+   Criado em: 27/08/2025, 10:40:09
+   Atualizado em: 27/08/2025, 10:40:43
+   Progresso: 0/0
+------------------------------------------------------------
+11. ID: cmet5eebl000p8ww4axxmhkej
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 26/08/2025, 19:59:11
+   Concluído em: N/A
+   Criado em: 26/08/2025, 19:59:11
+   Atualizado em: 26/08/2025, 19:59:11
+   Progresso: 0/0
+------------------------------------------------------------
+12. ID: cmet5eebl000o8ww450ttq7bk
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 26/08/2025, 19:59:11
+   Concluído em: 26/08/2025, 20:00:40
+   Criado em: 26/08/2025, 19:59:11
+   Atualizado em: 26/08/2025, 20:00:40
+   Progresso: 0/0
+------------------------------------------------------------
+13. ID: cmet521oj000k8ww4saoqocbm
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 26/08/2025, 19:49:35
+   Concluído em: N/A
+   Criado em: 26/08/2025, 19:49:35
+   Atualizado em: 26/08/2025, 19:49:35
+   Progresso: 0/0
+------------------------------------------------------------
+14. ID: cmet521op000l8ww4yenv3a39
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 26/08/2025, 19:49:35
+   Concluído em: N/A
+   Criado em: 26/08/2025, 19:49:35
+   Atualizado em: 26/08/2025, 19:49:35
+   Progresso: 0/0
+------------------------------------------------------------
+15. ID: cmet3zlfu000e8ww4l38l41h2
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 26/08/2025, 19:19:41
+   Concluído em: N/A
+   Criado em: 26/08/2025, 19:19:41
+   Atualizado em: 26/08/2025, 19:19:41
+   Progresso: 0/0
+------------------------------------------------------------
+16. ID: cmet3zlfu000f8ww4a36lghbi
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 26/08/2025, 19:19:41
+   Concluído em: 26/08/2025, 19:20:21
+   Criado em: 26/08/2025, 19:19:41
+   Atualizado em: 26/08/2025, 19:20:21
+   Progresso: 0/0
+------------------------------------------------------------
+17. ID: cmet3guzn000b8ww4a8hd8qyp
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 26/08/2025, 19:05:07
+   Concluído em: N/A
+   Criado em: 26/08/2025, 19:05:07
+   Atualizado em: 26/08/2025, 19:05:07
+   Progresso: 0/0
+------------------------------------------------------------
+18. ID: cmet3guzm00098ww4cwluuyt1
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 26/08/2025, 19:05:07
+   Concluído em: N/A
+   Criado em: 26/08/2025, 19:05:07
+   Atualizado em: 26/08/2025, 19:05:07
+   Progresso: 0/0
+------------------------------------------------------------
+19. ID: cmet3a7vz00078ww4w1wap1qu
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 26/08/2025, 18:59:57
+   Concluído em: N/A
+   Criado em: 26/08/2025, 18:59:57
+   Atualizado em: 26/08/2025, 18:59:57
+   Progresso: 0/0
+------------------------------------------------------------
+20. ID: cmet3a7vz00068ww4ekrxl7wi
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 26/08/2025, 18:59:57
+   Concluído em: N/A
+   Criado em: 26/08/2025, 18:59:57
+   Atualizado em: 26/08/2025, 18:59:57
+   Progresso: 0/0
+------------------------------------------------------------
+21. ID: cmet30p2400028ww4vu1dt3vu
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 26/08/2025, 18:52:33
+   Concluído em: N/A
+   Criado em: 26/08/2025, 18:52:33
+   Atualizado em: 26/08/2025, 18:52:33
+   Progresso: 0/0
+------------------------------------------------------------
+22. ID: cmet30p2500038ww4pckj2hxc
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 26/08/2025, 18:52:33
+   Concluído em: N/A
+   Criado em: 26/08/2025, 18:52:33
+   Atualizado em: 26/08/2025, 18:52:33
+   Progresso: 0/0
+------------------------------------------------------------
+23. ID: cmeszryjd00098wq4347n6x2a
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 26/08/2025, 17:21:46
+   Concluído em: N/A
+   Criado em: 26/08/2025, 17:21:46
+   Atualizado em: 26/08/2025, 17:21:46
+   Progresso: 0/0
+------------------------------------------------------------
+24. ID: cmeszryjb00088wq4hicqpbmq
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 26/08/2025, 17:21:46
+   Concluído em: N/A
+   Criado em: 26/08/2025, 17:21:46
+   Atualizado em: 26/08/2025, 17:21:46
+   Progresso: 0/0
+------------------------------------------------------------
+25. ID: cmesy8fsi00038wq46vw9ld3b
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 26/08/2025, 16:38:36
+   Concluído em: 26/08/2025, 16:39:09
+   Criado em: 26/08/2025, 16:38:36
+   Atualizado em: 26/08/2025, 16:39:09
+   Progresso: 0/0
+------------------------------------------------------------
+26. ID: cmesy8fsd00018wq4d9flmgjm
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 26/08/2025, 16:38:36
+   Concluído em: N/A
+   Criado em: 26/08/2025, 16:38:36
+   Atualizado em: 26/08/2025, 16:38:36
+   Progresso: 0/0
+------------------------------------------------------------
+27. ID: cmesj992l00098wksniieg1fj
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 26/08/2025, 09:39:20
+   Concluído em: N/A
+   Criado em: 26/08/2025, 09:39:20
+   Atualizado em: 26/08/2025, 09:39:20
+   Progresso: 0/0
+------------------------------------------------------------
+28. ID: cmesj992l00088wksl0nivxoy
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 26/08/2025, 09:39:20
+   Concluído em: 26/08/2025, 09:40:15
+   Criado em: 26/08/2025, 09:39:20
+   Atualizado em: 26/08/2025, 09:40:15
+   Progresso: 0/0
+------------------------------------------------------------
+29. ID: cmesh7kxl00028wksfhitatsb
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 26/08/2025, 08:42:02
+   Concluído em: N/A
+   Criado em: 26/08/2025, 08:42:02
+   Atualizado em: 26/08/2025, 08:42:02
+   Progresso: 0/0
+------------------------------------------------------------
+30. ID: cmesh7kxl00038wksjsrl8aaf
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 26/08/2025, 08:42:02
+   Concluído em: 26/08/2025, 08:45:58
+   Criado em: 26/08/2025, 08:42:02
+   Atualizado em: 26/08/2025, 08:45:58
+   Progresso: 0/0
+------------------------------------------------------------
+31. ID: cmesf6om800028wlgrob0jzg7
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 26/08/2025, 07:45:21
+   Concluído em: N/A
+   Criado em: 26/08/2025, 07:45:21
+   Atualizado em: 26/08/2025, 07:45:21
+   Progresso: 0/0
+------------------------------------------------------------
+32. ID: cmesf6om800038wlgowz3tjw2
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 26/08/2025, 07:45:21
+   Concluído em: 26/08/2025, 07:46:01
+   Criado em: 26/08/2025, 07:45:21
+   Atualizado em: 26/08/2025, 07:46:01
+   Progresso: 0/0
+------------------------------------------------------------
+33. ID: cmeruv1zi00028wyw9mj0ecpo
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 25/08/2025, 22:16:26
+   Concluído em: N/A
+   Criado em: 25/08/2025, 22:16:26
+   Atualizado em: 25/08/2025, 22:16:26
+   Progresso: 0/0
+------------------------------------------------------------
+34. ID: cmeruv1zl00038wyws0yvu0le
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 25/08/2025, 22:16:26
+   Concluído em: 25/08/2025, 22:17:00
+   Criado em: 25/08/2025, 22:16:26
+   Atualizado em: 25/08/2025, 22:17:00
+   Progresso: 0/0
+------------------------------------------------------------
+35. ID: cmersshlz00038wmcey4oc8b4
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 25/08/2025, 21:18:28
+   Concluído em: N/A
+   Criado em: 25/08/2025, 21:18:28
+   Atualizado em: 25/08/2025, 21:18:28
+   Progresso: 0/0
+------------------------------------------------------------
+36. ID: cmersshlz00028wmcsvqqhmj4
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 25/08/2025, 21:18:27
+   Concluído em: N/A
+   Criado em: 25/08/2025, 21:18:27
+   Atualizado em: 25/08/2025, 21:18:27
+   Progresso: 0/0
+------------------------------------------------------------
+37. ID: cmeqbcbov00038wawgsscf831
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 20:22:14
+   Concluído em: N/A
+   Criado em: 24/08/2025, 20:22:14
+   Atualizado em: 24/08/2025, 20:22:14
+   Progresso: 0/0
+------------------------------------------------------------
+38. ID: cmeqbcbov00028wawqemxpjy7
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 24/08/2025, 20:22:14
+   Concluído em: 24/08/2025, 20:23:02
+   Criado em: 24/08/2025, 20:22:14
+   Atualizado em: 24/08/2025, 20:23:02
+   Progresso: 0/0
+------------------------------------------------------------
+39. ID: cmeqay1k100028wekxowtrn1s
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 20:11:07
+   Concluído em: N/A
+   Criado em: 24/08/2025, 20:11:07
+   Atualizado em: 24/08/2025, 20:11:07
+   Progresso: 0/0
+------------------------------------------------------------
+40. ID: cmeqay1k200038wekm3kd4v0d
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 20:11:07
+   Concluído em: N/A
+   Criado em: 24/08/2025, 20:11:07
+   Atualizado em: 24/08/2025, 20:11:07
+   Progresso: 0/0
+------------------------------------------------------------
+41. ID: cmeq6bpbq00088wekhsfbgzzj
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 24/08/2025, 18:01:47
+   Concluído em: 24/08/2025, 18:02:43
+   Criado em: 24/08/2025, 18:01:47
+   Atualizado em: 24/08/2025, 18:02:43
+   Progresso: 0/0
+------------------------------------------------------------
+42. ID: cmeq6bpbq00098wekj5wp985b
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 18:01:47
+   Concluído em: N/A
+   Criado em: 24/08/2025, 18:01:47
+   Atualizado em: 24/08/2025, 18:01:47
+   Progresso: 0/0
+------------------------------------------------------------
+43. ID: cmeq5rud900038wekqjgjkhln
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 17:46:20
+   Concluído em: N/A
+   Criado em: 24/08/2025, 17:46:20
+   Atualizado em: 24/08/2025, 17:46:20
+   Progresso: 0/0
+------------------------------------------------------------
+44. ID: cmeq5rud900028wek09x54k0o
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 24/08/2025, 17:46:20
+   Concluído em: 24/08/2025, 17:46:56
+   Criado em: 24/08/2025, 17:46:20
+   Atualizado em: 24/08/2025, 17:46:56
+   Progresso: 0/0
+------------------------------------------------------------
+45. ID: cmeq4mf4r000r8wjkjk8d5nsp
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 24/08/2025, 17:14:07
+   Concluído em: 24/08/2025, 17:14:44
+   Criado em: 24/08/2025, 17:14:07
+   Atualizado em: 24/08/2025, 17:14:44
+   Progresso: 0/0
+------------------------------------------------------------
+46. ID: cmeq4mf4p000p8wjkwo9egqzs
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 17:14:07
+   Concluído em: N/A
+   Criado em: 24/08/2025, 17:14:07
+   Atualizado em: 24/08/2025, 17:14:07
+   Progresso: 0/0
+------------------------------------------------------------
+47. ID: cmeq4l53n000l8wjk1qhh5ftr
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 24/08/2025, 17:13:08
+   Concluído em: 24/08/2025, 17:13:47
+   Criado em: 24/08/2025, 17:13:08
+   Atualizado em: 24/08/2025, 17:13:47
+   Progresso: 0/0
+------------------------------------------------------------
+48. ID: cmeq4l53g000j8wjkn8baqg1y
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 17:13:08
+   Concluído em: N/A
+   Criado em: 24/08/2025, 17:13:08
+   Atualizado em: 24/08/2025, 17:13:08
+   Progresso: 0/0
+------------------------------------------------------------
+49. ID: cmeq4ex5y000h8wjk1jwok7yl
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 17:08:18
+   Concluído em: N/A
+   Criado em: 24/08/2025, 17:08:18
+   Atualizado em: 24/08/2025, 17:08:18
+   Progresso: 0/0
+------------------------------------------------------------
+50. ID: cmeq4ex5x000f8wjkofkbon7x
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 17:08:18
+   Concluído em: N/A
+   Criado em: 24/08/2025, 17:08:18
+   Atualizado em: 24/08/2025, 17:08:18
+   Progresso: 0/0
+------------------------------------------------------------
+51. ID: cmeq403rn000d8wjksdwe5j2d
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 16:56:46
+   Concluído em: N/A
+   Criado em: 24/08/2025, 16:56:46
+   Atualizado em: 24/08/2025, 16:56:46
+   Progresso: 0/0
+------------------------------------------------------------
+52. ID: cmeq403rl000b8wjkv64mzk5d
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 16:56:46
+   Concluído em: N/A
+   Criado em: 24/08/2025, 16:56:46
+   Atualizado em: 24/08/2025, 16:56:46
+   Progresso: 0/0
+------------------------------------------------------------
+53. ID: cmeq3skob00098wjk0kj2wl2m
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 16:50:55
+   Concluído em: N/A
+   Criado em: 24/08/2025, 16:50:55
+   Atualizado em: 24/08/2025, 16:50:55
+   Progresso: 0/0
+------------------------------------------------------------
+54. ID: cmeq3skoa00088wjkqqgkfkia
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 16:50:55
+   Concluído em: N/A
+   Criado em: 24/08/2025, 16:50:55
+   Atualizado em: 24/08/2025, 16:50:55
+   Progresso: 0/0
+------------------------------------------------------------
+55. ID: cmeq3esrv00038wjkqjerv35k
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 16:40:12
+   Concluído em: N/A
+   Criado em: 24/08/2025, 16:40:12
+   Atualizado em: 24/08/2025, 16:40:12
+   Progresso: 0/0
+------------------------------------------------------------
+56. ID: cmeq3esrv00028wjkdxswu383
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 24/08/2025, 16:40:12
+   Concluído em: 24/08/2025, 16:40:41
+   Criado em: 24/08/2025, 16:40:12
+   Atualizado em: 24/08/2025, 16:40:41
+   Progresso: 0/0
+------------------------------------------------------------
+57. ID: cmeq1olme00098wfk4lmod7t0
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 14:21:50
+   Concluído em: 24/08/2025, 15:06:50
+   Criado em: 24/08/2025, 15:51:50
+   Atualizado em: 24/08/2025, 15:51:50
+   Progresso: 0/108
+------------------------------------------------------------
+58. ID: cmeq1ollr00058wfktaw6n4on
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 14:51:50
+   Concluído em: 24/08/2025, 15:21:50
+   Criado em: 24/08/2025, 15:51:50
+   Atualizado em: 24/08/2025, 15:51:50
+   Progresso: 0/108
+------------------------------------------------------------
+59. ID: cmeq1oll000018wfka3utrf3a
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 15:21:50
+   Concluído em: 24/08/2025, 15:46:50
+   Criado em: 24/08/2025, 15:51:50
+   Atualizado em: 24/08/2025, 15:51:50
+   Progresso: 0/108
+------------------------------------------------------------
+60. ID: cmeq1n74400018w5cu0ids5cd
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 15:20:45
+   Concluído em: 24/08/2025, 15:45:45
+   Criado em: 24/08/2025, 15:50:45
+   Atualizado em: 24/08/2025, 15:50:45
+   Progresso: 0/108
+------------------------------------------------------------
+61. ID: cmeq1mwmp00018w7ob5sqeev5
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 15:20:31
+   Concluído em: 24/08/2025, 15:45:31
+   Criado em: 24/08/2025, 15:50:31
+   Atualizado em: 24/08/2025, 15:50:31
+   Progresso: 0/108
+------------------------------------------------------------
+62. ID: cmeq1ewi4000d8w1ce55cnx04
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 24/08/2025, 15:44:18
+   Concluído em: 24/08/2025, 15:44:48
+   Criado em: 24/08/2025, 15:44:18
+   Atualizado em: 24/08/2025, 15:44:48
+   Progresso: 0/0
+------------------------------------------------------------
+63. ID: cmeq1ewhr000b8w1cjobtc7hw
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 15:44:18
+   Concluído em: N/A
+   Criado em: 24/08/2025, 15:44:18
+   Atualizado em: 24/08/2025, 15:44:18
+   Progresso: 0/0
+------------------------------------------------------------
+64. ID: cmeq1eu3e00088w1co3rgxtrb
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 15:44:15
+   Concluído em: N/A
+   Criado em: 24/08/2025, 15:44:15
+   Atualizado em: 24/08/2025, 15:44:15
+   Progresso: 0/0
+------------------------------------------------------------
+65. ID: cmeq1eu3e00098w1cmvjbj4z9
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 15:44:15
+   Concluído em: N/A
+   Criado em: 24/08/2025, 15:44:15
+   Atualizado em: 24/08/2025, 15:44:15
+   Progresso: 0/0
+------------------------------------------------------------
+66. ID: cmepxzcjg00038w1c87qmqq5i
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 14:08:13
+   Concluído em: N/A
+   Criado em: 24/08/2025, 14:08:13
+   Atualizado em: 24/08/2025, 14:08:13
+   Progresso: 0/0
+------------------------------------------------------------
+67. ID: cmepxzcjf00018w1c9taelg74
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 24/08/2025, 14:08:13
+   Concluído em: 24/08/2025, 14:08:44
+   Criado em: 24/08/2025, 14:08:13
+   Atualizado em: 24/08/2025, 14:08:44
+   Progresso: 0/0
+------------------------------------------------------------
+68. ID: cmepsxujc001j8wqo1formtoi
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 24/08/2025, 11:47:05
+   Concluído em: 24/08/2025, 11:47:37
+   Criado em: 24/08/2025, 11:47:05
+   Atualizado em: 24/08/2025, 11:47:37
+   Progresso: 0/0
+------------------------------------------------------------
+69. ID: cmepsxuj8001h8wqox3l3ogf4
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 11:47:05
+   Concluído em: N/A
+   Criado em: 24/08/2025, 11:47:05
+   Atualizado em: 24/08/2025, 11:47:05
+   Progresso: 0/0
+------------------------------------------------------------
+70. ID: cmepsxqpt001f8wqo6jxyqkxs
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 11:47:00
+   Concluído em: N/A
+   Criado em: 24/08/2025, 11:47:00
+   Atualizado em: 24/08/2025, 11:47:00
+   Progresso: 0/0
+------------------------------------------------------------
+71. ID: cmepsxqpr001d8wqoh5iyxngr
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 11:47:00
+   Concluído em: N/A
+   Criado em: 24/08/2025, 11:47:00
+   Atualizado em: 24/08/2025, 11:47:00
+   Progresso: 0/0
+------------------------------------------------------------
+72. ID: cmepscmv800198wqoby266xbp
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 24/08/2025, 11:30:35
+   Concluído em: 24/08/2025, 11:31:08
+   Criado em: 24/08/2025, 11:30:35
+   Atualizado em: 24/08/2025, 11:31:08
+   Progresso: 0/0
+------------------------------------------------------------
+73. ID: cmepscmv600178wqowsp8z1th
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 11:30:35
+   Concluído em: N/A
+   Criado em: 24/08/2025, 11:30:35
+   Atualizado em: 24/08/2025, 11:30:35
+   Progresso: 0/0
+------------------------------------------------------------
+74. ID: cmepsase800158wqo8bduy56b
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 11:29:09
+   Concluído em: N/A
+   Criado em: 24/08/2025, 11:29:09
+   Atualizado em: 24/08/2025, 11:29:09
+   Progresso: 0/0
+------------------------------------------------------------
+75. ID: cmepsase500138wqoun6aici6
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 11:29:09
+   Concluído em: N/A
+   Criado em: 24/08/2025, 11:29:09
+   Atualizado em: 24/08/2025, 11:29:09
+   Progresso: 0/0
+------------------------------------------------------------
+76. ID: cmeprzko6000z8wqoxnkkljlh
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 24/08/2025, 11:20:26
+   Concluído em: 24/08/2025, 11:21:20
+   Criado em: 24/08/2025, 11:20:26
+   Atualizado em: 24/08/2025, 11:21:20
+   Progresso: 0/0
+------------------------------------------------------------
+77. ID: cmeprzko4000x8wqo13bjidzc
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 11:20:26
+   Concluído em: N/A
+   Criado em: 24/08/2025, 11:20:26
+   Atualizado em: 24/08/2025, 11:20:26
+   Progresso: 0/0
+------------------------------------------------------------
+78. ID: cmepry57f000v8wqonfopmhbe
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 11:19:19
+   Concluído em: N/A
+   Criado em: 24/08/2025, 11:19:19
+   Atualizado em: 24/08/2025, 11:19:19
+   Progresso: 0/0
+------------------------------------------------------------
+79. ID: cmepry57d000t8wqoeurw3ng0
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 11:19:19
+   Concluído em: N/A
+   Criado em: 24/08/2025, 11:19:19
+   Atualizado em: 24/08/2025, 11:19:19
+   Progresso: 0/0
+------------------------------------------------------------
+80. ID: cmeprwuvt000n8wqosgexqme4
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 11:18:19
+   Concluído em: N/A
+   Criado em: 24/08/2025, 11:18:19
+   Atualizado em: 24/08/2025, 11:18:19
+   Progresso: 0/0
+------------------------------------------------------------
+81. ID: cmeprwuvu000p8wqovd6tu9se
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 24/08/2025, 11:18:19
+   Concluído em: 24/08/2025, 11:18:47
+   Criado em: 24/08/2025, 11:18:19
+   Atualizado em: 24/08/2025, 11:18:47
+   Progresso: 0/0
+------------------------------------------------------------
+82. ID: cmeprub02000j8wqokljnydfl
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 24/08/2025, 11:16:20
+   Concluído em: 24/08/2025, 11:16:56
+   Criado em: 24/08/2025, 11:16:20
+   Atualizado em: 24/08/2025, 11:16:56
+   Progresso: 0/0
+------------------------------------------------------------
+83. ID: cmepruazz000h8wqo49r9ss72
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 11:16:20
+   Concluído em: N/A
+   Criado em: 24/08/2025, 11:16:20
+   Atualizado em: 24/08/2025, 11:16:20
+   Progresso: 0/0
+------------------------------------------------------------
+84. ID: cmeprnlpe000f8wqoyky9ekq0
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 11:11:08
+   Concluído em: N/A
+   Criado em: 24/08/2025, 11:11:08
+   Atualizado em: 24/08/2025, 11:11:08
+   Progresso: 0/0
+------------------------------------------------------------
+85. ID: cmeprnlpc000d8wqorvwbr3gl
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 11:11:08
+   Concluído em: N/A
+   Criado em: 24/08/2025, 11:11:08
+   Atualizado em: 24/08/2025, 11:11:08
+   Progresso: 0/0
+------------------------------------------------------------
+86. ID: cmeprmgw4000b8wqo5g0mx0fk
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 11:10:15
+   Concluído em: N/A
+   Criado em: 24/08/2025, 11:10:15
+   Atualizado em: 24/08/2025, 11:10:15
+   Progresso: 0/0
+------------------------------------------------------------
+87. ID: cmeprmgw200098wqoi86d79f1
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 11:10:15
+   Concluído em: N/A
+   Criado em: 24/08/2025, 11:10:15
+   Atualizado em: 24/08/2025, 11:10:15
+   Progresso: 0/0
+------------------------------------------------------------
+88. ID: cmeprgybe00078wqolk1rf2m6
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 11:05:57
+   Concluído em: N/A
+   Criado em: 24/08/2025, 11:05:57
+   Atualizado em: 24/08/2025, 11:05:57
+   Progresso: 0/0
+------------------------------------------------------------
+89. ID: cmeprgybb00058wqotmo3a3wm
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 11:05:57
+   Concluído em: N/A
+   Criado em: 24/08/2025, 11:05:57
+   Atualizado em: 24/08/2025, 11:05:57
+   Progresso: 0/0
+------------------------------------------------------------
+90. ID: cmeprg0g600028wqoko2vyktd
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 11:05:13
+   Concluído em: N/A
+   Criado em: 24/08/2025, 11:05:13
+   Atualizado em: 24/08/2025, 11:05:13
+   Progresso: 0/0
+------------------------------------------------------------
+91. ID: cmeprg0g600038wqoyxjkkgvk
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 11:05:13
+   Concluído em: N/A
+   Criado em: 24/08/2025, 11:05:13
+   Atualizado em: 24/08/2025, 11:05:13
+   Progresso: 0/0
+------------------------------------------------------------
+92. ID: cmeppjz93000f8wz0lh0zu5va
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 24/08/2025, 10:12:19
+   Concluído em: 24/08/2025, 10:12:20
+   Criado em: 24/08/2025, 10:12:19
+   Atualizado em: 24/08/2025, 10:12:20
+   Progresso: 0/0
+------------------------------------------------------------
+93. ID: cmeppjaah000b8wz0w9wc98fl
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 24/08/2025, 10:11:47
+   Concluído em: 24/08/2025, 10:11:47
+   Criado em: 24/08/2025, 10:11:47
+   Atualizado em: 24/08/2025, 10:11:47
+   Progresso: 0/0
+------------------------------------------------------------
+94. ID: cmeppieog00078wz0w30aragn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 24/08/2025, 10:11:06
+   Concluído em: 24/08/2025, 10:11:08
+   Criado em: 24/08/2025, 10:11:06
+   Atualizado em: 24/08/2025, 10:11:08
+   Progresso: 0/0
+------------------------------------------------------------
+95. ID: cmeppe7cu00038wz0yt9twkpw
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: COMPLETED
+   Iniciado em: 24/08/2025, 10:07:50
+   Concluído em: 24/08/2025, 10:07:53
+   Criado em: 24/08/2025, 10:07:50
+   Atualizado em: 24/08/2025, 10:07:53
+   Progresso: 0/0
+------------------------------------------------------------
+96. ID: cmeppamvm00018wz039j3l4ym
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade ([object Object])
+   Usuário: Colaborador Demo (colaborador@demo.com)
+   Status: STARTED
+   Iniciado em: 24/08/2025, 10:05:03
+   Concluído em: N/A
+   Criado em: 24/08/2025, 10:05:03
+   Atualizado em: 24/08/2025, 10:05:03
+   Progresso: 0/0
+------------------------------------------------------------
+
+
+💬 RESPOSTAS INDIVIDUAIS (Answer) - 45 registros
+
+================================================================================
+1. ID: cmeukc5np00008wk87lqlo65a
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Tenho padrões muito altos para mim mesmo e para os outros. (Nº 1)
+   Resposta: "3"
+   Tempo gasto: 32ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+2. ID: cmeukc5np00018wk8c1jozgcx
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Fico irritado quando as coisas não são feitas da maneira correta. (Nº 2)
+   Resposta: "2"
+   Tempo gasto: 25ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+3. ID: cmeukc5np00028wk8k0f251gk
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Sinto-me responsável por corrigir erros e melhorar as situações. (Nº 3)
+   Resposta: "4"
+   Tempo gasto: 12ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+4. ID: cmeukc5np00038wk8p0nblhub
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Tenho dificuldade em relaxar quando há trabalho a ser feito. (Nº 4)
+   Resposta: "2"
+   Tempo gasto: 30ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+5. ID: cmeukc5nq00048wk82axfv0zx
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Critico a mim mesmo quando cometo erros. (Nº 5)
+   Resposta: "4"
+   Tempo gasto: 30ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+6. ID: cmeukc5nq00058wk8sky77xpg
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Gosto de ajudar os outros, mesmo quando não pedem. (Nº 6)
+   Resposta: "2"
+   Tempo gasto: 20ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+7. ID: cmeukc5nq00068wk8yd1smwkn
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Tenho facilidade em perceber as necessidades das pessoas. (Nº 7)
+   Resposta: "4"
+   Tempo gasto: 23ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+8. ID: cmeukc5nq00078wk8uyafpa7b
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Às vezes me esqueço das minhas próprias necessidades. (Nº 8)
+   Resposta: "2"
+   Tempo gasto: 13ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+9. ID: cmeukc5nq00088wk8uchngngm
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Sinto-me bem quando sou útil e necessário para alguém. (Nº 9)
+   Resposta: "1"
+   Tempo gasto: 14ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+10. ID: cmeukc5nq00098wk8r0x57749
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Tenho dificuldade em dizer "não" quando alguém precisa de ajuda. (Nº 10)
+   Resposta: "4"
+   Tempo gasto: 23ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+11. ID: cmeukc5nq000a8wk83tle0ged
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Gosto de ser reconhecido pelos meus sucessos e conquistas. (Nº 11)
+   Resposta: "5"
+   Tempo gasto: 35ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+12. ID: cmeukc5nq000b8wk8xeaglnpk
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Trabalho duro para alcançar meus objetivos. (Nº 12)
+   Resposta: "1"
+   Tempo gasto: 35ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+13. ID: cmeukc5nq000c8wk8hdsui9yh
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Preocupo-me com a imagem que projeto para os outros. (Nº 13)
+   Resposta: "1"
+   Tempo gasto: 23ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+14. ID: cmeukc5nq000d8wk8qa9nyngf
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Tenho facilidade em me adaptar a diferentes situações sociais. (Nº 14)
+   Resposta: "2"
+   Tempo gasto: 24ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+15. ID: cmeukc5nq000e8wk8y8tqbha4
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Fico impaciente com pessoas que trabalham devagar. (Nº 15)
+   Resposta: "1"
+   Tempo gasto: 18ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+16. ID: cmeukc5nq000f8wk8v18me5xx
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Sinto-me diferente das outras pessoas. (Nº 16)
+   Resposta: "1"
+   Tempo gasto: 28ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+17. ID: cmeukc5nq000g8wk8cy4gokfp
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Meus sentimentos são intensos e profundos. (Nº 17)
+   Resposta: "2"
+   Tempo gasto: 17ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+18. ID: cmeukc5nq000h8wk8szebu8dj
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Valorizo a autenticidade e a expressão pessoal. (Nº 18)
+   Resposta: "5"
+   Tempo gasto: 14ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+19. ID: cmeukc5nq000i8wk85x6mnahk
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Às vezes me sinto melancólico ou nostálgico. (Nº 19)
+   Resposta: "5"
+   Tempo gasto: 22ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+20. ID: cmeukc5nq000j8wk87xcyeftj
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Tenho uma rica vida interior e imaginação. (Nº 20)
+   Resposta: "3"
+   Tempo gasto: 14ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+21. ID: cmeukc5nq000k8wk89b27r6cb
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Preciso de tempo sozinho para recarregar minhas energias. (Nº 21)
+   Resposta: "3"
+   Tempo gasto: 29ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+22. ID: cmeukc5nq000l8wk8eh91qwe7
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Gosto de entender como as coisas funcionam. (Nº 22)
+   Resposta: "1"
+   Tempo gasto: 36ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+23. ID: cmeukc5nq000m8wk8bmiwnvlk
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Prefiro observar antes de participar. (Nº 23)
+   Resposta: "5"
+   Tempo gasto: 39ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+24. ID: cmeukc5nq000n8wk8hx7pn6wg
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Sinto-me desconfortável quando as pessoas são muito emotivas. (Nº 24)
+   Resposta: "2"
+   Tempo gasto: 20ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+25. ID: cmeukc5nq000o8wk8rspxq0b8
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Valorizo minha privacidade e independência. (Nº 25)
+   Resposta: "4"
+   Tempo gasto: 16ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+26. ID: cmeukc5nq000p8wk8u1da34z6
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Busco segurança e estabilidade na vida. (Nº 26)
+   Resposta: "4"
+   Tempo gasto: 25ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+27. ID: cmeukc5nq000q8wk8635ngfv5
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Questiono autoridades e suas motivações. (Nº 27)
+   Resposta: "3"
+   Tempo gasto: 26ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+28. ID: cmeukc5nq000r8wk8kppjd569
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Preocupo-me com possíveis problemas futuros. (Nº 28)
+   Resposta: "3"
+   Tempo gasto: 13ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+29. ID: cmeukc5nq000s8wk8ejcdqg5n
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Sou leal aos meus amigos e grupos. (Nº 29)
+   Resposta: "4"
+   Tempo gasto: 22ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+30. ID: cmeukc5nq000t8wk8bcomy9vk
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Tenho dificuldade em tomar decisões importantes sozinho. (Nº 30)
+   Resposta: "5"
+   Tempo gasto: 24ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+31. ID: cmeukc5nq000u8wk8a21vmegy
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Gosto de ter muitas opções e possibilidades. (Nº 31)
+   Resposta: "5"
+   Tempo gasto: 26ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+32. ID: cmeukc5nq000v8wk819ydlxne
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Fico entediado facilmente com rotinas. (Nº 32)
+   Resposta: "1"
+   Tempo gasto: 17ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+33. ID: cmeukc5nq000w8wk8pw9hnjas
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Sou otimista e vejo o lado positivo das situações. (Nº 33)
+   Resposta: "1"
+   Tempo gasto: 11ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+34. ID: cmeukc5nq000x8wk8xi4s9ohr
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Tenho muitos interesses e hobbies diferentes. (Nº 34)
+   Resposta: "1"
+   Tempo gasto: 28ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+35. ID: cmeukc5nq000y8wk8w1lb0c7h
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Evito situações que me fazem sentir limitado ou preso. (Nº 35)
+   Resposta: "5"
+   Tempo gasto: 19ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+36. ID: cmeukc5nq000z8wk8kafugeke
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Gosto de estar no controle das situações. (Nº 36)
+   Resposta: "4"
+   Tempo gasto: 31ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+37. ID: cmeukc5nq00108wk8p1b5wsgo
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Não tenho medo de confrontos ou conflitos. (Nº 37)
+   Resposta: "3"
+   Tempo gasto: 14ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+38. ID: cmeukc5nq00118wk8uf1goqbl
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Protejo pessoas que considero vulneráveis. (Nº 38)
+   Resposta: "2"
+   Tempo gasto: 21ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+39. ID: cmeukc5nq00128wk8ugyqp34l
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Expresso minha raiva de forma direta. (Nº 39)
+   Resposta: "2"
+   Tempo gasto: 23ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+40. ID: cmeukc5nq00138wk8501sv0q4
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Tenho energia intensa e presença forte. (Nº 40)
+   Resposta: "4"
+   Tempo gasto: 16ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+41. ID: cmeukc5nr00148wk8rm2hioa8
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Evito conflitos e busco harmonia. (Nº 41)
+   Resposta: "5"
+   Tempo gasto: 28ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+42. ID: cmeukc5nr00158wk8zjoqn8sk
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Tenho dificuldade em expressar minha raiva. (Nº 42)
+   Resposta: "3"
+   Tempo gasto: 19ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+43. ID: cmeukc5nr00168wk8z53xk7m1
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Procrastino em decisões importantes. (Nº 43)
+   Resposta: "5"
+   Tempo gasto: 29ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+44. ID: cmeukc5nr00178wk8xpldrp7q
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Consigo ver diferentes pontos de vista em uma discussão. (Nº 44)
+   Resposta: "4"
+   Tempo gasto: 26ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+45. ID: cmeukc5nr00188wk8bw1poxh1
+   Usuário: Colaborador HumaniQ (colaborador@humaniq.com)
+   Sessão: cmeukbp7z00018wo4irliy9gn
+   Teste: HumaniQ Eneagrama – Tipos de Personalidade
+   Pergunta: Prefiro manter a paz a impor minha opinião. (Nº 45)
+   Resposta: "2"
+   Tempo gasto: 29ms
+   Pulada: Não
+   Criado em: 27/08/2025, 19:45:07
+   Atualizado em: 27/08/2025, 19:45:07
+------------------------------------------------------------
+
+
+🤖 ANÁLISES DE IA (AIAnalysis) - 63 registros
+
+================================================================================
+1. ID: 3bfc0dbb-6343-41ad-965d-28ff3ed0391f
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 86
+   Resumo: N/A...
+   Criado em: 21/08/2025, 12:00:02
+   Atualizado em: 21/08/2025, 12:00:02
+------------------------------------------------------------
+2. ID: e60cc184-8f5e-46ff-bd41-41ffa6872dc2
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 80
+   Resumo: N/A...
+   Criado em: 21/08/2025, 11:47:27
+   Atualizado em: 21/08/2025, 11:47:27
+------------------------------------------------------------
+3. ID: d4eece4a-c62d-482f-8c32-213c4b874c82
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 70
+   Resumo: N/A...
+   Criado em: 21/08/2025, 11:46:21
+   Atualizado em: 21/08/2025, 11:46:21
+------------------------------------------------------------
+4. ID: 693ba495-97c2-48ec-8023-fb12e4298e47
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 78
+   Resumo: N/A...
+   Criado em: 21/08/2025, 10:56:08
+   Atualizado em: 21/08/2025, 10:56:08
+------------------------------------------------------------
+5. ID: 7f7f003f-d393-42c4-9d8d-fd93d4105111
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_SIGNATURE
+   Status: undefined
+   Confiança: 75
+   Resumo: N/A...
+   Criado em: 21/08/2025, 10:36:54
+   Atualizado em: 21/08/2025, 10:36:54
+------------------------------------------------------------
+6. ID: 13321dde-e0ce-4541-aa75-079f92081edc
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_SIGNATURE
+   Status: undefined
+   Confiança: 75
+   Resumo: N/A...
+   Criado em: 21/08/2025, 10:29:04
+   Atualizado em: 21/08/2025, 10:29:04
+------------------------------------------------------------
+7. ID: 0ed6af5e-4c10-4e45-9b60-32fd22a38e28
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_SIGNATURE
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 20/08/2025, 22:42:58
+   Atualizado em: 20/08/2025, 22:42:58
+------------------------------------------------------------
+8. ID: f35f5a08-2b8d-4e5b-b368-5ed0f6fb7d19
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_SIGNATURE
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 20/08/2025, 22:28:04
+   Atualizado em: 20/08/2025, 22:28:04
+------------------------------------------------------------
+9. ID: 48fec9a1-3b71-4418-974b-e85d286aea44
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_SIGNATURE
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 20/08/2025, 22:24:52
+   Atualizado em: 20/08/2025, 22:24:52
+------------------------------------------------------------
+10. ID: 6194f01c-705e-4057-bf00-204067f6574e
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_SIGNATURE
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 20/08/2025, 22:24:08
+   Atualizado em: 20/08/2025, 22:24:08
+------------------------------------------------------------
+11. ID: a75cf10c-5b7e-4c1f-b4d0-25897780f351
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_SIGNATURE
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 20/08/2025, 22:22:27
+   Atualizado em: 20/08/2025, 22:22:27
+------------------------------------------------------------
+12. ID: 27814135-8420-4c20-aa15-535b7454e4f8
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_SIGNATURE
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 20/08/2025, 22:02:55
+   Atualizado em: 20/08/2025, 22:02:55
+------------------------------------------------------------
+13. ID: ac8bddfd-0479-42cd-9805-577de2f9c289
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_SIGNATURE
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 20/08/2025, 22:01:58
+   Atualizado em: 20/08/2025, 22:01:58
+------------------------------------------------------------
+14. ID: 9aeb8a7f-b694-4a6b-8db5-131f32cd1ce5
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 72
+   Resumo: N/A...
+   Criado em: 20/08/2025, 22:00:49
+   Atualizado em: 20/08/2025, 22:00:49
+------------------------------------------------------------
+15. ID: 004cac59-e524-4a67-83a1-443b1af21abb
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 90
+   Resumo: N/A...
+   Criado em: 20/08/2025, 22:00:30
+   Atualizado em: 20/08/2025, 22:00:30
+------------------------------------------------------------
+16. ID: c41437d4-667b-43c8-ac7c-1ea307de906d
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 92
+   Resumo: N/A...
+   Criado em: 20/08/2025, 21:18:41
+   Atualizado em: 20/08/2025, 21:18:41
+------------------------------------------------------------
+17. ID: 17c60707-2ce2-4c05-af18-d438a1daad21
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 81
+   Resumo: N/A...
+   Criado em: 20/08/2025, 21:17:35
+   Atualizado em: 20/08/2025, 21:17:35
+------------------------------------------------------------
+18. ID: 9ee9462a-067d-41f5-8ded-8321209d0042
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 84
+   Resumo: N/A...
+   Criado em: 20/08/2025, 21:00:08
+   Atualizado em: 20/08/2025, 21:00:08
+------------------------------------------------------------
+19. ID: c2402b37-a595-480e-a2bc-1c80a2f52bf5
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_SIGNATURE
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 20/08/2025, 20:38:50
+   Atualizado em: 20/08/2025, 20:38:50
+------------------------------------------------------------
+20. ID: 38c922cf-9860-4f2b-b10f-4aecb0c288f4
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_SIGNATURE
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 20/08/2025, 20:25:10
+   Atualizado em: 20/08/2025, 20:25:10
+------------------------------------------------------------
+21. ID: 7c99f7ef-7919-4d33-b5a6-f3595b5f5124
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_SIGNATURE
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 20/08/2025, 20:22:57
+   Atualizado em: 20/08/2025, 20:22:57
+------------------------------------------------------------
+22. ID: e2a72941-f790-45ef-8a81-63d5f71761d7
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_SIGNATURE
+   Status: undefined
+   Confiança: 89
+   Resumo: N/A...
+   Criado em: 20/08/2025, 18:54:50
+   Atualizado em: 20/08/2025, 18:54:50
+------------------------------------------------------------
+23. ID: 0457f079-b17e-446c-8040-04c9007f3ed2
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_SIGNATURE
+   Status: undefined
+   Confiança: 89
+   Resumo: N/A...
+   Criado em: 20/08/2025, 18:53:56
+   Atualizado em: 20/08/2025, 18:53:56
+------------------------------------------------------------
+24. ID: 67eea4d6-32e0-4975-9d03-9287545e2316
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 73
+   Resumo: N/A...
+   Criado em: 20/08/2025, 16:57:43
+   Atualizado em: 20/08/2025, 16:57:43
+------------------------------------------------------------
+25. ID: 7faceee8-d5b3-4688-b6be-fa3ffb11e0e0
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 89
+   Resumo: N/A...
+   Criado em: 20/08/2025, 14:54:25
+   Atualizado em: 20/08/2025, 14:54:25
+------------------------------------------------------------
+26. ID: e8fccd6b-e748-4127-bb95-27f8b994df4d
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 78
+   Resumo: N/A...
+   Criado em: 20/08/2025, 14:09:13
+   Atualizado em: 20/08/2025, 14:09:13
+------------------------------------------------------------
+27. ID: 8d5720f2-e9e6-4493-9b65-8a818bd78c1a
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 71
+   Resumo: N/A...
+   Criado em: 20/08/2025, 12:47:01
+   Atualizado em: 20/08/2025, 12:47:01
+------------------------------------------------------------
+28. ID: 7a971350-605f-4854-b475-bee8b5204344
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 83
+   Resumo: N/A...
+   Criado em: 20/08/2025, 11:36:51
+   Atualizado em: 20/08/2025, 11:36:51
+------------------------------------------------------------
+29. ID: 4c7f2d90-703e-4f1b-8f36-5c7296643c8c
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 95
+   Resumo: N/A...
+   Criado em: 20/08/2025, 09:37:02
+   Atualizado em: 20/08/2025, 09:37:02
+------------------------------------------------------------
+30. ID: f978d287-15b6-4d54-8206-6cfa5160c7f8
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 78
+   Resumo: N/A...
+   Criado em: 20/08/2025, 08:57:03
+   Atualizado em: 20/08/2025, 08:57:03
+------------------------------------------------------------
+31. ID: f48ddf2f-d1b5-41a8-8c65-6971e71877db
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 75
+   Resumo: N/A...
+   Criado em: 19/08/2025, 22:16:49
+   Atualizado em: 19/08/2025, 22:16:49
+------------------------------------------------------------
+32. ID: 39bb1c2e-369f-4fb4-a530-7b20ddfc51a2
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 89
+   Resumo: N/A...
+   Criado em: 19/08/2025, 21:50:01
+   Atualizado em: 19/08/2025, 21:50:01
+------------------------------------------------------------
+33. ID: 5cd44ca2-e2ca-4493-8e57-ef74dae88c2f
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 19/08/2025, 21:49:38
+   Atualizado em: 19/08/2025, 21:49:38
+------------------------------------------------------------
+34. ID: 40dd7438-2ab9-40fb-8869-3cdf0c44925c
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 80
+   Resumo: N/A...
+   Criado em: 19/08/2025, 21:29:54
+   Atualizado em: 19/08/2025, 21:29:54
+------------------------------------------------------------
+35. ID: ec5b7823-fc0a-486f-99e9-4cc164399d2b
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 75
+   Resumo: N/A...
+   Criado em: 19/08/2025, 20:46:56
+   Atualizado em: 19/08/2025, 20:46:56
+------------------------------------------------------------
+36. ID: a104cfd4-2d65-4dce-88fd-96dbb68a10e9
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 80
+   Resumo: N/A...
+   Criado em: 19/08/2025, 20:46:23
+   Atualizado em: 19/08/2025, 20:46:23
+------------------------------------------------------------
+37. ID: b55da8f4-9691-41e6-8a61-293bb7f251ba
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 82
+   Resumo: N/A...
+   Criado em: 19/08/2025, 15:07:53
+   Atualizado em: 19/08/2025, 15:07:53
+------------------------------------------------------------
+38. ID: 0adbe87d-635b-42d7-8d3c-1c1ba599b81b
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 75
+   Resumo: N/A...
+   Criado em: 19/08/2025, 14:50:07
+   Atualizado em: 19/08/2025, 14:50:07
+------------------------------------------------------------
+39. ID: d08c0923-931e-4a8a-bcbf-e6421372f001
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 85
+   Resumo: N/A...
+   Criado em: 19/08/2025, 14:46:29
+   Atualizado em: 19/08/2025, 14:46:29
+------------------------------------------------------------
+40. ID: d9773b56-1194-4232-9a2e-543491825b6a
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 19/08/2025, 14:27:07
+   Atualizado em: 19/08/2025, 14:27:07
+------------------------------------------------------------
+41. ID: 7c8272b6-48c3-4492-bc4f-9c642b3b013b
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 90
+   Resumo: N/A...
+   Criado em: 19/08/2025, 14:18:21
+   Atualizado em: 19/08/2025, 14:18:21
+------------------------------------------------------------
+42. ID: ba57e544-3d2d-4a42-8ac1-91e43651abd9
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 70
+   Resumo: N/A...
+   Criado em: 19/08/2025, 13:41:10
+   Atualizado em: 19/08/2025, 13:41:10
+------------------------------------------------------------
+43. ID: dc4424f0-d788-42a4-8f54-c1992d2d7a58
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 93
+   Resumo: N/A...
+   Criado em: 19/08/2025, 13:40:28
+   Atualizado em: 19/08/2025, 13:40:28
+------------------------------------------------------------
+44. ID: fa4f94a0-a331-466a-bf7a-31e543baa613
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 85
+   Resumo: N/A...
+   Criado em: 19/08/2025, 13:40:05
+   Atualizado em: 19/08/2025, 13:40:05
+------------------------------------------------------------
+45. ID: a29f0a4a-50b6-4d1f-bfb8-fb3fd14a2a23
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 85
+   Resumo: N/A...
+   Criado em: 19/08/2025, 13:38:35
+   Atualizado em: 19/08/2025, 13:38:35
+------------------------------------------------------------
+46. ID: dece0c4e-e9a0-4c1c-aac9-44589d39dbcb
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 19/08/2025, 12:45:35
+   Atualizado em: 19/08/2025, 12:45:35
+------------------------------------------------------------
+47. ID: 14a8cb39-0b4c-4638-a41e-c0045fb5d60b
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 19/08/2025, 11:14:18
+   Atualizado em: 19/08/2025, 11:14:18
+------------------------------------------------------------
+48. ID: 166cf882-e3c8-46e5-a11e-feba80961da9
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 19/08/2025, 11:13:49
+   Atualizado em: 19/08/2025, 11:13:49
+------------------------------------------------------------
+49. ID: 77a41824-4f3a-4e06-a4ce-fc690bf994b4
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 19/08/2025, 11:02:58
+   Atualizado em: 19/08/2025, 11:02:58
+------------------------------------------------------------
+50. ID: 33acb29a-2e2d-4a9e-9a17-e364415238a7
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 19/08/2025, 08:47:17
+   Atualizado em: 19/08/2025, 08:47:17
+------------------------------------------------------------
+51. ID: 0f8b43ca-ea18-45ac-b9e4-792e7513f96f
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 19/08/2025, 08:28:32
+   Atualizado em: 19/08/2025, 08:28:32
+------------------------------------------------------------
+52. ID: 2bb297e6-b935-4634-860d-1097b34460e1
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 19/08/2025, 08:19:47
+   Atualizado em: 19/08/2025, 08:19:47
+------------------------------------------------------------
+53. ID: 0168e843-23fb-4428-b167-744af0f48fee
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 18/08/2025, 22:19:09
+   Atualizado em: 18/08/2025, 22:19:09
+------------------------------------------------------------
+54. ID: 15918cc7-6bd4-4739-86b8-e01763a63767
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 18/08/2025, 22:18:40
+   Atualizado em: 18/08/2025, 22:18:40
+------------------------------------------------------------
+55. ID: b28aa376-f6f1-4ea7-b11a-82864045c1a6
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 18/08/2025, 21:38:02
+   Atualizado em: 18/08/2025, 21:38:02
+------------------------------------------------------------
+56. ID: 69d25f90-9784-42c8-90e3-706a3fa81604
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 18/08/2025, 21:28:50
+   Atualizado em: 18/08/2025, 21:28:50
+------------------------------------------------------------
+57. ID: 209c05b5-7a8a-4e36-bb4c-d3c3e29a9802
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 18/08/2025, 21:24:10
+   Atualizado em: 18/08/2025, 21:24:10
+------------------------------------------------------------
+58. ID: 3989c975-4304-49a6-b343-2759d5343db2
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 18/08/2025, 21:22:51
+   Atualizado em: 18/08/2025, 21:22:51
+------------------------------------------------------------
+59. ID: 9227bc23-1690-4533-8a15-d9299575a686
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 18/08/2025, 20:32:28
+   Atualizado em: 18/08/2025, 20:32:28
+------------------------------------------------------------
+60. ID: c025ce86-a6fc-40ad-b638-085543d134f0
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 18/08/2025, 19:16:38
+   Atualizado em: 18/08/2025, 19:16:38
+------------------------------------------------------------
+61. ID: 64f86cb4-3b7b-4184-8deb-9234b1b58df4
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 18/08/2025, 18:22:29
+   Atualizado em: 18/08/2025, 18:22:29
+------------------------------------------------------------
+62. ID: 65beb48a-fe78-402c-99ff-82b7f0b63b82
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 18/08/2025, 14:36:26
+   Atualizado em: 18/08/2025, 14:36:26
+------------------------------------------------------------
+63. ID: d346d1bd-2247-48fc-a616-29ce0c7590b3
+   Resultado: null
+   Teste: N/A
+   Usuário: N/A (N/A)
+   Tipo: GRAPHOLOGY_MANUSCRIPT
+   Status: undefined
+   Confiança: 87
+   Resumo: N/A...
+   Criado em: 18/08/2025, 14:35:34
+   Atualizado em: 18/08/2025, 14:35:34
+------------------------------------------------------------
+
+
+📈 RESUMO FINAL
+
+==================================================
+TestResult: 33 registros
+TestSession: 96 registros
+Answer: 45 registros
+AIAnalysis: 63 registros
+TOTAL: 237 registros
+
+Registro mais recente: 27/08/2025, 22:34:42
+Registro mais antigo: 18/08/2025, 14:35:34
+
+=== FIM DA LISTAGEM ===

@@ -1,4 +1,3 @@
-
 import { withAuth } from 'next-auth/middleware'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
@@ -74,7 +73,8 @@ export default withAuth(
         
         // Allow access to public routes
         if (pathname.startsWith('/invite/') ||
-            pathname.startsWith('/empresa/saude')) {
+            pathname.startsWith('/empresa/saude') ||
+            pathname.startsWith('/resultados')) {
           return true
         }
         
@@ -92,12 +92,13 @@ export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
-     * - api/auth (NextAuth API routes)
+     * - api/auth (NextAuth API routes - COMPLETELY EXCLUDED)
+     * - api/ (All API routes - let them handle their own auth)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - Static assets
      */
-    '/((?!api/auth|_next/static|_next/image|favicon.ico|.*\.svg|.*\.png|.*\.jpg|.*\.jpeg|.*\.gif|.*\.webp|.*\.ico|.*\.css|.*\.js).*)',
+    '/((?!api/|_next/static|_next/image|favicon.ico|.*\.svg|.*\.png|.*\.jpg|.*\.jpeg|.*\.gif|.*\.webp|.*\.ico|.*\.css|.*\.js).*)',
   ],
 }

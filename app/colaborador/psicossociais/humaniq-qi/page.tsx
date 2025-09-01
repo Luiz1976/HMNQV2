@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { LikertScale } from '@/components/ui/likert-scale'
+import { showResultStorageSuccess, showResultStorageError, showSavingProgress } from '@/lib/toast-utils'
 
 import { ArrowLeft, ArrowRight, Brain, Clock, CheckCircle, Award, Target, Calculator, Zap, Eye } from 'lucide-react'
 
@@ -423,71 +424,68 @@ export default function HumaniqQIPage() {
     setIsSubmitting(true)
     
     try {
-      // 1. Criar sessão de teste
-      const sessionResponse = await fetch('/api/tests/sessions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      // Calcular resultados primeiro
+      const testResults = calculateResults()
+      
+      // Mostrar mensagem de progresso
+      showSavingProgress('HumaniQ QI – Quociente de Inteligência')
+      
+      // Preparar dados para a nova API de resultados
+      const resultData = {
+        tipoTeste: 'QI',
+        respostasCriptografadas: {
+          ...testResults,
+          answers: Object.entries(answers).map(([questionId, answer]) => {
+            const question = questions.find(q => q.id === parseInt(questionId))
+            return {
+              questionId: parseInt(questionId),
+              selectedOption: answer,
+              isCorrect: question ? answer === question.correctAnswer : false
+            }
+          })
         },
-        body: JSON.stringify({
-          testId: 'cme216bqg000f8wg08lorykq7'
-        })
-      })
-
-      if (!sessionResponse.ok) {
-        throw new Error('Falha ao criar sessão de teste')
-      }
-
-      const sessionData = await sessionResponse.json()
-      const sessionId = sessionData.sessionId
-
-      // 2. Preparar dados para submissão
-       const submissionData = {
-         testId: 'cme216bqg000f8wg08lorykq7',
-        sessionId: sessionId,
-        answers: Object.entries(answers).map(([questionId, answer]) => {
-          const question = questions.find(q => q.id === parseInt(questionId))
-          return {
-            questionId: parseInt(questionId),
-            selectedOption: answer,
-            isCorrect: question ? answer === question.correctAnswer : false
-          }
-        }),
-        duration: timeElapsed,
         metadata: {
           testName: 'HumaniQ QI – Quociente de Inteligência',
           totalQuestions: questions.length,
-          completedAt: new Date().toISOString()
+          duration: timeElapsed,
+          completedAt: new Date().toISOString(),
+          version: '2.0'
         }
       }
 
-      // 3. Submeter resultados
-      const submitResponse = await fetch('/api/tests/submit', {
+      // Submeter para a nova API segura
+      const response = await fetch('/api/colaborador/resultados', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(submissionData)
+        credentials: 'include',
+        body: JSON.stringify(resultData)
       })
 
-      if (!submitResponse.ok) {
-        throw new Error('Falha ao submeter resultados')
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || `Erro ${response.status}`)
       }
 
-      const submitData = await submitResponse.json()
+      const responseData = await response.json()
       
-      // 4. Calcular e exibir resultados localmente
-      const testResults = calculateResults()
+      // Mostrar mensagem de sucesso
+      showResultStorageSuccess('HumaniQ QI – Quociente de Inteligência')
+      
+      // Calcular e exibir resultados localmente
       setResults(testResults)
       setShowResults(true)
       
-      // 5. Redirecionar para página de resultados após um delay
+      // Redirecionar para página de resultados após um delay
       setTimeout(() => {
-        window.location.href = '/colaborador/resultados'
-      }, 3000)
+        router.push(`/colaborador/resultados?highlight=${responseData.data.idResultado}`)
+      }, 8000)
       
     } catch (error) {
       console.error('Erro ao completar teste:', error)
+      showResultStorageError(error instanceof Error ? error.message : 'Erro desconhecido')
+      
       // Em caso de erro, ainda mostra os resultados localmente
       const testResults = calculateResults()
       setResults(testResults)

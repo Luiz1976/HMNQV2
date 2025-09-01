@@ -5,15 +5,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { ArrowLeft, ArrowRight, CheckCircle, Brain, Heart, Zap, Users, Clock, Award, Target, Calculator, Eye, Lightbulb, Shield } from 'lucide-react'
+import { ArrowLeft, ArrowRight, CheckCircle, Brain, Heart, Zap, Users, Clock, Award, Target, Calculator, Eye, Lightbulb, Shield, Printer, Download } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { LikertScale } from '@/components/ui/likert-scale'
 
 interface Question {
-  id: number
+  id: string
   text: string
   test: string
   dimension: string
+  questionNumber?: number
+  type?: string
 }
 
 interface TestResults {
@@ -23,85 +25,51 @@ interface TestResults {
   testScores: Record<string, number>
 }
 
-const questions: Question[] = [
-  // TOHE - Teste de Organização e Histórias Emocionais
-  // Reconhecimento Emocional (RE)
-  { id: 1, text: "Eu consigo perceber com facilidade quando alguém está incomodado, mesmo que não diga nada.", test: "TOHE", dimension: "Reconhecimento Emocional" },
-  { id: 2, text: "Se alguém está alegre, normalmente percebo isso no tom de voz ou expressão.", test: "TOHE", dimension: "Reconhecimento Emocional" },
-  { id: 3, text: "Consigo perceber mudanças sutis nas expressões faciais das pessoas.", test: "TOHE", dimension: "Reconhecimento Emocional" },
-  { id: 4, text: "Tenho facilidade em perceber quando alguém está desconfortável em uma conversa.", test: "TOHE", dimension: "Reconhecimento Emocional" },
-  { id: 5, text: "Rapidamente noto quando o clima emocional de um ambiente muda.", test: "TOHE", dimension: "Reconhecimento Emocional" },
-  
-  // Compreensão de Causas (CC)
-  { id: 6, text: "Quando algo me irrita, costumo entender exatamente o motivo.", test: "TOHE", dimension: "Compreensão de Causas" },
-  { id: 7, text: "Entendo bem o que causou minhas emoções em situações passadas.", test: "TOHE", dimension: "Compreensão de Causas" },
-  { id: 8, text: "Sou capaz de identificar as causas das emoções alheias com facilidade.", test: "TOHE", dimension: "Compreensão de Causas" },
-  { id: 9, text: "Consigo relacionar eventos a sentimentos de forma lógica.", test: "TOHE", dimension: "Compreensão de Causas" },
-  { id: 10, text: "Tenho clareza sobre como meu ambiente influencia meu estado emocional.", test: "TOHE", dimension: "Compreensão de Causas" },
-  
-  // Tomada de Perspectiva (TP)
-  { id: 11, text: "Consigo imaginar como outra pessoa se sente em uma situação difícil.", test: "TOHE", dimension: "Tomada de Perspectiva" },
-  { id: 12, text: "Costumo pensar em como as situações afetam os outros antes de agir.", test: "TOHE", dimension: "Tomada de Perspectiva" },
-  { id: 13, text: "Tenho facilidade para entender pontos de vista diferentes do meu.", test: "TOHE", dimension: "Tomada de Perspectiva" },
-  { id: 14, text: "Mesmo em conflitos, tento considerar as emoções das outras pessoas.", test: "TOHE", dimension: "Tomada de Perspectiva" },
-  { id: 15, text: "Me coloco no lugar do outro para entender melhor seu comportamento.", test: "TOHE", dimension: "Tomada de Perspectiva" },
-  
-  // VE - Teste de Velocidade Emocional
-  // Reação Rápida (RR)
-  { id: 16, text: "Consigo reagir com calma mesmo em situações de pressão emocional.", test: "VE", dimension: "Reação Rápida" },
-  { id: 17, text: "Tomo decisões equilibradas mesmo quando estou sob forte emoção.", test: "VE", dimension: "Reação Rápida" },
-  { id: 18, text: "Identifico rapidamente emoções em mensagens de texto ou e-mail.", test: "VE", dimension: "Reação Rápida" },
-  { id: 19, text: "Costumo agir de forma adequada emocionalmente, mesmo sob pressão.", test: "VE", dimension: "Reação Rápida" },
-  { id: 20, text: "Percebo minhas emoções quase no mesmo momento em que surgem.", test: "VE", dimension: "Reação Rápida" },
-  
-  // Tomada de Decisão Emocional (TDE)
-  { id: 21, text: "Penso rápido em como consolar alguém que está chorando.", test: "VE", dimension: "Tomada de Decisão Emocional" },
-  { id: 22, text: "Tenho boas respostas emocionais imediatas em situações sociais.", test: "VE", dimension: "Tomada de Decisão Emocional" },
-  { id: 23, text: "Rapidamente ajusto minha abordagem com base nas emoções dos outros.", test: "VE", dimension: "Tomada de Decisão Emocional" },
-  { id: 24, text: "Tenho agilidade emocional em discussões difíceis.", test: "VE", dimension: "Tomada de Decisão Emocional" },
-  { id: 25, text: "Reajo com empatia quase instintivamente quando vejo sofrimento.", test: "VE", dimension: "Tomada de Decisão Emocional" },
-  
-  // QORE - Questionário Online de Regulação Emocional
-  // Autorregulação (AR)
-  { id: 26, text: "Quando fico frustrado, consigo me acalmar rapidamente.", test: "QORE", dimension: "Autorregulação" },
-  { id: 27, text: "Tenho estratégias eficazes para lidar com sentimentos negativos.", test: "QORE", dimension: "Autorregulação" },
-  { id: 28, text: "Sou capaz de controlar minhas reações emocionais em público.", test: "QORE", dimension: "Autorregulação" },
-  { id: 29, text: "Mesmo em situações estressantes, mantenho o autocontrole.", test: "QORE", dimension: "Autorregulação" },
-  { id: 30, text: "Evito decisões impulsivas motivadas por emoção.", test: "QORE", dimension: "Autorregulação" },
-  
-  // Redirecionamento Positivo (RP)
-  { id: 31, text: "Em situações difíceis, busco focar em algo positivo.", test: "QORE", dimension: "Redirecionamento Positivo" },
-  { id: 32, text: "Consigo transformar emoções negativas em aprendizado.", test: "QORE", dimension: "Redirecionamento Positivo" },
-  { id: 33, text: "Costumo ver um lado positivo mesmo em adversidades.", test: "QORE", dimension: "Redirecionamento Positivo" },
-  { id: 34, text: "Busco soluções construtivas quando estou emocionalmente afetado.", test: "QORE", dimension: "Redirecionamento Positivo" },
-  { id: 35, text: "Consigo manter uma atitude otimista mesmo em tempos difíceis.", test: "QORE", dimension: "Redirecionamento Positivo" },
-  
-  // QOE - Questionário Online de Empatia
-  // Empatia Cognitiva (EC)
-  { id: 36, text: "Consigo me colocar no lugar dos outros com facilidade.", test: "QOE", dimension: "Empatia Cognitiva" },
-  { id: 37, text: "Entendo o ponto de vista de quem discorda de mim.", test: "QOE", dimension: "Empatia Cognitiva" },
-  { id: 38, text: "Penso em como as pessoas se sentem antes de tomar decisões.", test: "QOE", dimension: "Empatia Cognitiva" },
-  { id: 39, text: "Gosto de entender o que motiva os outros.", test: "QOE", dimension: "Empatia Cognitiva" },
-  { id: 40, text: "Tenho interesse real pelas histórias e vivências das pessoas.", test: "QOE", dimension: "Empatia Cognitiva" },
-  
-  // Empatia Emocional (EE)
-  { id: 41, text: "Sinto tristeza ao ver alguém chorando.", test: "QOE", dimension: "Empatia Emocional" },
-  { id: 42, text: "Minha emoção muda quando percebo que alguém está muito feliz ou triste.", test: "QOE", dimension: "Empatia Emocional" },
-  { id: 43, text: "Fico emocionado com relatos ou filmes comoventes.", test: "QOE", dimension: "Empatia Emocional" },
-  { id: 44, text: "Me conecto emocionalmente com quem está passando por dificuldades.", test: "QOE", dimension: "Empatia Emocional" },
-  { id: 45, text: "Minha empatia me faz sentir parte do sofrimento dos outros.", test: "QOE", dimension: "Empatia Emocional" }
-]
+// Questões serão carregadas dinamicamente do banco de dados
 
 // Removido responseOptions - agora usando LikertScale component
 
 export default function HumaniqBOLIETest() {
   const router = useRouter()
   const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [answers, setAnswers] = useState<Record<number, number>>({})
+  const [answers, setAnswers] = useState<Record<string, number>>({})
   const [showResults, setShowResults] = useState(false)
   const [results, setResults] = useState<TestResults | null>(null)
   const [timeElapsed, setTimeElapsed] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [questions, setQuestions] = useState<Question[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+
+  // Carregar questões do banco de dados
+  useEffect(() => {
+    const loadQuestions = async () => {
+      try {
+        setIsLoading(true)
+        const response = await fetch('/api/tests/questions?testId=cmehdpsox000o8wc0yuai0swa')
+        
+        if (!response.ok) {
+          throw new Error('Falha ao carregar questões')
+        }
+        
+        const data = await response.json()
+        
+        if (data.success && data.questions) {
+          setQuestions(data.questions)
+          setLoadError(null)
+        } else {
+          throw new Error(data.error || 'Erro ao carregar questões')
+        }
+      } catch (error) {
+        console.error('Erro ao carregar questões:', error)
+        setLoadError(error instanceof Error ? error.message : 'Erro desconhecido')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    
+    loadQuestions()
+  }, [])
 
   // Timer
   useEffect(() => {
@@ -123,19 +91,21 @@ export default function HumaniqBOLIETest() {
   const answeredQuestions = Object.keys(answers).length
 
   const handleAnswer = (value: number) => {
-    const newAnswers = { ...answers, [questions[currentQuestion].id]: value }
-    setAnswers(newAnswers)
+    const question = questions[currentQuestion]
+    setAnswers(prev => ({ ...prev, [question.id]: value }))
     
-    // Auto-navegar para próxima questão ou finalizar teste
-    setTimeout(() => {
-      if (currentQuestion < questions.length - 1) {
+    // Auto-advance to next question
+    if (currentQuestion < questions.length - 1) {
+      setTimeout(() => {
         setCurrentQuestion(prev => prev + 1)
-      } else {
-        // Todas as questões respondidas, calcular e finalizar
-        const finalResults = calculateResults(newAnswers)
-        completeTest(finalResults)
-      }
-    }, 500)
+      }, 300)
+    } else {
+      // Test completed
+      setTimeout(() => {
+        const testResults = calculateResults({ ...answers, [question.id]: value })
+        completeTest(testResults)
+      }, 300)
+    }
   }
 
   const nextQuestion = () => {
@@ -145,8 +115,21 @@ export default function HumaniqBOLIETest() {
   }
 
   const previousQuestion = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion(prev => prev - 1)
+     if (currentQuestion > 0) {
+       setCurrentQuestion(prev => prev - 1)
+     }
+   }
+
+   // Funções de ação no resultado
+  const handlePrint = () => {
+    if (typeof window !== 'undefined') {
+      window.print()
+    }
+  }
+
+  const handleDownload = () => {
+    if (typeof window !== 'undefined') {
+      window.open('/api/tests/report-pdf?test=bolie', '_blank')
     }
   }
 
@@ -258,7 +241,7 @@ export default function HumaniqBOLIETest() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          testId: 'bolie-test-id' // ID específico do teste BOLIE
+          testId: 'cmehdpsox000o8wc0yuai0swa' // ID específico do teste BOLIE
         })
       })
 
@@ -271,12 +254,12 @@ export default function HumaniqBOLIETest() {
 
       // 2. Preparar dados para submissão
       const submissionData = {
-        testId: 'bolie-test-id',
+        testId: 'cmehdpsox000o8wc0yuai0swa',
         sessionId: sessionId,
         answers: Object.entries(answers).map(([questionId, answer]) => {
-          const question = questions.find(q => q.id === parseInt(questionId))
+          const question = questions.find(q => q.id === questionId)
           return {
-            questionId: parseInt(questionId),
+            questionId: questionId,
             selectedOption: answer.toString(),
             dimension: question?.dimension || '',
             test: question?.test || ''
@@ -315,10 +298,17 @@ export default function HumaniqBOLIETest() {
       setResults(testResults)
       setShowResults(true)
       
-      // 5. Redirecionar para página de resultados após um delay
-      setTimeout(() => {
-        window.location.href = '/colaborador/resultados'
-      }, 3000)
+      // 5. Redirecionar para página individual do resultado após um delay
+      if (submitData.success && submitData.testResult?.id) {
+        setTimeout(() => {
+          router.push(`/colaborador/resultados/${submitData.testResult.id}?saved=1`)
+        }, 3000)
+      } else {
+        // Fallback para página de resultados se não conseguir o ID
+        setTimeout(() => {
+          router.push('/colaborador/resultados')
+        }, 3000)
+      }
       
     } catch (error) {
       console.error('Erro ao completar teste:', error)
@@ -499,6 +489,67 @@ export default function HumaniqBOLIETest() {
               Refazer Teste
             </Button>
           </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Interface de loading
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-4 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Carregando questões do teste...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Interface de erro
+  if (loadError) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-4 flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <div className="text-red-500 mb-4">
+            <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Erro ao Carregar Teste</h2>
+          <p className="text-gray-600 mb-4">{loadError}</p>
+          <div className="space-y-2">
+            <Button
+              onClick={() => window.location.reload()}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              Tentar Novamente
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => router.push('/colaborador/psicossociais')}
+            >
+              Voltar aos Testes
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Verificar se as questões foram carregadas
+  if (questions.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-4 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Nenhuma questão encontrada para este teste.</p>
+          <Button
+            variant="outline"
+            onClick={() => router.push('/colaborador/psicossociais')}
+            className="mt-4"
+          >
+            Voltar aos Testes
+          </Button>
         </div>
       </div>
     )

@@ -9,8 +9,17 @@ export const dynamic = 'force-dynamic'
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
+    
+    console.log('🔍 Session debug:', {
+      hasSession: !!session,
+      hasUser: !!session?.user,
+      userId: session?.user?.id,
+      userEmail: session?.user?.email,
+      userType: session?.user?.userType
+    })
 
     if (!session?.user?.id) {
+      console.log('❌ Session validation failed - no user ID')
       return NextResponse.json(
         { error: 'Não autorizado' },
         { status: 401 }

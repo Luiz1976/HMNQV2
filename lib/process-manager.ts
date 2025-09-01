@@ -36,8 +36,12 @@ class ProcessManager {
     // Registrar handlers de shutdown
     process.on('SIGTERM', this.handleShutdown.bind(this))
     process.on('SIGINT', this.handleShutdown.bind(this))
-    process.on('beforeExit', this.handleShutdown.bind(this))
-    process.on('exit', this.handleExit.bind(this))
+    // TEMPORARIAMENTE DESABILITADO: Evitar encerramento prematuro em ambiente de desenvolvimento
+    // if (process.env.NODE_ENV === 'production') {
+    //   process.on('beforeExit', this.handleShutdown.bind(this))
+    // }
+    // TEMPORARIAMENTE DESABILITADO: exit handler pode interferir com Next.js dev server
+    // process.on('exit', this.handleExit.bind(this))
 
     this.listenersRegistered = true
     console.log('[PROCESS-MANAGER] Process listeners registrados com sucesso')

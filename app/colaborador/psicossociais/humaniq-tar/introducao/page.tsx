@@ -562,12 +562,7 @@ export default function HumaniqTARIntroducaoPage() {
                           transition={{ delay: index * 0.1 }}
                           className="text-blue-100 leading-relaxed text-lg"
                         >
-                          {paragraph.split('**').map((part, i) => 
-                            i % 2 === 1 ? 
-                              <strong key={i} className="text-white font-semibold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-                                {part}
-                              </strong> : part
-                          )}
+                          {paragraph}
                         </motion.p>
                       ))}
                     </motion.div>

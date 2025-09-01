@@ -392,17 +392,8 @@ export default function QITestPage() {
             {/* Custom QI Likert Scale with 4 options */}
             <div className="mb-8">
               <div className="w-full space-y-6">
-                {/* Top Labels and Gradient Bar */}
+                {/* Gradient Bar */}
                 <div className="space-y-4">
-                  {/* Labels */}
-                  <div className="flex justify-between text-sm font-medium text-gray-600">
-                    <span className="text-red-600">a)</span>
-                    <span className="text-orange-600">b)</span>
-                    <span className="text-yellow-600">c)</span>
-                    <span className="text-green-600">d)</span>
-                  </div>
-                  
-                  {/* Gradient Bar */}
                   <div className="h-2 w-full rounded-full bg-gradient-to-r from-red-300 via-orange-300 via-yellow-300 to-green-400 shadow-sm"></div>
                 </div>
 

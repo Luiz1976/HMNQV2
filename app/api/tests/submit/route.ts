@@ -6,8 +6,27 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { db as prisma } from '@/lib/db'
 import TestResultArchiver from '@/archives/utils/archiver'
+import fs from 'fs'
+import path from 'path'
 
 export const dynamic = 'force-dynamic'
+
+// Função para log de monitoramento
+function logMonitoring(message: string, data?: any) {
+  const timestamp = new Date().toLocaleString('pt-BR')
+  const logEntry = `[${timestamp}] 🔍 MONITOR: ${message}`
+  
+  console.log(logEntry, data || '')
+  
+  // Salvar no arquivo de log de monitoramento
+  try {
+    const logFile = path.join(process.cwd(), 'monitoring-log.txt')
+    const fullEntry = data ? `${logEntry} - ${JSON.stringify(data)}\n` : `${logEntry}\n`
+    fs.appendFileSync(logFile, fullEntry)
+  } catch (error) {
+    console.error('Erro ao escrever log de monitoramento:', error)
+  }
+}
 
 // Interface para submissão de teste
 interface TestSubmission {
@@ -20,14 +39,22 @@ interface TestSubmission {
   }[]
   duration: number
   metadata?: any
+  results?: {
+    uniqueResultId?: string
+  }
 }
 
 // POST - Submeter teste completo
 export async function POST(request: NextRequest) {
   try {
+    console.log('🚀 [TEST_SUBMIT] Iniciando submissão de teste')
+    logMonitoring('INÍCIO DA SUBMISSÃO DE TESTE', { timestamp: new Date().toISOString() })
+    
     const session = await getServerSession(authOptions)
+    console.log('👤 [TEST_SUBMIT] Sessão do usuário:', { userId: session?.user?.id, email: session?.user?.email })
     
     if (!session?.user?.id) {
+      console.log('❌ [TEST_SUBMIT] Usuário não autorizado')
       return NextResponse.json(
         { error: 'Não autorizado' },
         { status: 401 }
@@ -35,6 +62,12 @@ export async function POST(request: NextRequest) {
     }
 
     const submission: TestSubmission = await request.json()
+    console.log('📝 [TEST_SUBMIT] Dados da submissão recebidos:', {
+      testId: submission.testId,
+      sessionId: submission.sessionId,
+      answersCount: submission.answers?.length || 0,
+      duration: submission.duration
+    })
     
     // Validar dados da submissão
     if (!submission.testId || !submission.sessionId || !submission.answers) {
@@ -45,6 +78,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verificar se o teste existe, está ativo e o usuário tem permissão
+    console.log('🔍 [TEST_SUBMIT] Buscando teste no banco de dados:', submission.testId)
     const test = await prisma.test.findUnique({
       where: { id: submission.testId },
       include: {
@@ -53,11 +87,19 @@ export async function POST(request: NextRequest) {
     })
 
     if (!test) {
+      console.log('❌ [TEST_SUBMIT] Teste não encontrado:', submission.testId)
       return NextResponse.json(
         { error: 'Teste não encontrado' },
         { status: 404 }
       )
     }
+    
+    console.log('✅ [TEST_SUBMIT] Teste encontrado:', {
+      id: test.id,
+      name: test.name,
+      isActive: test.isActive,
+      questionsCount: test.questions?.length || 0
+    })
 
     // Validar se o teste está ativo (apenas testes oficiais)
     if (!test.isActive) {
@@ -68,6 +110,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Verificar sessão do teste
+    console.log('🔍 [TEST_SUBMIT] Verificando sessão do teste:', {
+      sessionId: submission.sessionId,
+      userId: session.user.id,
+      testId: submission.testId
+    })
+    
     const testSession = await prisma.testSession.findFirst({
       where: {
         id: submission.sessionId,
@@ -77,11 +125,18 @@ export async function POST(request: NextRequest) {
     })
 
     if (!testSession) {
+      console.log('❌ [TEST_SUBMIT] Sessão de teste inválida ou não encontrada')
       return NextResponse.json(
         { error: 'Sessão de teste inválida' },
         { status: 404 }
       )
     }
+    
+    console.log('✅ [TEST_SUBMIT] Sessão válida encontrada:', {
+      sessionId: testSession.id,
+      status: testSession.status,
+      createdAt: testSession.createdAt
+    })
 
     // Verificar se existem questões cadastradas para este teste
     const questionsCount = await prisma.question.count({
@@ -90,15 +145,37 @@ export async function POST(request: NextRequest) {
     
     // Salvar respostas no banco de dados apenas se existirem questões cadastradas
     if (questionsCount > 0) {
+      logMonitoring('Salvando respostas no banco de dados', {
+        answersCount: submission.answers.length,
+        testId: submission.testId,
+        userId: session.user.id
+      })
       await saveTestAnswers(submission, session.user.id)
+      logMonitoring('🚨 RESPOSTAS SALVAS NO BANCO DE DADOS!', {
+        location: 'SQLite Database - Answer table',
+        answersCount: submission.answers.length,
+        testId: submission.testId,
+        userId: session.user.id
+      })
     } else {
       console.log(`⚠️ Teste ${submission.testId} não possui questões cadastradas. Pulando salvamento de respostas.`)
+      logMonitoring('Teste sem questões cadastradas - pulando salvamento de respostas', {
+        testId: submission.testId
+      })
     }
     
     // Calcular resultados do teste
     const calculatedResults = await calculateTestResults(submission, test)
     
     // Criar resultado do teste
+    console.log('💾 [TEST_SUBMIT] Criando resultado do teste no banco de dados:', {
+      sessionId: submission.sessionId,
+      testId: submission.testId,
+      userId: session.user.id,
+      overallScore: (calculatedResults as any).overallScore || 0,
+      dimensionScoresKeys: Object.keys((calculatedResults as any).dimensionScores || {})
+    })
+    
     const testResult = await prisma.testResult.create({
       data: {
         sessionId: submission.sessionId,
@@ -109,27 +186,73 @@ export async function POST(request: NextRequest) {
         dimensionScores: (calculatedResults as any).dimensionScores || {},
         metadata: {
           ...submission.metadata,
+          ...(calculatedResults as any).metadata,
           calculationDate: new Date().toISOString(),
-          totalAnswers: submission.answers.length
+          totalAnswers: submission.answers.length,
+          uniqueResultId: submission.results?.uniqueResultId || submission.metadata?.uniqueResultId
         }
       }
+    })
+    
+    logMonitoring('🚨 RESULTADO SALVO NO BANCO DE DADOS!', {
+      resultId: testResult.id,
+      testId: testResult.testId,
+      userId: testResult.userId,
+      sessionId: testResult.sessionId,
+      overallScore: testResult.overallScore,
+      createdAt: testResult.createdAt,
+      location: 'SQLite Database - TestResult table'
+    })
+    
+    console.log('✅ [TEST_SUBMIT] Resultado criado com sucesso:', {
+      resultId: testResult.id,
+      createdAt: testResult.createdAt
     })
 
     // Arquivar resultado automaticamente
     try {
+      logMonitoring('Iniciando arquivamento de resultado', {
+        resultId: testResult.id,
+        testType: test.testType
+      })
       await archiveTestResult(testResult, test, session.user.id)
+      logMonitoring('🚨 RESULTADO ARQUIVADO EM JSON!', {
+        resultId: testResult.id,
+        location: './archives/results/ directory',
+        testType: test.testType,
+        userId: session.user.id
+      })
     } catch (archiveError) {
       console.error('Erro ao arquivar resultado (não crítico):', archiveError)
+      logMonitoring('❌ ERRO NO ARQUIVAMENTO JSON', {
+        error: archiveError instanceof Error ? archiveError.message : String(archiveError),
+        resultId: testResult.id
+      })
       // Não interromper o fluxo principal se o arquivamento falhar
     }
 
     // Atualizar status da sessão
-    await prisma.testSession.update({
+    console.log('🔄 [TEST_SUBMIT] Atualizando status da sessão para COMPLETED:', submission.sessionId)
+    
+    const updatedSession = await prisma.testSession.update({
       where: { id: submission.sessionId },
       data: {
         status: 'COMPLETED',
         completedAt: new Date()
       }
+    })
+    
+    logMonitoring('🚨 SESSÃO ATUALIZADA NO BANCO DE DADOS!', {
+      sessionId: updatedSession.id,
+      status: updatedSession.status,
+      completedAt: updatedSession.completedAt,
+      location: 'SQLite Database - TestSession table'
+    })
+    
+    console.log('✅ [TEST_SUBMIT] Sessão atualizada com sucesso:', {
+      sessionId: updatedSession.id,
+      status: updatedSession.status,
+      completedAt: updatedSession.completedAt
     })
 
     // Acionar análise de IA em segundo plano (não-bloqueante)
@@ -151,7 +274,9 @@ export async function POST(request: NextRequest) {
       },
       results: {
         overallScore: (calculatedResults as any).overallScore || 0,
-        dimensionScores: (calculatedResults as any).dimensionScores || {}
+        dimensionScores: (calculatedResults as any).dimensionScores || {},
+        uniqueResultId: submission.results?.uniqueResultId || submission.metadata?.uniqueResultId,
+        ...(calculatedResults as any)
       },
       message: 'Teste submetido com sucesso. Análise de IA será processada em segundo plano.'
     })
@@ -170,39 +295,59 @@ async function archiveTestResult(testResult: any, test: any, userId: string) {
   try {
     const archiver = new TestResultArchiver()
     
+    // Mapear tipo de teste para formato do archiver
+    const mapTestType = (testType: string): 'personalidade' | 'psicossociais' | 'outros' => {
+      switch (testType) {
+        case 'PERSONALITY':
+          return 'personalidade'
+        case 'PSYCHOSOCIAL':
+        case 'HUMANIQ_MGRP':
+          return 'psicossociais'
+        case 'GRAPHOLOGY':
+        case 'CORPORATE':
+        default:
+          return 'outros'
+      }
+    }
+
     // Converter resultado do Prisma para formato do archiver
     const archiveData = {
       id: testResult.id,
       testId: testResult.testId,
       testName: test.name,
-      testType: test.testType,
+      testType: mapTestType(test.testType),
       userId: userId,
       sessionId: testResult.sessionId,
       overallScore: testResult.overallScore,
       dimensionScores: testResult.dimensionScores,
-      duration: testResult.duration,
-      completedAt: testResult.createdAt || new Date().toISOString(),
-      status: 'completed' as 'completed' | 'incomplete',
-      metadata: {
-        ...testResult.metadata,
-        testCategory: test.category,
-        testDescription: test.description,
-        archivedFromAPI: true
-      }
-    }
-    
+      completedAt: testResult.createdAt,
+      score: testResult.overallScore,
+      status: 'completed' as const,
+      aiAnalysis: null,
+      metadata: testResult.metadata || {}
+    };
+
+    console.log('🔍 [ARCHIVE] Dados para arquivamento:', {
+      id: archiveData.id,
+      testId: archiveData.testId,
+      testType: archiveData.testType,
+      userId: archiveData.userId,
+      completedAt: archiveData.completedAt
+    })
+
     // Arquivar o resultado
     const filePath = await archiver.archiveTestResult(archiveData, {
       autoIndex: true,
       createDirectories: true,
       overwrite: false
-    })
+    });
     
     console.log(`✅ Resultado arquivado com sucesso: ${filePath}`)
     return filePath
     
   } catch (error) {
     console.error('❌ Erro no arquivamento:', error)
+    console.error('❌ Stack trace:', (error as Error).stack)
     throw error
   }
 }
@@ -269,11 +414,19 @@ function calculateScoresByTestType(testType: string, answers: any[], test: any) 
   }
   
   // Verificar se é o teste HumaniQ Eneagrama pelo ID específico
-  if (test.id === 'humaniq-enneagram-test') {
+  if (test.id === 'humaniq_eneagrama') {
     return calculateEnneagramResults(answers, test)
   }
   
+  // Verificar se é o teste HumaniQ FLEX pelo ID específico
+  if (test.id === 'cmehdpsq4000w8wc0aypzlum1') {
+    return calculateHumaniQFlexResults(answers, test)
+  }
   
+  // Verificar se é o teste HumaniQ Big Five pelo código
+  if (test.code === 'humaniq_big_five' || test.name?.includes('Big Five')) {
+    return calculateBigFiveResults(answers, test)
+  }
   
   switch (testType) {
     case 'PSYCHOSOCIAL':
@@ -284,8 +437,107 @@ function calculateScoresByTestType(testType: string, answers: any[], test: any) 
       return calculateGraphologyResults(answers, test)
     case 'CORPORATE':
       return calculateCorporateResults(answers, test)
+    case 'HUMANIQ_MGRP':
+      return calculateHumaniQMGRPResults(answers, test)
     default:
       return calculateGenericResults(answers, test)
+  }
+}
+
+// Cálculos específicos para teste HumaniQ Big Five (IPIP-120)
+function calculateBigFiveResults(answers: any[], test: any) {
+  const dimensions = {
+    'Abertura': { score: 0, count: 0 },
+    'Conscienciosidade': { score: 0, count: 0 },
+    'Extroversão': { score: 0, count: 0 },
+    'Amabilidade': { score: 0, count: 0 },
+    'Neuroticismo': { score: 0, count: 0 }
+  }
+
+  // Mapear questões para dimensões baseado no padrão IPIP-120
+  // Cada fator tem 24 questões (120 questões / 5 fatores)
+  const questionDimensionMap: { [key: number]: string } = {}
+  
+  // Abertura (questões 1-24)
+  for (let i = 1; i <= 24; i++) {
+    questionDimensionMap[i] = 'Abertura'
+  }
+  
+  // Conscienciosidade (questões 25-48)
+  for (let i = 25; i <= 48; i++) {
+    questionDimensionMap[i] = 'Conscienciosidade'
+  }
+  
+  // Extroversão (questões 49-72)
+  for (let i = 49; i <= 72; i++) {
+    questionDimensionMap[i] = 'Extroversão'
+  }
+  
+  // Amabilidade (questões 73-96)
+  for (let i = 73; i <= 96; i++) {
+    questionDimensionMap[i] = 'Amabilidade'
+  }
+  
+  // Neuroticismo (questões 97-120)
+  for (let i = 97; i <= 120; i++) {
+    questionDimensionMap[i] = 'Neuroticismo'
+  }
+
+  // Questões com pontuação reversa no IPIP-120
+  const reversedQuestions = new Set([
+    2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, // Abertura
+    26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, // Conscienciosidade
+    50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, // Extroversão
+    74, 76, 78, 80, 82, 84, 86, 88, 90, 92, 94, 96, // Amabilidade
+    97, 99, 101, 103, 105, 107, 109, 111, 113, 115, 117, 119 // Neuroticismo
+  ])
+
+  answers.forEach((answer, index) => {
+    const questionNumber = index + 1
+    const dimension = questionDimensionMap[questionNumber]
+    let value = parseInt(answer.value) || 0
+    
+    // Aplicar pontuação reversa se necessário
+    if (reversedQuestions.has(questionNumber)) {
+      value = 6 - value // Inverter escala 1-5 para 5-1
+    }
+    
+    if (dimension && dimensions[dimension as keyof typeof dimensions]) {
+      dimensions[dimension as keyof typeof dimensions].score += value
+      dimensions[dimension as keyof typeof dimensions].count += 1
+    }
+  })
+
+  // Calcular médias e normalizar para escala 0-100
+  const dimensionScores: { [key: string]: number } = {}
+  let totalScore = 0
+  let totalCount = 0
+
+  Object.entries(dimensions).forEach(([dimension, data]) => {
+    if (data.count > 0) {
+      const average = data.score / data.count
+      dimensionScores[dimension] = Math.round((average / 5) * 100) // Normalizar para 0-100
+      totalScore += data.score
+      totalCount += data.count
+    } else {
+      dimensionScores[dimension] = 0
+    }
+  })
+
+  const overallScore = totalCount > 0 ? Math.round((totalScore / (totalCount * 5)) * 100) : 0
+
+  return {
+    overallScore,
+    dimensionScores,
+    metadata: {
+      totalQuestions: answers.length,
+      calculationMethod: 'big_five_ipip120',
+      testType: 'HumaniQ Big Five - Cinco Grandes Fatores da Personalidade',
+      factors: ['Abertura', 'Conscienciosidade', 'Extroversão', 'Amabilidade', 'Neuroticismo'],
+      dimensionCounts: Object.fromEntries(
+        Object.entries(dimensions).map(([key, data]) => [key, data.count])
+      )
+    }
   }
 }
 
@@ -529,7 +781,52 @@ function getQIClassification(qiScore: number): string {
   return 'Abaixo do Limítrofe'
 }
 
-// Cálculos específicos para teste HumaniQ Eneagrama (9 tipos de personalidade)
+// Função para obter o nome específico do subtipo
+function getSubtypeName(type: number, instinct: string): string {
+  const subtypeNames: { [key: string]: string } = {
+    // Tipo 1 - O Perfeccionista
+    '1sp': 'O Perfeccionista Preocupado',
+    '1so': 'O Perfeccionista Inadaptável',
+    '1sx': 'O Perfeccionista Zeloso',
+    // Tipo 2 - O Prestativo
+    '2sp': 'O Prestativo Privilegiado',
+    '2so': 'O Prestativo Ambicioso',
+    '2sx': 'O Prestativo Agressivo/Sedutor',
+    // Tipo 3 - O Realizador
+    '3sp': 'O Realizador Seguro',
+    '3so': 'O Realizador Prestigioso',
+    '3sx': 'O Realizador Carismático',
+    // Tipo 4 - O Individualista
+    '4sp': 'O Individualista Tenaz',
+    '4so': 'O Individualista Sofredor',
+    '4sx': 'O Individualista Competitivo',
+    // Tipo 5 - O Investigador
+    '5sp': 'O Investigador Castelo',
+    '5so': 'O Investigador Tótem',
+    '5sx': 'O Investigador Confidencial',
+    // Tipo 6 - O Leal
+    '6sp': 'O Leal Aquecedor',
+    '6so': 'O Leal Dever',
+    '6sx': 'O Leal Força/Beleza',
+    // Tipo 7 - O Entusiasta
+    '7sp': 'O Entusiasta Família',
+    '7so': 'O Entusiasta Sacrifício',
+    '7sx': 'O Entusiasta Sugestionável',
+    // Tipo 8 - O Desafiador
+    '8sp': 'O Desafiador Satisfatório',
+    '8so': 'O Desafiador Amizade',
+    '8sx': 'O Desafiador Posse/Rendição',
+    // Tipo 9 - O Pacificador
+    '9sp': 'O Pacificador Apetite',
+    '9so': 'O Pacificador Participação',
+    '9sx': 'O Pacificador União'
+  }
+  
+  const key = `${type}${instinct}`
+  return subtypeNames[key] || `Tipo ${type} ${instinct.toUpperCase()}`
+}
+
+// Cálculos específicos para teste HumaniQ Eneagrama (27 subtipos)
 function calculateEnneagramResults(answers: any[], test: any) {
   // Mapeamento das 100 perguntas para os 9 tipos do Eneagrama
   // Cada tipo tem aproximadamente 11-12 perguntas distribuídas ao longo do teste
@@ -554,6 +851,25 @@ function calculateEnneagramResults(answers: any[], test: any) {
     9: 9, 18: 9, 27: 9, 36: 9, 45: 9, 54: 9, 63: 9, 72: 9, 81: 9, 90: 9, 99: 9
   }
 
+  // Mapeamento das perguntas para os três instintos básicos
+  const questionInstinctMap: { [key: number]: string } = {
+    // Autopreservação (SP) - questões relacionadas a segurança, conforto, recursos
+    1: 'sp', 4: 'sp', 7: 'sp', 10: 'sp', 13: 'sp', 16: 'sp', 19: 'sp', 22: 'sp', 25: 'sp', 28: 'sp',
+    31: 'sp', 34: 'sp', 37: 'sp', 40: 'sp', 43: 'sp', 46: 'sp', 49: 'sp', 52: 'sp', 55: 'sp', 58: 'sp',
+    61: 'sp', 64: 'sp', 67: 'sp', 70: 'sp', 73: 'sp', 76: 'sp', 79: 'sp', 82: 'sp', 85: 'sp', 88: 'sp',
+    91: 'sp', 94: 'sp', 97: 'sp', 100: 'sp',
+    // Social (SO) - questões relacionadas a grupos, hierarquia, reconhecimento
+    2: 'so', 5: 'so', 8: 'so', 11: 'so', 14: 'so', 17: 'so', 20: 'so', 23: 'so', 26: 'so', 29: 'so',
+    32: 'so', 35: 'so', 38: 'so', 41: 'so', 44: 'so', 47: 'so', 50: 'so', 53: 'so', 56: 'so', 59: 'so',
+    62: 'so', 65: 'so', 68: 'so', 71: 'so', 74: 'so', 77: 'so', 80: 'so', 83: 'so', 86: 'so', 89: 'so',
+    92: 'so', 95: 'so', 98: 'so',
+    // Sexual/Um-a-um (SX) - questões relacionadas a intensidade, atração, conexões íntimas
+    3: 'sx', 6: 'sx', 9: 'sx', 12: 'sx', 15: 'sx', 18: 'sx', 21: 'sx', 24: 'sx', 27: 'sx', 30: 'sx',
+    33: 'sx', 36: 'sx', 39: 'sx', 42: 'sx', 45: 'sx', 48: 'sx', 51: 'sx', 54: 'sx', 57: 'sx', 60: 'sx',
+    63: 'sx', 66: 'sx', 69: 'sx', 72: 'sx', 75: 'sx', 78: 'sx', 81: 'sx', 84: 'sx', 87: 'sx', 90: 'sx',
+    93: 'sx', 96: 'sx', 99: 'sx'
+  }
+
   // Inicializar contadores para cada tipo
   const typeScores = {
     1: { score: 0, count: 0, percentage: 0 },
@@ -567,20 +883,44 @@ function calculateEnneagramResults(answers: any[], test: any) {
     9: { score: 0, count: 0, percentage: 0 }
   }
 
-  // Processar cada resposta e agrupar por tipo
+  // Inicializar contadores para os instintos
+  const instinctScores = {
+    sp: { score: 0, count: 0, percentage: 0 }, // Autopreservação
+    so: { score: 0, count: 0, percentage: 0 }, // Social
+    sx: { score: 0, count: 0, percentage: 0 }  // Sexual/Um-a-um
+  }
+
+  // Processar cada resposta e agrupar por tipo e instinto
   answers.forEach(answer => {
     const questionNumber = parseInt(answer.questionId) || 0
     const enneagramType = questionTypeMap[questionNumber]
+    const instinct = questionInstinctMap[questionNumber]
     const value = parseInt(answer.value) || 0 // Respostas de 1 a 5
     
+    // Calcular pontuação por tipo
     if (enneagramType && typeScores[enneagramType as keyof typeof typeScores]) {
       typeScores[enneagramType as keyof typeof typeScores].score += value
       typeScores[enneagramType as keyof typeof typeScores].count += 1
+    }
+    
+    // Calcular pontuação por instinto
+    if (instinct && instinctScores[instinct as keyof typeof instinctScores]) {
+      instinctScores[instinct as keyof typeof instinctScores].score += value
+      instinctScores[instinct as keyof typeof instinctScores].count += 1
     }
   })
 
   // Calcular percentuais para cada tipo
   Object.entries(typeScores).forEach(([type, data]) => {
+    if (data.count > 0) {
+      // Normalizar: (pontuação obtida ÷ pontuação máxima possível) × 100
+      const maxPossibleScore = data.count * 5 // Máximo 5 pontos por pergunta
+      data.percentage = Math.round((data.score / maxPossibleScore) * 100)
+    }
+  })
+
+  // Calcular percentuais para cada instinto
+  Object.entries(instinctScores).forEach(([instinct, data]) => {
     if (data.count > 0) {
       // Normalizar: (pontuação obtida ÷ pontuação máxima possível) × 100
       const maxPossibleScore = data.count * 5 // Máximo 5 pontos por pergunta
@@ -598,9 +938,34 @@ function calculateEnneagramResults(answers: any[], test: any) {
     }))
     .sort((a, b) => b.percentage - a.percentage)
 
+  // Ordenar instintos por percentual (ranking)
+  const rankedInstincts = Object.entries(instinctScores)
+    .map(([instinct, data]) => ({
+      instinct,
+      percentage: data.percentage,
+      score: data.score,
+      count: data.count
+    }))
+    .sort((a, b) => b.percentage - a.percentage)
+
   // Identificar tipo dominante, secundário e ala (wing)
   const dominantType = rankedTypes[0]
   const secondaryType = rankedTypes[1]
+  
+  // Identificar instinto dominante
+  const dominantInstinct = rankedInstincts[0]
+  const secondaryInstinct = rankedInstincts[1]
+  
+  // Criar o subtipo combinando tipo dominante + instinto dominante
+  const subtype = {
+    type: dominantType.type,
+    instinct: dominantInstinct.instinct,
+    code: `${dominantType.type}${dominantInstinct.instinct}`,
+    name: getSubtypeName(dominantType.type, dominantInstinct.instinct),
+    typePercentage: dominantType.percentage,
+    instinctPercentage: dominantInstinct.percentage,
+    combinedScore: Math.round((dominantType.percentage + dominantInstinct.percentage) / 2)
+  }
   
   // Determinar ala (wing) - tipos adjacentes ao dominante com maior pontuação
   const dominantTypeNumber = dominantType.type
@@ -628,6 +993,13 @@ function calculateEnneagramResults(answers: any[], test: any) {
     9: 'O Pacificador'
   }
 
+  // Nomes dos instintos
+  const instinctNames = {
+    sp: 'Autopreservação',
+    so: 'Social',
+    sx: 'Sexual/Um-a-um'
+  }
+
   // Preparar scores por dimensão para compatibilidade
   const dimensionScores: { [key: string]: number } = {}
   rankedTypes.forEach(type => {
@@ -636,9 +1008,22 @@ function calculateEnneagramResults(answers: any[], test: any) {
   })
 
   return {
-    overallScore: dominantType.percentage,
+    overallScore: subtype.combinedScore,
     dimensionScores,
     metadata: {
+      // Informações do subtipo dominante (27 subtipos)
+      dominantSubtype: {
+        type: subtype.type,
+        instinct: subtype.instinct,
+        code: subtype.code,
+        name: subtype.name,
+        typeName: typeNames[subtype.type as keyof typeof typeNames],
+        instinctName: instinctNames[subtype.instinct as keyof typeof instinctNames],
+        typePercentage: subtype.typePercentage,
+        instinctPercentage: subtype.instinctPercentage,
+        combinedScore: subtype.combinedScore
+      },
+      // Informações do tipo dominante (compatibilidade)
       dominantType: {
         number: dominantType.type,
         name: typeNames[dominantType.type as keyof typeof typeNames],
@@ -649,6 +1034,24 @@ function calculateEnneagramResults(answers: any[], test: any) {
         name: typeNames[secondaryType.type as keyof typeof typeNames],
         percentage: secondaryType.percentage
       },
+      // Informações dos instintos
+      dominantInstinct: {
+        code: dominantInstinct.instinct,
+        name: instinctNames[dominantInstinct.instinct as keyof typeof instinctNames],
+        percentage: dominantInstinct.percentage
+      },
+      secondaryInstinct: {
+        code: secondaryInstinct.instinct,
+        name: instinctNames[secondaryInstinct.instinct as keyof typeof instinctNames],
+        percentage: secondaryInstinct.percentage
+      },
+      instinctRanking: rankedInstincts.map(inst => ({
+        code: inst.instinct,
+        name: instinctNames[inst.instinct as keyof typeof instinctNames],
+        percentage: inst.percentage,
+        rawScore: inst.score,
+        questionCount: inst.count
+      })),
       wing: primaryWing ? {
         number: primaryWing.type,
         name: typeNames[primaryWing.type as keyof typeof typeNames],
@@ -662,7 +1065,7 @@ function calculateEnneagramResults(answers: any[], test: any) {
         questionCount: type.count
       })),
       totalQuestions: answers.length,
-      calculationMethod: 'enneagram_nine_types',
+      calculationMethod: 'enneagram_27_subtypes',
       testConsistency: calculateEnneagramConsistency(rankedTypes)
     }
   }
@@ -798,6 +1201,172 @@ function calculateGraphologyResults(answers: any[], test: any) {
       analysisType: 'automated_preliminary'
     }
   };
+}
+
+// Cálculos específicos para teste HumaniQ MGRP (Maturidade em Gestão de Riscos Psicossociais)
+function calculateHumaniQMGRPResults(answers: any[], test: any) {
+  const dimensions = {
+    'Prevenção e Mapeamento': { score: 0, count: 0 },
+    'Monitoramento e Controle': { score: 0, count: 0 },
+    'Acolhimento e Suporte': { score: 0, count: 0 },
+    'Conformidade Legal': { score: 0, count: 0 },
+    'Cultura e Comunicação': { score: 0, count: 0 }
+  }
+
+  // Mapear questões para dimensões (40 questões, 8 por dimensão)
+  const questionDimensionMap: { [key: number]: string } = {
+    // Dimensão 1: Prevenção e Mapeamento (questões 1-8)
+    1: 'Prevenção e Mapeamento', 2: 'Prevenção e Mapeamento', 3: 'Prevenção e Mapeamento', 4: 'Prevenção e Mapeamento',
+    5: 'Prevenção e Mapeamento', 6: 'Prevenção e Mapeamento', 7: 'Prevenção e Mapeamento', 8: 'Prevenção e Mapeamento',
+    // Dimensão 2: Monitoramento e Controle (questões 9-16)
+    9: 'Monitoramento e Controle', 10: 'Monitoramento e Controle', 11: 'Monitoramento e Controle', 12: 'Monitoramento e Controle',
+    13: 'Monitoramento e Controle', 14: 'Monitoramento e Controle', 15: 'Monitoramento e Controle', 16: 'Monitoramento e Controle',
+    // Dimensão 3: Acolhimento e Suporte (questões 17-24)
+    17: 'Acolhimento e Suporte', 18: 'Acolhimento e Suporte', 19: 'Acolhimento e Suporte', 20: 'Acolhimento e Suporte',
+    21: 'Acolhimento e Suporte', 22: 'Acolhimento e Suporte', 23: 'Acolhimento e Suporte', 24: 'Acolhimento e Suporte',
+    // Dimensão 4: Conformidade Legal (questões 25-32)
+    25: 'Conformidade Legal', 26: 'Conformidade Legal', 27: 'Conformidade Legal', 28: 'Conformidade Legal',
+    29: 'Conformidade Legal', 30: 'Conformidade Legal', 31: 'Conformidade Legal', 32: 'Conformidade Legal',
+    // Dimensão 5: Cultura e Comunicação (questões 33-40)
+    33: 'Cultura e Comunicação', 34: 'Cultura e Comunicação', 35: 'Cultura e Comunicação', 36: 'Cultura e Comunicação',
+    37: 'Cultura e Comunicação', 38: 'Cultura e Comunicação', 39: 'Cultura e Comunicação', 40: 'Cultura e Comunicação'
+  }
+
+  answers.forEach((answer, index) => {
+    const questionNumber = index + 1
+    const dimension = questionDimensionMap[questionNumber]
+    const value = parseInt(answer.value) || 0
+    
+    if (dimension && dimensions[dimension as keyof typeof dimensions]) {
+      dimensions[dimension as keyof typeof dimensions].score += value
+      dimensions[dimension as keyof typeof dimensions].count += 1
+    }
+  })
+
+  // Calcular médias por dimensão (escala 1-5)
+  const dimensionScores: { [key: string]: number } = {}
+  let totalScore = 0
+  let totalCount = 0
+
+  Object.entries(dimensions).forEach(([dimension, data]) => {
+    if (data.count > 0) {
+      const average = data.score / data.count
+      dimensionScores[dimension] = Math.round(average * 100) / 100 // Manter escala 1-5 com 2 decimais
+      totalScore += data.score
+      totalCount += data.count
+    } else {
+      dimensionScores[dimension] = 0
+    }
+  })
+
+  // Calcular pontuação geral (média de todas as dimensões)
+  const overallScore = totalCount > 0 ? Math.round((totalScore / totalCount) * 100) / 100 : 0
+
+  return {
+    overallScore,
+    dimensionScores,
+    metadata: {
+      totalQuestions: answers.length,
+      calculationMethod: 'mgrp_maturity_assessment',
+      dimensionCounts: Object.fromEntries(
+        Object.entries(dimensions).map(([key, data]) => [key, data.count])
+      ),
+      maturityLevel: overallScore >= 4.5 ? 'Excelente' : 
+                    overallScore >= 3.5 ? 'Boa' : 
+                    overallScore >= 2.5 ? 'Regular' : 
+                    overallScore >= 1.5 ? 'Insuficiente' : 'Crítica'
+    }
+  }
+}
+
+// Cálculos específicos para teste HumaniQ FLEX (Avaliação de Adaptabilidade)
+function calculateHumaniQFlexResults(answers: any[], test: any) {
+  const dimensions = {
+    'Abertura à mudança': { score: 0, count: 0 },
+    'Resiliência emocional': { score: 0, count: 0 },
+    'Flexibilidade cognitiva': { score: 0, count: 0 },
+    'Tolerância à incerteza': { score: 0, count: 0 },
+    'Capacidade de aprendizagem': { score: 0, count: 0 }
+  }
+
+  // Mapear questões para dimensões (4 questões por dimensão)
+  const questionDimensionMap: { [key: number]: string } = {
+    // Abertura à mudança (questões 1-4)
+    1: 'Abertura à mudança', 2: 'Abertura à mudança', 3: 'Abertura à mudança', 4: 'Abertura à mudança',
+    // Resiliência emocional (questões 5-8)
+    5: 'Resiliência emocional', 6: 'Resiliência emocional', 7: 'Resiliência emocional', 8: 'Resiliência emocional',
+    // Flexibilidade cognitiva (questões 9-12)
+    9: 'Flexibilidade cognitiva', 10: 'Flexibilidade cognitiva', 11: 'Flexibilidade cognitiva', 12: 'Flexibilidade cognitiva',
+    // Tolerância à incerteza (questões 13-16)
+    13: 'Tolerância à incerteza', 14: 'Tolerância à incerteza', 15: 'Tolerância à incerteza', 16: 'Tolerância à incerteza',
+    // Capacidade de aprendizagem (questões 17-20)
+    17: 'Capacidade de aprendizagem', 18: 'Capacidade de aprendizagem', 19: 'Capacidade de aprendizagem', 20: 'Capacidade de aprendizagem'
+  }
+
+  answers.forEach((answer, index) => {
+    const questionNumber = index + 1
+    const dimension = questionDimensionMap[questionNumber]
+    const value = parseInt(answer.value) || 0
+    
+    if (dimension && dimensions[dimension as keyof typeof dimensions]) {
+      dimensions[dimension as keyof typeof dimensions].score += value
+      dimensions[dimension as keyof typeof dimensions].count += 1
+    }
+  })
+
+  // Calcular médias e percentuais
+  const dimensionScores: { [key: string]: number } = {}
+  let totalScore = 0
+  let totalCount = 0
+
+  Object.entries(dimensions).forEach(([dimension, data]) => {
+    if (data.count > 0) {
+      const average = data.score / data.count
+      dimensionScores[dimension] = Math.round((average / 5) * 100) // Normalizar para 0-100
+      totalScore += data.score
+      totalCount += data.count
+    } else {
+      dimensionScores[dimension] = 0
+    }
+  })
+
+  const overallScore = totalCount > 0 ? Math.round((totalScore / (totalCount * 5)) * 100) : 0
+
+  // Classificar nível de adaptabilidade
+  let classification = 'Baixa'
+  let color = '#ef4444'
+  
+  if (overallScore >= 80) {
+    classification = 'Muito Alta'
+    color = '#22c55e'
+  } else if (overallScore >= 65) {
+    classification = 'Alta'
+    color = '#84cc16'
+  } else if (overallScore >= 50) {
+    classification = 'Moderada'
+    color = '#eab308'
+  } else if (overallScore >= 35) {
+    classification = 'Baixa'
+    color = '#f97316'
+  } else {
+    classification = 'Muito Baixa'
+    color = '#ef4444'
+  }
+
+  return {
+    overallScore,
+    dimensionScores,
+    metadata: {
+      totalQuestions: answers.length,
+      calculationMethod: 'adaptability_assessment',
+      classification,
+      color,
+      dimensionCounts: Object.fromEntries(
+        Object.entries(dimensions).map(([key, data]) => [key, data.count])
+      ),
+      testType: 'HumaniQ FLEX - Avaliação de Adaptabilidade'
+    }
+  }
 }
 
 // Cálculos para avaliação corporativa

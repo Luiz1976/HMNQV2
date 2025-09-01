@@ -46,7 +46,8 @@ import { PieChart, Pie, Cell, BarChart as ReBarChart, Bar, XAxis, YAxis, Tooltip
 // Cores para o gráfico de pizza
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D']
 import { TestResultCard } from '@/components/ui/test-result-card'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { toast } from 'sonner'
 
 interface TestResult {
   id: string
@@ -120,6 +121,20 @@ export default function ResultadosPage() {
   const [sortOrder, setSortOrder] = useState('desc')
   const [currentPage, setCurrentPage] = useState(1)
   const [includeAI, setIncludeAI] = useState(true)
+
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const saved = searchParams.get('saved')
+    if (saved === '1') {
+      toast.success('Resultado salvo com sucesso!')
+      const params = new URLSearchParams(searchParams.toString())
+      params.delete('saved')
+      const qs = params.toString()
+      router.replace(`${window.location.pathname}${qs ? `?${qs}` : ''}`, { scroll: false })
+    }
+  }, [searchParams, router])
 
   useEffect(() => {
     loadResults()

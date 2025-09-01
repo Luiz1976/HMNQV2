@@ -40,9 +40,9 @@ interface CorporateTest {
 
 // IDs de testes corporativos permitidos e ordem desejada
 const ALLOWED_CORPORATE_TEST_IDS = [
-  'humaniq-lidera',
-  'humaniq-tela',
-  'humaniq-cobe'
+  'cme216c2h000v8wg0bwfqdy5z', // HumaniQ LIDERA – Estilos e Competências de Liderança
+  'cme216c33000x8wg08eauo7vk', // HumaniQ TELA – Teste de Liderança Autêntica
+  'clima-organizacional' // HumaniQ Pesquisa de Clima
 ]
 
 export default function CorporativosPage() {
@@ -59,7 +59,10 @@ export default function CorporativosPage() {
       'humaniq-lidera': '/colaborador/psicossociais/humaniq-lidera/introducao',
       'humaniq-tela': '/colaborador/psicossociais/humaniq-tela/introducao',
       'humaniq-qvt': '/colaborador/psicossociais/humaniq-qvt/introducao',
-      'humaniq-pas': '/colaborador/psicossociais/humaniq-pas/introducao'
+      'humaniq-pas': '/colaborador/psicossociais/humaniq-pas/introducao',
+      // Novos IDs reais do banco de dados
+      'cme216c2h000v8wg0bwfqdy5z': '/colaborador/psicossociais/humaniq-lidera/introducao',
+      'cme216c33000x8wg08eauo7vk': '/colaborador/psicossociais/humaniq-tela/introducao'
     }
     
     const route = routeMap[testId] || `/colaborador/corporativos/${testId}`
@@ -77,12 +80,11 @@ export default function CorporativosPage() {
 
   useEffect(() => {
     if (apiTests.length > 0) {
-      const corporateTests = apiTests
+      let corporateTests = apiTests
         .filter(test => ALLOWED_CORPORATE_TEST_IDS.includes(test.id))
-        .sort((a, b) => ALLOWED_CORPORATE_TEST_IDS.indexOf(a.id) - ALLOWED_CORPORATE_TEST_IDS.indexOf(b.id))
         .map(test => ({
           id: test.id,
-          code: test.id, // Usar o ID como código
+          code: test.id,
           name: test.title,
           description: test.description,
           category: 'Liderança',
@@ -92,6 +94,57 @@ export default function CorporativosPage() {
           dimensions: [],
           organizationalImpact: 'Alto Impacto'
         }))
+
+      // Adicionar mocks para testes que não vieram da API
+      const existingIds = corporateTests.map(t => t.id)
+      const missingIds = ALLOWED_CORPORATE_TEST_IDS.filter(id => !existingIds.includes(id))
+
+      missingIds.forEach(id => {
+        if (id === 'cme216c2h000v8wg0bwfqdy5z') {
+          corporateTests.push({
+            id,
+            code: id,
+            name: 'HumaniQ LIDERA – Estilos e Competências de Liderança',
+            description: 'Avaliação abrangente dos estilos e competências de liderança.',
+            category: 'Liderança',
+            estimatedTime: 35,
+            questionsCount: 0,
+            status: 'available',
+            dimensions: [],
+            organizationalImpact: 'Alto Impacto'
+          })
+        } else if (id === 'cme216c33000x8wg08eauo7vk') {
+          corporateTests.push({
+            id,
+            code: id,
+            name: 'HumaniQ TELA – Teste de Liderança Autêntica',
+            description: 'Avaliação das dimensões da liderança autêntica.',
+            category: 'Liderança',
+            estimatedTime: 20,
+            questionsCount: 0,
+            status: 'available',
+            dimensions: [],
+            organizationalImpact: 'Alto Impacto'
+          })
+        } else if (id === 'clima-organizacional') {
+          corporateTests.push({
+            id,
+            code: id,
+            name: 'HumaniQ Pesquisa de Clima',
+            description: 'Avaliação abrangente de clima organizacional.',
+            category: 'Clima Organizacional',
+            estimatedTime: 15,
+            questionsCount: 0,
+            status: 'available',
+            dimensions: [],
+            organizationalImpact: 'Alto Impacto'
+          })
+        }
+      })
+
+      // Garantir ordem definida por ALLOWED_CORPORATE_TEST_IDS
+      corporateTests = corporateTests.sort((a, b) => ALLOWED_CORPORATE_TEST_IDS.indexOf(a.id) - ALLOWED_CORPORATE_TEST_IDS.indexOf(b.id))
+
       setTests(corporateTests)
     }
   }, [apiTests])

@@ -106,12 +106,25 @@ export default function PersonalidadePage() {
         test.title.includes('TAR') ||
         test.title.includes('TIPOS') ||
         test.title.includes('Valores') ||
-        test.title.includes('DISC')) &&
-        !test.title.includes('(MBTI)')
+        test.title.includes('DISC'))
       )
 
+      // Filtrar para manter apenas um teste de Eneagrama (o do meio)
+      const eneagramaTests = personalityTests.filter(test => test.title.includes('Eneagrama'))
+      const otherTests = personalityTests.filter(test => !test.title.includes('Eneagrama'))
+      
+      // Se há múltiplos testes de Eneagrama, manter apenas o do meio
+      let filteredEneagramaTests = eneagramaTests
+      if (eneagramaTests.length > 1) {
+        const middleIndex = Math.floor(eneagramaTests.length / 2)
+        filteredEneagramaTests = [eneagramaTests[middleIndex]]
+      }
+      
+      // Combinar os testes filtrados
+      const finalTests = [...otherTests, ...filteredEneagramaTests]
+
       // Mapear os dados da API para o formato esperado pela página
-      const mappedTests: Test[] = personalityTests.map(test => ({
+      const mappedTests: Test[] = finalTests.map(test => ({
         id: test.id,
         name: test.title,
         description: test.description,
@@ -274,14 +287,14 @@ export default function PersonalidadePage() {
          </div>
 
          {/* Grid de Testes */}
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+         <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-center">
            {tests.map((test, index) => {
              const Icon = test.icon
              const gradientClass = getCategoryGradient(test.category)
              
              return (
-               <div key={test.id} className="group">
-                 <div className={`${gradientClass} rounded-xl p-6 text-white relative overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 h-[350px] flex flex-col`}>
+               <div key={test.id} className="group" style={{minWidth: '280px', maxWidth: '360px', width: '100%'}}>
+                 <div className={`${gradientClass} rounded-xl p-6 text-white relative overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 h-[350px] flex flex-col`} style={{minHeight: '350px'}}>
                    {/* Elementos decorativos */}
                    <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-10 translate-x-10"></div>
                    <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/10 rounded-full translate-y-8 -translate-x-8"></div>
@@ -304,7 +317,7 @@ export default function PersonalidadePage() {
                      </div>
                      
                      {/* Título e Descrição */}
-                     <div className="mb-4 flex-grow">
+                     <div className="mb-4 flex-grow overflow-y-auto">
                        <h3 className="text-lg font-bold mb-2 leading-tight">{test.name}</h3>
                        <p className="text-white/90 text-sm leading-relaxed mb-3">
                          {test.description}
@@ -313,16 +326,7 @@ export default function PersonalidadePage() {
 
                      {/* Informações do Teste */}
                      <div className="mb-4">
-                       <div className="flex items-center gap-4 text-xs text-white/80 mb-2">
-                         <div className="flex items-center gap-1">
-                           <Clock className="h-3 w-3" />
-                           <span>{test.duration}</span>
-                         </div>
-                         <div className="flex items-center gap-1">
-                           <BarChart3 className="h-3 w-3" />
-                           <span>{test.questions} questões</span>
-                         </div>
-                       </div>
+
                        
                        {/* Categoria */}
                        <div className="text-xs text-white/70">

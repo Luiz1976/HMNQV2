@@ -18,7 +18,7 @@ const OFFICIAL_TESTS = [
   'HumaniQ BOLIE – Inteligência Emocional',
   'HumaniQ Big Five – Cinco Grandes Fatores da Personalidade',
   'HumaniQ Eneagrama – Tipos de Personalidade',
-  'HumaniQ FLEX – Avaliação de Adaptabilidade',
+  // Removido: 'HumaniQ FLEX – Avaliação de Adaptabilidade',
   'HumaniQ MOTIVA – Perfil de Motivação Profissional',
   'HumaniQ QI – Quociente de Inteligência',
   'HumaniQ TAR – Teste de Atenção e Raciocínio',

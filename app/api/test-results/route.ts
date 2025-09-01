@@ -209,7 +209,7 @@ async function archiveTestResultFromAPI(testResult: any) {
   const archiveData = {
     id: testResult.id,
     userId: testResult.userId,
-    testType: testResult.test?.testType || 'outros' as 'personalidade' | 'psicossociais' | 'outros',
+    testType: (testResult.test?.testType?.toLowerCase().includes('bolie') ? 'personalidade' : testResult.test?.testType) || 'outros' as 'personalidade' | 'psicossociais' | 'outros',
     testId: testResult.testId,
     completedAt: testResult.completedAt || testResult.createdAt,
     score: testResult.overallScore,

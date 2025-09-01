@@ -93,8 +93,7 @@ export function TestCard({
       case 'humaniq-valores':
       case 'humaniq-motiva':
       case 'humaniq-bolie':
-      case 'humaniq-flex':
-        return category === 'Testes de Perfil' ? Users : Brain
+      // Caso removido: humaniq-flex
       // Testes Corporativos
       case 'humaniq-lid':
       case 'humaniq-teq':

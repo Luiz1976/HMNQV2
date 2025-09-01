@@ -55,7 +55,7 @@ const getPsicossocialIcon = (testId: string) => {
     'humaniq-eneagrama': Compass,
     'humaniq-valores': Trophy,
     'humaniq-motiva': Zap,
-    'humaniq-flex': Sparkles
+    // Removido: 'humaniq-flex': Sparkles
   }
   return iconMap[testId] || Brain
 }
@@ -75,7 +75,7 @@ const getPsicossocialCategory = (testId: string) => {
     'humaniq-eneagrama': 'Personalidade',
     'humaniq-valores': 'Valores',
     'humaniq-motiva': 'Motivação',
-    'humaniq-flex': 'Adaptabilidade'
+    // Removido: 'humaniq-flex': 'Adaptabilidade'
   }
   return categoryMap[testId] || 'Psicossocial'
 }
@@ -103,8 +103,7 @@ const ALLOWED_PSICO_TEST_IDS = [
   'cme216bjq00098wg0yz7ly97k', // HumaniQ EO – Estresse Ocupacional, Burnout e Resiliência
   'cme216blq000b8wg0viq7ta6k', // HumaniQ PAS – Percepção de Assédio Moral e Sexual
   'cme216boc000d8wg02vj91skk', // HumaniQ MGRP – Maturidade em Gestão de Riscos Psicossociais
-  'cme7u1z2w00058w1w9k11srma', // HumaniQ RPO – Riscos Psicossociais Ocupacionais
-  'humaniq-tipos' // HumaniQ Tipos
+  'cme7u1z2w00058w1w9k11srma' // HumaniQ RPO – Riscos Psicossociais Ocupacionais
 ] as const
 
 export default function PsicossociaisPage() {
@@ -114,11 +113,27 @@ export default function PsicossociaisPage() {
   const [tests, setTests] = useState<Test[]>([])
 
   useEffect(() => {
-    if (apiTests.length > 0) {
-      // Filtrar apenas os testes desejados para a página
-      const psicossocialTests: Test[] = apiTests
-        .filter(test => ALLOWED_PSICO_TEST_IDS.includes(test.id as any))
-        .map(test => ({
+    // Fallback estático com os testes HumaniQ
+    const fallback: Test[] = [
+      { id: 'humaniq-eo', name: 'HumaniQ EO – Estresse Ocupacional, Burnout e Resiliência', description: 'Avalia estresse, burnout e resiliência', category: 'Estresse e Burnout', duration: '20 min', status: 'available', icon: getPsicossocialIcon('humaniq-eo'), dimensions: ['Estresse','Burnout','Resiliência'] },
+      { id: 'humaniq-insight', name: 'HumaniQ Insight – Clima Organizacional e Bem-Estar Psicológico', description: 'Avalia clima organizacional e bem-estar', category: 'Clima Organizacional', duration: '20 min', status: 'available', icon: getPsicossocialIcon('humaniq-insight'), dimensions: ['Clima','Bem-estar'] },
+      { id: 'humaniq-karasek-siegrist', name: 'HumaniQ Karasek-Siegrist – Teste Psicossocial Avançado', description: 'Demanda, controle, esforço e recompensa', category: 'Estresse Ocupacional', duration: '25 min', status: 'available', icon: getPsicossocialIcon('humaniq-karasek-siegrist'), dimensions: ['Demanda','Controle','Esforço','Recompensa'] },
+      { id: 'humaniq-mgrp', name: 'HumaniQ MGRP – Maturidade em Gestão de Riscos Psicossociais', description: 'Avalia maturidade na gestão de riscos', category: 'Gestão de Riscos', duration: '25 min', status: 'available', icon: getPsicossocialIcon('humaniq-mgrp'), dimensions: ['Maturidade','Gestão'] },
+      { id: 'humaniq-pas', name: 'HumaniQ PAS – Percepção de Assédio Moral e Sexual', description: 'Avalia percepção de assédio', category: 'Assédio e Violência', duration: '15 min', status: 'available', icon: getPsicossocialIcon('humaniq-pas'), dimensions: ['Assédio Moral','Assédio Sexual'] },
+      { id: 'humaniq-qvt', name: 'HumaniQ QVT – Qualidade de Vida no Trabalho', description: 'Avalia qualidade de vida no trabalho', category: 'Qualidade de Vida', duration: '20 min', status: 'available', icon: getPsicossocialIcon('humaniq-qvt'), dimensions: ['Qualidade de Vida'] },
+      { id: 'humaniq-rpo', name: 'HumaniQ RPO – Riscos Psicossociais Ocupacionais', description: 'Avalia riscos psicossociais ocupacionais', category: 'Riscos Psicossociais', duration: '25 min', status: 'available', icon: getPsicossocialIcon('humaniq-rpo'), dimensions: ['Riscos','Prevenção'] }
+    ]
+
+    // Se não há testes da API, usar fallback imediatamente
+    if (apiTests.length === 0) {
+      setTests(fallback)
+      return
+    }
+
+    // Filtrar testes psicossociais vindos da API
+    const psicossocialTests: Test[] = apiTests
+      .filter(test => ALLOWED_PSICO_TEST_IDS.includes(test.id as any))
+      .map(test => ({
         id: test.id,
         name: test.title,
         description: test.description,
@@ -128,11 +143,10 @@ export default function PsicossociaisPage() {
         icon: getPsicossocialIcon(test.id),
         dimensions: getDimensionsForTest(test.id)
       }))
-      
-      // Ordenar de acordo com a lista definida
-      psicossocialTests.sort((a, b) => ALLOWED_PSICO_TEST_IDS.indexOf(a.id as any) - ALLOWED_PSICO_TEST_IDS.indexOf(b.id as any))
-      setTests(psicossocialTests)
-    }
+
+    psicossocialTests.sort((a, b) => ALLOWED_PSICO_TEST_IDS.indexOf(a.id as any) - ALLOWED_PSICO_TEST_IDS.indexOf(b.id as any))
+
+    setTests(psicossocialTests.length ? psicossocialTests : fallback)
   }, [apiTests])
 
   // Função para mapear dimensões baseadas no ID do teste

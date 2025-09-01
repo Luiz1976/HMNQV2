@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, CheckCircle, Brain, Target, Users, Heart, Zap, AlertTriangle, Clock, Play, Trophy } from 'lucide-react'
+import { ArrowLeft, CheckCircle, Brain, Target, Users, Heart, Zap, AlertTriangle, Clock, Play, Trophy, Briefcase } from 'lucide-react'
 import { LikertScale } from '@/components/ui/likert-scale'
 
 interface Question {
@@ -221,6 +221,55 @@ function getScoreInterpretation(score: number): { level: string; color: string; 
   }
 }
 
+// Gera análise profissional detalhada para cada fator considerando o nível obtido
+function getProfessionalAnalysis(factor: string, score: number): string {
+  const { level } = getScoreInterpretation(score)
+  switch (factor) {
+    case 'openness':
+      if (level === 'Muito Alto' || level === 'Alto') {
+        return 'Pontuações elevadas em Abertura indicam grande potencial para inovação, aprendizagem rápida e capacidade de lidar com cenários de mudança constante.'
+      } else if (level === 'Médio') {
+        return 'Equilíbrio saudável entre criatividade e pragmatismo; pode alternar entre seguir padrões estabelecidos e propor melhorias quando necessário.'
+      } else {
+        return 'Preferência por rotinas consolidadas e menor tolerância a incertezas. A exposição gradativa a projetos criativos pode estimular desenvolvimento desta competência.'
+      }
+    case 'conscientiousness':
+      if (level === 'Muito Alto' || level === 'Alto') {
+        return 'Alto grau de organização, confiabilidade e foco em metas. Útil para funções que exigem forte responsabilidade e atenção a detalhes.'
+      } else if (level === 'Médio') {
+        return 'Mantém disciplina adequada sem perder flexibilidade; adapta-se bem a ambientes que combinam rotinas e imprevistos.'
+      } else {
+        return 'Possível dificuldade com prazos e organização. Programas de mentoring e metodologias ágeis podem auxiliar no desenvolvimento.'
+      }
+    case 'extraversion':
+      if (level === 'Muito Alto' || level === 'Alto') {
+        return 'Energia social elevada, tende a liderar interações e motivar equipes. Indicado para papéis que envolvam networking e comunicação frequente.'
+      } else if (level === 'Médio') {
+        return 'Capaz de alternar entre momentos de exposição e reflexão. Adequado para posições que exijam colaboração moderada.'
+      } else {
+        return 'Prefere ambientes tranquilos e trabalho focado. Estratégias de comunicação assíncrona podem aumentar produtividade e conforto.'
+      }
+    case 'agreeableness':
+      if (level === 'Muito Alto' || level === 'Alto') {
+        return 'Alta cooperação e empatia favorecem clima organizacional positivo e gestão de conflitos. Ideal para atividades de suporte e atendimento.'
+      } else if (level === 'Médio') {
+        return 'Equilíbrio entre assertividade e colaboração, permitindo negociações justas sem comprometer relações.'
+      } else {
+        return 'Pode demonstrar postura mais competitiva ou crítica. Treinamentos em escuta ativa e mediação podem agregar valor.'
+      }
+    case 'neuroticism':
+      if (level === 'Muito Baixo' || level === 'Baixo') {
+        return 'Estabilidade emocional elevada contribui para resiliência em situações de pressão e tomada de decisão assertiva.'
+      } else if (level === 'Médio') {
+        return 'Níveis moderados de sensibilidade geram autoconsciência útil, desde que existam práticas de gestão do estresse.'
+      } else {
+        return 'Tendência a reatividade emocional; programas de bem-estar, mindfulness e suporte psicológico podem aumentar desempenho e satisfação.'
+      }
+    default:
+      return ''
+  }
+}
+
 export default function HumaniqBigFivePage() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -356,27 +405,69 @@ export default function HumaniqBigFivePage() {
     setIsSubmitting(true)
     
     try {
-      // Preparar dados para envio
-      const testData = {
-        testType: 'humaniq-big-five',
-        answers: finalAnswers,
-        results: results,
-        timeElapsed: timeElapsed,
-        completedAt: new Date().toISOString(),
-        totalQuestions: questions.length
+      // Buscar o teste Big Five no banco de dados
+      const testResponse = await fetch('/api/tests')
+      const testsData = await testResponse.json()
+      
+      // Encontrar o teste Big Five
+      const bigFiveTest = testsData.tests?.find((test: any) => 
+        test.title?.includes('Big Five') || 
+        test.title?.includes('Cinco Grandes Fatores') ||
+        test.id === 'humaniq-big-five'
+      )
+      
+      if (!bigFiveTest) {
+        throw new Error('Teste Big Five não encontrado no sistema')
       }
       
-      // Simulate API call - aqui seria a integração real com a API
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Preparar dados para envio à API real
+      const testResultData = {
+        testId: bigFiveTest.id,
+        testType: 'PERSONALITY',
+        answers: finalAnswers,
+        overallScore: Math.round(Object.values(results || {}).reduce((sum: number, val: any) => sum + (typeof val === 'number' ? val : 0), 0) / 5 * 20),
+        dimensionScores: {
+          openness: Math.round((results?.openness || 0) * 20),
+          conscientiousness: Math.round((results?.conscientiousness || 0) * 20),
+          extraversion: Math.round((results?.extraversion || 0) * 20),
+          agreeableness: Math.round((results?.agreeableness || 0) * 20),
+          neuroticism: Math.round((results?.neuroticism || 0) * 20)
+        },
+        facetScores: results?.facets || {},
+        duration: timeElapsed,
+        completedAt: new Date().toISOString(),
+        metadata: {
+          testVersion: 'IPIP-120',
+          totalQuestions: questions.length,
+          factorScores: results
+        }
+      }
       
-      console.log('Dados do teste Big Five enviados:', testData)
+      console.log('🚀 Enviando dados do teste Big Five para API:', testResultData)
       
-      // Arquivamento automático e redirecionamento
-      router.push('/colaborador/resultados')
+      // Enviar para a API real de resultados
+      const response = await fetch('/api/colaborador/resultados', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(testResultData)
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(`Erro na API: ${errorData.message || response.statusText}`)
+      }
+      
+      const result = await response.json()
+      console.log('✅ Resultado salvo com sucesso:', result)
+      
+      // Redirecionamento para a página de resultados
+      router.push('/colaborador/resultados?highlight=big-five')
     } catch (error) {
-      console.error('Erro ao enviar resultados:', error)
+      console.error('❌ Erro ao enviar resultados do Big Five:', error)
       // Em caso de erro, ainda redireciona mas mostra mensagem
-      router.push('/colaborador/resultados?error=submission')
+      router.push('/colaborador/resultados?error=big-five-submission')
     } finally {
       setIsSubmitting(false)
     }
@@ -624,7 +715,7 @@ export default function HumaniqBigFivePage() {
                   <h4 className="font-bold text-blue-800 mb-2">IPIP-120 (Goldberg & Johnson)</h4>
                   <p className="text-sm text-blue-700">
                     Instrumento com 120 itens do International Personality Item Pool, 
-                    validado cientificamente com alta confiabilidade (α &gt; 0.85) e estabilidade temporal.
+                    validado cientificamente com alta confiabilidade ({"α > 0.85"}) e estabilidade temporal.
                   </p>
                 </div>
                 

@@ -125,6 +125,15 @@ export default function SignatureResultPage() {
     return 'bg-red-100'
   }
 
+  // Labels para exibição das competências no idioma correto
+  const competencyLabels: Record<string, string> = {
+    communication: 'Comunicação',
+    organization: 'Organização',
+    emotionalStability: 'Estabilidade Emocional',
+    leadership: 'Liderança',
+    adaptability: 'Adaptabilidade'
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-red-50 flex items-center justify-center">
@@ -364,6 +373,55 @@ export default function SignatureResultPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Pontos Fortes */}
+        <Card className="mb-8 border-0 bg-white/80 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-green-700">
+              <TrendingUp className="h-5 w-5" />
+              Pontos Fortes
+            </CardTitle>
+            <CardDescription>
+              Detalhamento dos principais pontos fortes identificados
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-disc pl-5 space-y-2">
+              {analysisData.professionalInsights.strengths.map((item, idx) => (
+                <li key={idx} className="text-gray-700">{item}</li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+
+        {/* Competências */}
+        <Card className="mb-8 border-0 bg-white/80 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Target className="h-5 w-5 text-purple-600" />
+              Competências
+            </CardTitle>
+            <CardDescription>
+              Detalhamento das competências identificadas na assinatura
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-2 gap-6">
+              {Object.entries(analysisData.workplaceTrends).map(([key, value]) => (
+                <div key={key} className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">{competencyLabels[key as keyof typeof competencyLabels] || key}</span>
+                    <Badge variant={value.score >= 80 ? 'default' : value.score >= 60 ? 'secondary' : 'outline'}>
+                      {value.score}%
+                    </Badge>
+                  </div>
+                  <Progress value={value.score} className="h-2" />
+                  <p className="text-sm text-gray-600">{value.description}</p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Work, Communication and Leadership Style */}
         <div className="grid lg:grid-cols-3 gap-8 mb-8">

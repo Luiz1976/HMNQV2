@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, Heart, Printer } from 'lucide-react'
+import { ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, Shield, Printer, Heart } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { LikertScale } from '@/components/ui/likert-scale'
 
@@ -321,6 +321,189 @@ export default function HumaniqQVTTest() {
               </Card>
             ))}
           </div>
+
+          {/* Análise Detalhada: Qualidade de Vida no Trabalho */}
+          <Card className="mt-8">
+            <CardHeader>
+              <CardTitle className="flex items-center text-2xl">
+                <Heart className="w-6 h-6 mr-2 text-blue-600" />
+                Análise Detalhada: Qualidade de Vida no Trabalho
+              </CardTitle>
+              <CardDescription>
+                Compreenda seus resultados e receba orientações profissionais personalizadas
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Contextualização Científica */}
+              <div className="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-400">
+                <h3 className="text-lg font-semibold text-blue-800 mb-3">Contextualização Científica</h3>
+                <p className="text-blue-700 leading-relaxed">
+                  A Qualidade de Vida no Trabalho (QVT) é um conceito multidimensional que engloba aspectos físicos, 
+                  psicológicos, sociais e organizacionais do ambiente laboral. Segundo Walton (1973) e posteriormente 
+                  desenvolvido por diversos pesquisadores, a QVT refere-se ao grau de satisfação e bem-estar que os 
+                  colaboradores experimentam em seu ambiente de trabalho, influenciando diretamente sua produtividade, 
+                  engajamento e saúde mental.
+                </p>
+              </div>
+
+              {/* Análise dos Resultados do Usuário */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-800">Análise dos Seus Resultados</h3>
+                
+                {overallScore >= 4.5 ? (
+                  <div className="bg-green-50 p-6 rounded-lg border-l-4 border-green-400">
+                    <h4 className="font-semibold text-green-800 mb-2">Excelente Qualidade de Vida no Trabalho</h4>
+                    <p className="text-green-700 mb-3">
+                      Seus resultados indicam uma qualidade de vida no trabalho excepcional (Índice: {overallScore.toFixed(1)}). 
+                      Você demonstra alta satisfação em múltiplas dimensões do ambiente laboral, o que está associado a 
+                      maior bem-estar psicológico, produtividade e engajamento organizacional.
+                    </p>
+                    <p className="text-green-700">
+                      <strong>Principais fortalezas identificadas:</strong> Ambiente de trabalho favorável, relações 
+                      interpessoais saudáveis, equilíbrio adequado entre demandas e recursos, e alinhamento entre 
+                      valores pessoais e organizacionais.
+                    </p>
+                  </div>
+                ) : overallScore >= 3.5 ? (
+                  <div className="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-400">
+                    <h4 className="font-semibold text-blue-800 mb-2">Boa Qualidade de Vida no Trabalho</h4>
+                    <p className="text-blue-700 mb-3">
+                      Seus resultados demonstram uma qualidade de vida no trabalho satisfatória (Índice: {overallScore.toFixed(1)}). 
+                      Você apresenta níveis adequados de bem-estar laboral, com algumas áreas que podem ser otimizadas 
+                      para alcançar um estado de excelência.
+                    </p>
+                    <p className="text-blue-700">
+                      <strong>Oportunidades de melhoria:</strong> Identifique as dimensões com menores pontuações e 
+                      desenvolva estratégias específicas para aprimorar esses aspectos do seu ambiente de trabalho.
+                    </p>
+                  </div>
+                ) : overallScore >= 2.5 ? (
+                  <div className="bg-yellow-50 p-6 rounded-lg border-l-4 border-yellow-400">
+                    <h4 className="font-semibold text-yellow-800 mb-2">Qualidade de Vida no Trabalho Regular</h4>
+                    <p className="text-yellow-700 mb-3">
+                      Seus resultados indicam uma qualidade de vida no trabalho moderada (Índice: {overallScore.toFixed(1)}). 
+                      Existem aspectos positivos em seu ambiente laboral, mas também áreas significativas que requerem 
+                      atenção e intervenção para prevenir o desenvolvimento de problemas mais sérios.
+                    </p>
+                    <p className="text-yellow-700">
+                      <strong>Ação recomendada:</strong> Priorize melhorias nas dimensões com menores pontuações e 
+                      considere buscar apoio organizacional ou profissional para desenvolver estratégias de enfrentamento.
+                    </p>
+                  </div>
+                ) : overallScore >= 1.5 ? (
+                  <div className="bg-orange-50 p-6 rounded-lg border-l-4 border-orange-400">
+                    <h4 className="font-semibold text-orange-800 mb-2">Qualidade de Vida no Trabalho Baixa</h4>
+                    <p className="text-orange-700 mb-3">
+                      Seus resultados revelam uma qualidade de vida no trabalho comprometida (Índice: {overallScore.toFixed(1)}). 
+                      Esta situação pode estar impactando negativamente seu bem-estar físico e psicológico, requerendo 
+                      intervenções imediatas e estruturadas.
+                    </p>
+                    <p className="text-orange-700">
+                      <strong>Necessidade de intervenção:</strong> Recomenda-se buscar apoio profissional e organizacional 
+                      para desenvolver um plano de ação abrangente visando a melhoria das condições de trabalho.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="bg-red-50 p-6 rounded-lg border-l-4 border-red-400">
+                    <h4 className="font-semibold text-red-800 mb-2">Situação Crítica Identificada</h4>
+                    <p className="text-red-700 mb-3">
+                      Seus resultados indicam uma qualidade de vida no trabalho em nível crítico (Índice: {overallScore.toFixed(1)}). 
+                      Esta situação representa um risco significativo para sua saúde física e mental, requerendo 
+                      intervenção imediata e acompanhamento profissional especializado.
+                    </p>
+                    <p className="text-red-700">
+                      <strong>Ação urgente necessária:</strong> Procure imediatamente apoio de profissionais de saúde 
+                      ocupacional, recursos humanos ou psicólogos organizacionais para desenvolver estratégias de 
+                      proteção e recuperação.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Recomendações Profissionais */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-800">Recomendações Profissionais</h3>
+                
+                {overallScore >= 4.0 ? (
+                  <div className="bg-gray-50 p-6 rounded-lg">
+                    <h4 className="font-semibold text-gray-800 mb-3">Estratégias de Manutenção e Otimização</h4>
+                    <ul className="space-y-2 text-gray-700">
+                      <li>• <strong>Mentoria e Liderança:</strong> Considere assumir papéis de mentoria para compartilhar suas experiências positivas com colegas</li>
+                      <li>• <strong>Desenvolvimento Contínuo:</strong> Invista em capacitações que ampliem suas competências e satisfação profissional</li>
+                      <li>• <strong>Advocacy Organizacional:</strong> Contribua para iniciativas que promovam a QVT em sua organização</li>
+                      <li>• <strong>Equilíbrio Sustentável:</strong> Mantenha práticas de autocuidado para preservar seu bem-estar a longo prazo</li>
+                    </ul>
+                  </div>
+                ) : overallScore >= 2.5 ? (
+                  <div className="bg-gray-50 p-6 rounded-lg">
+                    <h4 className="font-semibold text-gray-800 mb-3">Estratégias de Melhoria Gradual</h4>
+                    <ul className="space-y-2 text-gray-700">
+                      <li>• <strong>Comunicação Assertiva:</strong> Desenvolva habilidades para expressar necessidades e preocupações de forma construtiva</li>
+                      <li>• <strong>Gestão de Relacionamentos:</strong> Invista na construção de redes de apoio no ambiente de trabalho</li>
+                      <li>• <strong>Organização Pessoal:</strong> Implemente técnicas de gestão do tempo e priorização de tarefas</li>
+                      <li>• <strong>Busca por Feedback:</strong> Solicite regularmente feedback construtivo para identificar áreas de melhoria</li>
+                    </ul>
+                  </div>
+                ) : (
+                  <div className="bg-gray-50 p-6 rounded-lg">
+                    <h4 className="font-semibold text-gray-800 mb-3">Estratégias de Intervenção Imediata</h4>
+                    <ul className="space-y-2 text-gray-700">
+                      <li>• <strong>Apoio Profissional:</strong> Busque orientação de psicólogos organizacionais ou coaches especializados</li>
+                      <li>• <strong>Diálogo com Liderança:</strong> Agende conversas estruturadas com sua chefia sobre melhorias necessárias</li>
+                      <li>• <strong>Recursos Organizacionais:</strong> Utilize programas de assistência ao colaborador disponíveis na empresa</li>
+                      <li>• <strong>Planejamento de Carreira:</strong> Considere alternativas profissionais que melhor atendam suas necessidades</li>
+                    </ul>
+                  </div>
+                )}
+              </div>
+
+              {/* Considerações Finais sobre Gestão do Estresse Ocupacional */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-800">Considerações Finais: Gestão do Estresse Ocupacional</h3>
+                
+                <div className="bg-indigo-50 p-6 rounded-lg border-l-4 border-indigo-400">
+                  <h4 className="font-semibold text-indigo-800 mb-3">Estratégias Individuais de Enfrentamento</h4>
+                  <p className="text-indigo-700 mb-3">
+                    A gestão eficaz do estresse ocupacional requer uma abordagem multifacetada que combine técnicas 
+                    individuais de enfrentamento com mudanças organizacionais. Baseado no modelo de Lazarus e Folkman (1984), 
+                    as estratégias de coping podem ser focadas no problema ou na emoção.
+                  </p>
+                  <ul className="space-y-1 text-indigo-700">
+                    <li>• <strong>Técnicas de Relaxamento:</strong> Mindfulness, respiração diafragmática e relaxamento muscular progressivo</li>
+                    <li>• <strong>Atividade Física Regular:</strong> Exercícios aeróbicos e de resistência para redução do cortisol</li>
+                    <li>• <strong>Gestão do Tempo:</strong> Técnicas de priorização e delegação para otimizar a carga de trabalho</li>
+                    <li>• <strong>Suporte Social:</strong> Cultivo de relacionamentos positivos dentro e fora do ambiente de trabalho</li>
+                  </ul>
+                </div>
+
+                <div className="bg-purple-50 p-6 rounded-lg border-l-4 border-purple-400">
+                  <h4 className="font-semibold text-purple-800 mb-3">Intervenções Organizacionais</h4>
+                  <p className="text-purple-700 mb-3">
+                    Segundo o modelo de Karasek e Theorell (1990), a qualidade de vida no trabalho é influenciada 
+                    pela interação entre demandas psicológicas, controle sobre o trabalho e suporte social. 
+                    Organizações eficazes implementam:
+                  </p>
+                  <ul className="space-y-1 text-purple-700">
+                    <li>• <strong>Redesenho de Cargos:</strong> Aumento da autonomia e variedade de tarefas</li>
+                    <li>• <strong>Programas de Bem-estar:</strong> Iniciativas de promoção da saúde física e mental</li>
+                    <li>• <strong>Flexibilidade Organizacional:</strong> Horários flexíveis e modalidades de trabalho híbrido</li>
+                    <li>• <strong>Cultura de Feedback:</strong> Sistemas estruturados de comunicação e reconhecimento</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Referências Científicas */}
+              <div className="bg-gray-100 p-6 rounded-lg">
+                <h4 className="font-semibold text-gray-800 mb-3">Referências Científicas</h4>
+                <div className="text-sm text-gray-600 space-y-1">
+                  <p>• Walton, R. E. (1973). Quality of working life: what is it? <em>Sloan Management Review</em>, 15(1), 11-21.</p>
+                  <p>• Karasek, R., & Theorell, T. (1990). <em>Healthy work: stress, productivity, and the reconstruction of working life</em>. Basic Books.</p>
+                  <p>• Lazarus, R. S., & Folkman, S. (1984). <em>Stress, appraisal, and coping</em>. Springer Publishing Company.</p>
+                  <p>• Hackman, J. R., & Oldham, G. R. (1976). Motivation through the design of work. <em>Organizational Behavior and Human Performance</em>, 16(2), 250-279.</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Ações */}
           <div className="flex gap-4 justify-center mt-8">

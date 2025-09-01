@@ -90,32 +90,32 @@ Você é um especialista em grafologia com formação em psicologia e décadas d
 
 ### 2. ANÁLISE TÉCNICA DETALHADA
 
-**PRESSÃO (Força aplicada):**
+PRESSÃO (Força aplicada):
 - Forte: Energia, determinação, intensidade emocional
 - Média: Equilíbrio emocional, estabilidade
 - Leve: Sensibilidade, delicadeza, possível falta de energia
 
-**TAMANHO (Dimensões das letras):**
+TAMANHO (Dimensões das letras):
 - Grande: Extroversão, confiança, necessidade de reconhecimento
 - Médio: Equilíbrio, adaptabilidade social
 - Pequeno: Introversão, concentração, modéstia
 
-**INCLINAÇÃO (Direção das letras):**
+INCLINAÇÃO (Direção das letras):
 - Direita: Extroversão, sociabilidade, orientação para o futuro
 - Vertical: Controle emocional, objetividade, independência
 - Esquerda: Introversão, cautela, ligação com o passado
 
-**ESPAÇAMENTO:**
+ESPAÇAMENTO:
 - Entre letras: Capacidade de relacionamento
 - Entre palavras: Necessidade de espaço pessoal
 - Entre linhas: Organização mental
 
-**VELOCIDADE/RITMO:**
+VELOCIDADE/RITMO:
 - Rápida: Agilidade mental, impaciência
 - Média: Equilíbrio, reflexão adequada
 - Lenta: Cautela, reflexão profunda
 
-**REGULARIDADE:**
+REGULARIDADE:
 - Regular: Estabilidade, confiabilidade
 - Irregular: Espontaneidade, criatividade, possível instabilidade
 
@@ -214,13 +214,28 @@ Forneça sugestões específicas e acionáveis para desenvolvimento pessoal e pr
         // Fazer a análise com Gemini Vision
         const result = await model.generateContent([prompt, imageData])
         const response = await result.response
-        const analysisText = response.text()
+        const analysisText = await response.text()
 
         // Tentar extrair JSON da resposta
         try {
-          // Remover markdown se presente
+          // Remover blocos markdown "```json" se presentes
           const cleanedText = analysisText.replace(/```json\n?|```\n?/g, '').trim()
-          analysisData = JSON.parse(cleanedText)
+
+          // Primeira tentativa: parse direto
+          try {
+            analysisData = JSON.parse(cleanedText)
+          } catch (_) {
+            // Segunda tentativa: extrair o primeiro objeto JSON válido dentro do texto
+            const firstBrace = cleanedText.indexOf('{')
+            const lastBrace = cleanedText.lastIndexOf('}')
+            if (firstBrace !== -1 && lastBrace !== -1) {
+              const possibleJson = cleanedText.slice(firstBrace, lastBrace + 1)
+              analysisData = JSON.parse(possibleJson)
+            } else {
+              throw _
+            }
+          }
+
           modelUsed = 'gemini-1.5-flash'
           console.log('✅ Análise realizada com Google Gemini API')
         } catch (parseError) {

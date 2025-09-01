@@ -388,9 +388,9 @@ export default function HumaniQClimaTestePage() {
     
     // Verificar se é a última pergunta
     if (currentQuestion === totalQuestions) {
-      // Finalizar teste automaticamente e redirecionar para resultados após 800ms
+      // Finalizar teste automaticamente e redirecionar para confirmação após 800ms
       setTimeout(() => {
-        window.location.href = '/colaborador/corporativo/humaniq-pesquisa-clima/resultado'
+        window.location.href = '/colaborador/corporativo/humaniq-pesquisa-clima/confirmacao'
       }, 800)
     } else {
       // Avanço automático para a próxima pergunta após 800ms

@@ -307,7 +307,7 @@ export default function HumaniQTiposResultadoPage() {
           Voltar aos Resultados
         </Button>
         
-        <Button variant="outline">
+        <Button variant="outline" onClick={() => typeof window !== 'undefined' && window.print()}>
           <Download className="h-4 w-4 mr-2" />
           Baixar Relatório
         </Button>

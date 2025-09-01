@@ -238,10 +238,20 @@ export async function GET(request: NextRequest) {
       by: ['status'],
       where: {
         companyId: user.company.id,
-        metadata: {
-          path: 'erpConfigId',
-          equals: erpConfigId
-        }
+        OR: [
+          {
+            metadata: {
+              path: ['erpConfigId'],
+              equals: erpConfigId
+            } as any
+          },
+          {
+            metadata: {
+              path: ['isAutoImported'],
+              equals: true
+            } as any
+          }
+        ]
       },
       _count: {
         id: true

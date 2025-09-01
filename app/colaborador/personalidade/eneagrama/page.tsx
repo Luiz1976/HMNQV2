@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/hooks/use-toast'
 import { ArrowLeft, ArrowRight, Circle, Clock, CheckCircle, AlertCircle } from 'lucide-react'
+import { showResultStorageSuccess, showResultStorageError, showSavingProgress } from '@/lib/toast-utils'
 
 interface Question {
   id: number
@@ -40,19 +41,7 @@ interface TestResults {
   totalQuestions: number
 }
 
-// Base Científica do HumaniQ Eneagrama:
-// Embora o Eneagrama não seja cientificamente validado como testes psicométricos tradicionais
-// (ex.: Big Five, MBTI), ele é amplamente usado em desenvolvimento pessoal, coaching,
-// psicologia organizacional e espiritualidade.
-//
-// Principais referências:
-// • Riso, Don & Hudson, Russ – The Wisdom of the Enneagram
-// • Ginger Lapid-Bogda – Bringing Out the Best in Yourself at Work
-// • Helen Palmer – The Enneagram: Understanding Yourself and the Others in Your Life
-//
-// Importante: Apesar de não ter a mesma robustez estatística de testes clínicos,
-// pesquisas mostram correlação entre o Eneagrama e traços do Big Five,
-// o que aumenta sua credibilidade como ferramenta de autoconhecimento.
+
 
 const questions: Question[] = [
   // Tipo 1 - O Perfeccionista (11 perguntas)
@@ -205,7 +194,7 @@ export default function PersonalityEnneagramPage() {
           },
           credentials: 'include',
           body: JSON.stringify({
-            testId: 'humaniq-enneagram-test'
+            testId: 'humaniq_eneagrama'
           })
         })
 
@@ -242,7 +231,7 @@ export default function PersonalityEnneagramPage() {
         },
         credentials: 'include',
         body: JSON.stringify({
-          testId: 'humaniq-enneagram-test',
+          testId: 'humaniq_eneagrama',
           questionId: questionId,
           value: value,
           metadata: {
@@ -261,71 +250,231 @@ export default function PersonalityEnneagramPage() {
   }
 
   // Função para finalizar teste automaticamente
-  const finalizeTestAutomatically = async (finalAnswers: Record<number, number>) => {
-    console.log('🔄 Iniciando finalização automática do teste...')
-    console.log('Total de respostas para finalizar:', Object.keys(finalAnswers).length)
+  const finalizeTestAutomatically = async (currentAnswers: Record<number, number>) => {
+    console.log('🎯 finalizeTestAutomatically iniciada')
+    console.log('📊 Dados recebidos:')
+    console.log('   - Total de respostas:', Object.keys(currentAnswers).length)
+    console.log('   - IDs das questões:', Object.keys(currentAnswers).sort((a, b) => parseInt(a) - parseInt(b)))
     
-    if (Object.keys(finalAnswers).length < 100) {
-      console.error('❌ Erro: Nem todas as questões foram respondidas!')
+    try {
+      // Verificar se realmente temos todas as 100 respostas
+      const answeredQuestions = Object.keys(currentAnswers).length
+      console.log('📈 Número de questões respondidas:', answeredQuestions)
+      
+      if (answeredQuestions < 100) {
+        console.log('❌ ERRO: Não é possível finalizar - faltam respostas')
+        console.log('❌ Esperado: 100, Recebido:', answeredQuestions)
+        
+        // Resetar estados
+        setIsSubmitting(false)
+        isFinalizingRef.current = false
+        setHasAutoFinalized(false)
+        
+        toast({
+          title: "Teste incompleto",
+          description: `Faltam ${100 - answeredQuestions} respostas para finalizar o teste.`,
+          variant: "destructive"
+        })
+        return
+      }
+      
+      // Validar que todas as questões de 1 a 100 estão presentes
+      const missingQuestions = []
+      for (let i = 1; i <= 100; i++) {
+        if (!currentAnswers[i] || currentAnswers[i] < 1 || currentAnswers[i] > 5) {
+          missingQuestions.push(i)
+        }
+      }
+      
+      if (missingQuestions.length > 0) {
+        console.log('❌ ERRO: Questões com respostas inválidas:', missingQuestions)
+        
+        // Resetar estados
+        setIsSubmitting(false)
+        isFinalizingRef.current = false
+        setHasAutoFinalized(false)
+        
+        toast({
+          title: "Respostas inválidas",
+          description: `Algumas questões têm respostas inválidas. Verifique suas respostas.`,
+          variant: "destructive"
+        })
+        return
+      }
+      
+      console.log('✅ Validação concluída - todas as 100 questões têm respostas válidas')
+      console.log('🚀 Iniciando completeTest...')
+      
+      // Chamar completeTest com as respostas validadas
+      await completeTest(currentAnswers, true) // true indica finalização automática
+      
+      console.log('✅ completeTest executado com sucesso')
+      
+    } catch (error) {
+      console.error('❌ ERRO CRÍTICO na finalização automática:', error)
+      console.error('❌ Stack trace:', error instanceof Error ? error.stack : 'N/A')
+      
+      // Resetar todos os estados de finalização
+      setIsSubmitting(false)
+      isFinalizingRef.current = false
+      setHasAutoFinalized(false)
+      
       toast({
-        title: "Erro",
-        description: "Nem todas as questões foram respondidas!",
+        title: "Erro na finalização",
+        description: "Ocorreu um erro inesperado ao finalizar o teste. Tente recarregar a página.",
+        variant: "destructive"
+      })
+    }
+  }
+  
+  // Verificar e finalizar se completo
+  const checkAndFinalizeIfComplete = async () => {
+    console.log('🔍 checkAndFinalizeIfComplete chamada')
+    const totalAnswers = Object.keys(answers).length
+    console.log('📊 Total de respostas atuais:', totalAnswers)
+    console.log('🔍 Estados: hasAutoFinalized:', hasAutoFinalized, 'isSubmitting:', isSubmitting)
+    
+    if (totalAnswers === 100 && !hasAutoFinalized && !isSubmitting && !isFinalizingRef.current) {
+      console.log('✅ Teste completo detectado! Iniciando finalização de fallback...')
+      
+      // Verificar se a questão 100 foi respondida
+      const hasAnsweredQuestion100 = answers[100] !== undefined
+      console.log('🎯 Questão 100 respondida?', hasAnsweredQuestion100)
+      
+      if (hasAnsweredQuestion100) {
+        console.log('🚀 Executando finalização de fallback')
+        await finalizeTestAutomatically(answers)
+      } else {
+        console.log('⚠️ Questão 100 não foi respondida ainda')
+      }
+    } else {
+      console.log('⏳ Condições para finalização não atendidas:')
+      console.log('   - Total respostas === 100?', totalAnswers === 100)
+      console.log('   - !hasAutoFinalized?', !hasAutoFinalized)
+      console.log('   - !isSubmitting?', !isSubmitting)
+      console.log('   - !isFinalizingRef.current?', !isFinalizingRef.current)
+    }
+  }
+  
+  // Função de fallback para finalização manual
+  const handleManualFinalization = async () => {
+    console.log('🔧 handleManualFinalization chamada')
+    const totalAnswers = Object.keys(answers).length
+    
+    if (totalAnswers < 100) {
+      toast({
+        title: "Teste incompleto",
+        description: `Você precisa responder todas as 100 questões. Faltam ${100 - totalAnswers} respostas.`,
         variant: "destructive"
       })
       return
     }
     
-    // Utilize o mesmo fluxo de envio e redirecionamento do teste principal
-    return await completeTest(finalAnswers, true)
-  }
-  
-  // Função de fallback para verificar se o teste deve ser finalizado
-  const checkAndFinalizeIfComplete = async () => {
-    console.log('🔍 Verificando se o teste deve ser finalizado...')
-    console.log('Current Question:', currentQuestion)
-    console.log('Total Questions:', 100)
-    console.log('Total Answers:', Object.keys(answers).length)
+    if (isSubmitting || hasAutoFinalized || isFinalizingRef.current) {
+      console.log('⚠️ Finalização já em andamento')
+      return
+    }
     
-    if (currentQuestion === 99 && Object.keys(answers).length === 100) {
-      console.log('🎯 Condições atendidas! Finalizando teste...')
+    console.log('🚀 Iniciando finalização manual')
+    isFinalizingRef.current = true
+    setHasAutoFinalized(true)
+    setIsSubmitting(true)
+    
+    try {
       await finalizeTestAutomatically(answers)
+    } catch (error) {
+      console.error('❌ Erro na finalização manual:', error)
+      isFinalizingRef.current = false
+      setHasAutoFinalized(false)
+      setIsSubmitting(false)
     }
   }
 
   const handleAnswer = async (questionId: number, value: number) => {
-    console.log('handleAnswer chamada para questionId:', questionId, 'valor:', value)
+    console.log('🔄 handleAnswer chamada para questionId:', questionId, 'valor:', value)
+    console.log('🔍 Estado atual - isSubmitting:', isSubmitting, 'hasAutoFinalized:', hasAutoFinalized, 'isFinalizingRef:', isFinalizingRef.current)
+    
     // Prevenir múltiplas execuções se já está finalizando
     if (isFinalizingRef.current || hasAutoFinalized || isSubmitting) {
-      console.log('handleAnswer bloqueado por finalização')
+      console.log('⚠️ handleAnswer bloqueado por finalização em andamento')
+      return
+    }
+    
+    // Prevenir múltiplas submissões da mesma resposta
+    if (answers[questionId] === value) {
+      console.log('⚠️ Resposta já foi submetida para esta pergunta')
       return
     }
     
     const newAnswers = { ...answers, [questionId]: value }
-    console.log('newAnswers:', newAnswers)
+    console.log('📝 newAnswers criado:', Object.keys(newAnswers).length, 'respostas')
     setAnswers(newAnswers)
-    await saveAnswerToBackend(questionId, value)
     
-    // Verificar se é a última questão (ID 100)
+    // Salvar resposta no backend de forma assíncrona (não bloquear UI)
+    saveAnswerToBackend(questionId, value).catch(error => {
+      console.warn('⚠️ Erro ao salvar resposta no backend:', error)
+    })
+    
+    // Verificar se é a última questão (ID 100) e se todas as 100 questões foram respondidas
     const isLastQuestion = questionId === 100
-    console.log('É a última questão (ID 100)?', isLastQuestion)
-    console.log('Total de respostas:', Object.keys(newAnswers).length)
+    const totalAnswers = Object.keys(newAnswers).length
+    const isTestComplete = totalAnswers === 100
+    
+    console.log('🎯 Análise da finalização:')
+    console.log('   - É a última questão (ID 100)?', isLastQuestion)
+    console.log('   - Total de respostas:', totalAnswers)
+    console.log('   - Teste completo?', isTestComplete)
+    console.log('   - Deve finalizar?', isLastQuestion && isTestComplete)
     
     // Se respondeu a questão 100 e tem todas as 100 respostas, finalizar automaticamente
-    if (isLastQuestion && Object.keys(newAnswers).length === 100) {
-      console.log('🎯 Respondeu a questão 100! Finalizando automaticamente o teste...')
+    if (isLastQuestion && isTestComplete) {
+      console.log('🚀 INICIANDO FINALIZAÇÃO AUTOMÁTICA DO TESTE!')
+      
+      // Definir estados de finalização ANTES de chamar a função
       isFinalizingRef.current = true
       setHasAutoFinalized(true)
-      await finalizeTestAutomatically(newAnswers)
-    } else if (!isLastQuestion && currentQuestion < 99) {
+      setIsSubmitting(true)
+      
+      try {
+        await finalizeTestAutomatically(newAnswers)
+        console.log('✅ Finalização automática concluída com sucesso')
+      } catch (error) {
+        console.error('❌ Erro na finalização automática:', error)
+        // Resetar estados em caso de erro
+        isFinalizingRef.current = false
+        setHasAutoFinalized(false)
+        setIsSubmitting(false)
+        
+        toast({
+          title: "Erro na finalização",
+          description: "Ocorreu um erro ao finalizar o teste. Tente novamente.",
+          variant: "destructive"
+        })
+      }
+    } else if (!isLastQuestion && currentQuestion < questions.length - 1) {
       // Avançar para próxima questão apenas se não for a última
-      console.log('Avançando para próxima questão:', currentQuestion + 1)
+      console.log('➡️ Avançando para próxima questão:', currentQuestion + 1)
       setCurrentQuestion(prev => prev + 1)
+    } else {
+      console.log('🔄 Permanecendo na questão atual - aguardando finalização ou navegação manual')
     }
   }
 
+  // useEffect para verificar finalização automática
+  useEffect(() => {
+    console.log('🔄 useEffect [answers] disparado - Total respostas:', Object.keys(answers).length)
+    
+    // Adicionar um pequeno delay para evitar execuções múltiplas
+    const timeoutId = setTimeout(() => {
+      checkAndFinalizeIfComplete()
+    }, 100)
+    
+    return () => clearTimeout(timeoutId)
+  }, [answers, hasAutoFinalized, isSubmitting])
+
   const handleNext = () => {
     console.log('🔄 handleNext called - currentQuestion:', currentQuestion)
-    if (currentQuestion < 99) {
+    if (currentQuestion < questions.length - 1) {
       console.log('✅ Advancing to next question:', currentQuestion + 1)
       setCurrentQuestion(prev => {
         console.log('📝 handleNext setCurrentQuestion - prev:', prev, 'new:', prev + 1)
@@ -481,28 +630,36 @@ export default function PersonalityEnneagramPage() {
   }
 
   const completeTest = async (finalAnswers: Record<number, number>, isAutoFinalization = false) => {
-    console.log('Iniciando finalização do teste...')
-    console.log('Respostas finais:', Object.keys(finalAnswers).length)
+    console.log('🏁 INICIANDO FINALIZAÇÃO DO TESTE')
+    console.log('📊 Dados da finalização:')
+    console.log('   - Total de respostas:', Object.keys(finalAnswers).length)
+    console.log('   - É finalização automática?', isAutoFinalization)
+    console.log('   - SessionId disponível?', !!sessionId)
     
     // Só exibir alerta se não for finalização automática
     if (Object.keys(finalAnswers).length < 100 && !isAutoFinalization) {
-      console.warn('Teste incompleto, faltam respostas')
+      console.warn('❌ Teste incompleto, faltam respostas')
       alert('Por favor, responda todas as questões antes de finalizar.')
       return
     }
 
-    // Garantir que a sessão válida foi criada antes de submeter
-    if (!sessionId) {
-      toast({
-        title: "Aguarde",
-        description: "Inicializando sua sessão do teste. Tente novamente em alguns segundos.",
-      })
-      return
+    // Helper para aguardar a criação da sessão antes de submeter o teste
+    const waitForSessionId = async (getSessionId: () => string | null, timeout = 5000, interval = 300): Promise<string | null> => {
+      const start = Date.now()
+      while (Date.now() - start < timeout) {
+        const id = getSessionId()
+        if (id) return id
+        await new Promise(resolve => setTimeout(resolve, interval))
+      }
+      return null
     }
     
     setIsSubmitting(true)
     
     try {
+      // Mostrar mensagem de progresso
+      showSavingProgress('HumaniQ Eneagrama')
+      
       const results = calculateResults(finalAnswers)
       console.log('Resultados calculados:', results)
       
@@ -515,47 +672,68 @@ export default function PersonalityEnneagramPage() {
         }
       }))
       
-      const response = await fetch('/api/tests/submit', {
+      // Garantir que temos um sessionId válido antes de submeter
+      const obtainedSessionId = await waitForSessionId(() => sessionId)
+      if (!obtainedSessionId) {
+        throw new Error('Não foi possível obter o sessionId para submeter o teste.')
+      }
+
+      // Preparar dados para a nova API segura
+      const resultData = {
+        tipoTeste: 'ENEAGRAMA',
+        respostasCriptografadas: {
+          ...results,
+          answers: formattedAnswers
+        },
+        metadata: {
+          testName: 'HumaniQ Eneagrama',
+          testId: 'humaniq_eneagrama',
+          sessionId: obtainedSessionId,
+          duration: Math.floor((Date.now() - testStartTime) / 1000),
+          testType: 'ENNEAGRAM',
+          completedAt: new Date().toISOString(),
+          version: '2.0'
+        }
+      }
+
+      // Submeter para a nova API segura
+      const response = await fetch('/api/colaborador/resultados', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        credentials: 'include', // Incluir cookies de sessão para autenticação
-        body: JSON.stringify({
-          testId: 'humaniq-enneagram-test', // ID do teste Eneagrama
-          sessionId: sessionId,
-          answers: formattedAnswers,
-          duration: Math.floor((Date.now() - testStartTime) / 1000),
-          metadata: {
-            testType: 'ENNEAGRAM',
-            results: results,
-            completedAt: new Date().toISOString()
-          }
-        })
+        credentials: 'include',
+        body: JSON.stringify(resultData)
       })
 
       if (!response.ok) {
-        throw new Error('Erro ao enviar resultados')
+        const errorData = await response.json()
+        throw new Error(errorData.message || `Erro ${response.status}`)
       }
 
-      const data = await response.json()
+      const responseData = await response.json()
       
-      toast({
-        title: "Teste concluído!",
-        description: "Seus resultados foram salvos com sucesso."
-      })
+      // Mostrar mensagem de sucesso
+      showResultStorageSuccess('HumaniQ Eneagrama')
 
-      // Redirect to results page
-      router.push(`/colaborador/personalidade/eneagrama/resultado?id=${data.testResult.id}`)
+      // Aguardar um pouco para o usuário ver a mensagem
+      setTimeout(() => {
+        console.log('🎉 SUCESSO! Redirecionando para resultados com ID:', responseData.data.idResultado)
+        router.push(`/colaborador/personalidade/eneagrama/resultado?id=${responseData.data.idResultado}`)
+      }, 2000)
+      
     } catch (error) {
-      console.error('Erro ao submeter teste:', error)
-      toast({
-        title: "Erro",
-        description: "Ocorreu um erro ao salvar seus resultados. Tente novamente.",
-        variant: "destructive"
-      })
+      console.error('❌ ERRO CRÍTICO ao submeter teste:', error)
+      console.error('❌ Stack trace:', error instanceof Error ? error.stack : 'N/A')
+      
+      showResultStorageError(error instanceof Error ? error.message : 'Erro desconhecido')
+      
+      // Resetar estados de finalização em caso de erro
+      isFinalizingRef.current = false
+      setHasAutoFinalized(false)
     } finally {
       setIsSubmitting(false)
+      console.log('🔄 Estados resetados - isSubmitting definido como false')
     }
   }
 
@@ -580,7 +758,7 @@ export default function PersonalityEnneagramPage() {
   }
   
   const currentAnswer = answers[currentQ.id]
-  const isLastQuestion = currentQuestion === 99
+  const isLastQuestion = currentQuestion === questions.length - 1
   const canGoNext = currentQ && answers[currentQ.id] !== undefined
   const canGoPrevious = currentQuestion > 0
   const allQuestionsAnswered = Object.keys(answers).length === 100
@@ -620,7 +798,8 @@ export default function PersonalityEnneagramPage() {
           {/* Contador de Questões */}
           <div className="text-right">
             <p className="text-green-100 text-sm">Questão</p>
-            <p className="text-2xl font-bold">{Object.keys(answers).length}/100</p>
+            <p className="text-2xl font-bold">{currentQ?.id || currentQuestion + 1}/100</p>
+            
           </div>
         </div>
         
@@ -741,14 +920,32 @@ export default function PersonalityEnneagramPage() {
           </div>
 
           {isLastQuestion ? (
-            <div className="flex items-center gap-2 px-6 py-3 text-green-600 font-medium">
+            <div className="flex flex-col gap-2">
               {isSubmitting ? (
-                <>
+                <div className="flex items-center gap-2 px-6 py-3 text-green-600 font-medium">
                   <div className="w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full animate-spin"></div>
                   Finalizando automaticamente...
-                </>
+                </div>
               ) : (
-                'Responda para finalizar automaticamente'
+                <>
+                  <div className="flex items-center gap-2 px-6 py-3 text-green-600 font-medium">
+                    Responda para finalizar automaticamente
+                  </div>
+                  {Object.keys(answers).length === 100 && !hasAutoFinalized && (
+                    <div className="flex flex-col gap-2 mt-2">
+                      <span className="text-sm text-amber-600">
+                        ⚠️ Finalização automática não funcionou? Clique abaixo:
+                      </span>
+                      <Button
+                        onClick={handleManualFinalization}
+                        className="bg-green-600 hover:bg-green-700 text-white"
+                        size="sm"
+                      >
+                        Finalizar Teste Manualmente
+                      </Button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           ) : (

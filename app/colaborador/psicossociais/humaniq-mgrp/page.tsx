@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, Shield, TrendingUp, Users, FileText, MessageSquare } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, Shield, TrendingUp, Users, FileText, MessageSquare, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { LikertScale } from '@/components/ui/likert-scale';
 
@@ -282,6 +282,96 @@ export default function HumaniqMGRPTest() {
             </CardContent>
           </Card>
 
+          {/* Explanation of Classification Levels */}
+          <Card className="mb-6 border-blue-200 bg-blue-50">
+            <CardHeader>
+              <CardTitle className="text-xl text-blue-800 flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5" />
+                Entenda Sua Classificação
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="bg-white p-4 rounded-lg border-l-4 border-blue-500">
+                  <h3 className="font-semibold text-blue-900 mb-2">Escala de Classificação de Maturidade</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <div className="w-20 text-center">
+                        <div className="text-sm font-bold text-green-600">4.5-5.0</div>
+                        <Badge className="bg-green-100 text-green-600 text-xs">Excelente</Badge>
+                      </div>
+                      <p className="text-sm text-gray-700 flex-1">
+                        <strong>Gestão exemplar:</strong> Práticas avançadas implementadas, monitoramento contínuo e cultura organizacional sólida em saúde mental.
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-20 text-center">
+                        <div className="text-sm font-bold text-blue-600">3.5-4.4</div>
+                        <Badge className="bg-blue-100 text-blue-600 text-xs">Boa</Badge>
+                      </div>
+                      <p className="text-sm text-gray-700 flex-1">
+                        <strong>Gestão adequada:</strong> Processos bem estruturados com oportunidades de aprimoramento e otimização.
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-20 text-center">
+                        <div className="text-sm font-bold text-yellow-600">2.5-3.4</div>
+                        <Badge className="bg-yellow-100 text-yellow-600 text-xs">Regular</Badge>
+                      </div>
+                      <p className="text-sm text-gray-700 flex-1">
+                        <strong>Gestão básica:</strong> Práticas iniciais implementadas, mas necessita melhorias significativas para eficácia.
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-3 bg-orange-50 p-3 rounded-lg">
+                      <div className="w-20 text-center">
+                        <div className="text-sm font-bold text-orange-600">1.5-2.4</div>
+                        <Badge className="bg-orange-100 text-orange-600 text-xs">Insuficiente</Badge>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-700 mb-2">
+                          <strong>Gestão inadequada:</strong> Práticas limitadas ou ineficazes que não atendem aos requisitos mínimos de proteção à saúde mental.
+                        </p>
+                        <div className="bg-orange-100 p-2 rounded text-xs text-orange-800">
+                          <strong>Ação Imediata Necessária:</strong> Implementar urgentemente medidas de prevenção, monitoramento e suporte para reduzir riscos psicossociais.
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-20 text-center">
+                        <div className="text-sm font-bold text-red-600">1.0-1.4</div>
+                        <Badge className="bg-red-100 text-red-600 text-xs">Crítica</Badge>
+                      </div>
+                      <p className="text-sm text-gray-700 flex-1">
+                        <strong>Ausência de gestão:</strong> Risco elevado para a saúde mental dos colaboradores, requer intervenção emergencial.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                {results.globalLevel === 'Insuficiente' && (
+                  <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg">
+                    <h4 className="font-semibold text-orange-800 mb-2 flex items-center gap-2">
+                      <AlertTriangle className="h-4 w-4" />
+                      Seu Resultado: Nível Insuficiente
+                    </h4>
+                    <div className="space-y-2 text-sm text-orange-700">
+                      <p><strong>O que isso significa:</strong> Sua organização possui lacunas significativas na gestão de riscos psicossociais que podem comprometer a saúde mental dos colaboradores.</p>
+                      <p><strong>Principais preocupações:</strong></p>
+                      <ul className="list-disc list-inside ml-4 space-y-1">
+                        <li>Ausência ou inadequação de processos de identificação de riscos</li>
+                        <li>Monitoramento insuficiente dos indicadores de saúde mental</li>
+                        <li>Falta de suporte adequado aos colaboradores em situação de risco</li>
+                        <li>Não conformidade com requisitos legais e normativos</li>
+                        <li>Cultura organizacional que não prioriza a saúde mental</li>
+                      </ul>
+                      <p><strong>Próximos passos:</strong> Implemente imediatamente um plano de ação focado nas dimensões com menor pontuação, priorizando medidas de proteção e suporte aos colaboradores.</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Alerts */}
           {results.alerts.length > 0 && (
             <Card className="mb-6 border-red-200">
@@ -354,6 +444,180 @@ export default function HumaniqMGRPTest() {
             </CardContent>
           </Card>
 
+          {/* Comprehensive Mental Health Diagnosis */}
+          <Card className="mb-6 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50">
+            <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-t-lg">
+              <CardTitle className="text-xl flex items-center gap-2">
+                <AlertTriangle className="h-6 w-6" />
+                Diagnóstico Abrangente de Saúde Mental Organizacional
+              </CardTitle>
+              <p className="text-blue-100 text-sm mt-2">
+                Análise científica baseada na avaliação de maturidade em gestão de riscos psicossociais
+              </p>
+            </CardHeader>
+            <CardContent className="p-6 space-y-6">
+              {/* Introduction */}
+              <div className="bg-white p-4 rounded-lg border border-blue-100">
+                <h3 className="text-lg font-semibold text-blue-800 mb-3 flex items-center gap-2">
+                  <Shield className="h-5 w-5" />
+                  Introdução à Avaliação de Riscos Psicossociais
+                </h3>
+                <p className="text-gray-700 leading-relaxed">
+                  A gestão eficaz de riscos psicossociais no ambiente de trabalho é fundamental para a promoção da saúde mental 
+                  e bem-estar dos colaboradores. Esta avaliação utiliza metodologias científicas reconhecidas internacionalmente 
+                  para mensurar o nível de maturidade organizacional na identificação, prevenção e gestão de fatores que podem 
+                  impactar negativamente a saúde psicológica dos trabalhadores.
+                </p>
+              </div>
+
+              {/* Scientific Methodology */}
+              <div className="bg-white p-4 rounded-lg border border-blue-100">
+                <h3 className="text-lg font-semibold text-blue-800 mb-3 flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  Metodologia Científica
+                </h3>
+                <div className="space-y-3">
+                  <div>
+                    <h4 className="font-semibold text-gray-800">Modelo de Avaliação de Maturidade</h4>
+                    <p className="text-gray-700 text-sm">
+                      Baseado nas diretrizes da ISO 45003:2021 e NR-01, avaliando cinco dimensões críticas: 
+                      Prevenção e Mapeamento, Monitoramento e Controle, Acolhimento e Suporte, Conformidade Legal 
+                      e Cultura Organizacional.
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-800">Escala de Mensuração</h4>
+                    <p className="text-gray-700 text-sm">
+                      Utiliza escala Likert de 5 pontos para avaliar o grau de implementação e eficácia das 
+                      práticas organizacionais em cada dimensão avaliada.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Detailed Results Analysis */}
+              <div className="bg-white p-4 rounded-lg border border-blue-100">
+                <h3 className="text-lg font-semibold text-blue-800 mb-3 flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5" />
+                  Análise Detalhada dos Resultados
+                </h3>
+                <div className="space-y-4">
+                  <div className="p-3 bg-blue-50 rounded-lg">
+                    <h4 className="font-semibold text-blue-900">Índice Geral de Maturidade: {results.globalScore.toFixed(1)}/5.0</h4>
+                    <p className="text-blue-800 text-sm mt-1">
+                      {results.globalScore >= 4.0 ? 
+                        "Sua organização demonstra excelência na gestão de riscos psicossociais, com práticas bem estruturadas e implementadas de forma consistente." :
+                        results.globalScore >= 3.0 ?
+                        "A organização apresenta um nível adequado de maturidade, com oportunidades identificadas para aprimoramento das práticas de gestão." :
+                        results.globalScore >= 2.0 ?
+                        "Há necessidade de desenvolvimento significativo nas práticas de gestão de riscos psicossociais para garantir um ambiente de trabalho saudável." :
+                        "A situação atual requer atenção imediata e implementação urgente de medidas de proteção à saúde mental dos colaboradores."
+                      }
+                    </p>
+                  </div>
+                  
+                  <div className="grid gap-3">
+                    {results.dimensions.map((dimension, index) => (
+                      <div key={index} className="p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-semibold text-gray-800">{dimension.name}</h4>
+                          <span className={`text-sm font-medium ${dimension.color}`}>
+                            {dimension.score.toFixed(1)}/5.0 - {dimension.level}
+                          </span>
+                        </div>
+                        <p className="text-gray-600 text-sm">
+                          {dimension.score >= 4.0 ?
+                            `Excelente desempenho em ${dimension.name.toLowerCase()}, demonstrando práticas maduras e eficazes.` :
+                            dimension.score >= 3.0 ?
+                            `Bom nível de desenvolvimento em ${dimension.name.toLowerCase()}, com espaço para otimizações.` :
+                            dimension.score >= 2.0 ?
+                            `Necessita melhorias significativas em ${dimension.name.toLowerCase()} para atender aos padrões recomendados.` :
+                            `Requer ação imediata para desenvolver práticas adequadas de ${dimension.name.toLowerCase()}.`
+                          }
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Professional Recommendations */}
+              <div className="bg-white p-4 rounded-lg border border-blue-100">
+                <h3 className="text-lg font-semibold text-blue-800 mb-3 flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  Recomendações Profissionais
+                </h3>
+                <div className="space-y-3">
+                  <div>
+                    <h4 className="font-semibold text-gray-800">Ações Prioritárias</h4>
+                    <ul className="text-gray-700 text-sm space-y-1 ml-4">
+                      {results.globalScore < 3.0 && (
+                        <>
+                          <li>• Implementar programa estruturado de identificação e avaliação de riscos psicossociais</li>
+                          <li>• Estabelecer canais de comunicação e suporte para questões de saúde mental</li>
+                          <li>• Capacitar lideranças para reconhecimento de sinais de sofrimento psíquico</li>
+                        </>
+                      )}
+                      {results.globalScore >= 3.0 && results.globalScore < 4.0 && (
+                        <>
+                          <li>• Aprimorar sistemas de monitoramento contínuo de indicadores de saúde mental</li>
+                          <li>• Fortalecer programas de acolhimento e suporte aos colaboradores</li>
+                          <li>• Desenvolver cultura organizacional mais inclusiva e preventiva</li>
+                        </>
+                      )}
+                      {results.globalScore >= 4.0 && (
+                        <>
+                          <li>• Manter e aperfeiçoar as práticas já implementadas</li>
+                          <li>• Buscar certificações em saúde mental ocupacional</li>
+                          <li>• Compartilhar boas práticas com outras organizações</li>
+                        </>
+                      )}
+                    </ul>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-semibold text-gray-800">Acompanhamento Recomendado</h4>
+                    <p className="text-gray-700 text-sm">
+                      Recomenda-se reavaliação periódica a cada 6-12 meses para monitorar a evolução das práticas 
+                      implementadas e identificar novas oportunidades de melhoria. O acompanhamento por profissionais 
+                      especializados em saúde mental ocupacional é fundamental para o sucesso das intervenções.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Final Considerations */}
+              <div className="bg-white p-4 rounded-lg border border-blue-100">
+                <h3 className="text-lg font-semibold text-blue-800 mb-3 flex items-center gap-2">
+                  <MessageSquare className="h-5 w-5" />
+                  Considerações Finais sobre Gestão de Riscos Psicossociais
+                </h3>
+                <p className="text-gray-700 text-sm leading-relaxed mb-3">
+                  A gestão eficaz de riscos psicossociais não é apenas uma obrigação legal, mas um investimento 
+                  estratégico no capital humano da organização. Ambientes de trabalho psicologicamente seguros 
+                  promovem maior engajamento, produtividade e retenção de talentos, além de reduzirem custos 
+                  associados ao absenteísmo e turnover.
+                </p>
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  A implementação de práticas baseadas em evidências científicas, como as avaliadas neste 
+                  instrumento, contribui para a construção de uma cultura organizacional resiliente e promotora 
+                  de bem-estar, beneficiando tanto colaboradores quanto a organização como um todo.
+                </p>
+              </div>
+
+              {/* Scientific References */}
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h4 className="font-semibold text-gray-800 mb-2">Referências Científicas</h4>
+                <div className="text-xs text-gray-600 space-y-1">
+                  <p>• ISO 45003:2021 - Occupational health and safety management — Psychological health and safety at work</p>
+                  <p>• NR-01 - Disposições Gerais e Gerenciamento de Riscos Ocupacionais (Brasil, 2020)</p>
+                  <p>• Leka, S., & Jain, A. (2010). Health impact of psychosocial hazards at work: An overview. World Health Organization</p>
+                  <p>• Cox, T., & Griffiths, A. (2010). Work-related stress: A theoretical perspective. In S. Leka & J. Houdmont (Eds.), Occupational Health Psychology</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <div className="flex gap-4">
             <Button 
               onClick={() => router.push('/colaborador/psicossociais')}
@@ -364,7 +628,15 @@ export default function HumaniqMGRPTest() {
               Voltar aos Testes
             </Button>
             <Button 
-              onClick={() => router.push('/colaborador/resultados')}
+              onClick={() => window.print()}
+              variant="outline"
+              className="flex items-center gap-2 px-6"
+            >
+              <Printer className="h-4 w-4" />
+              Imprimir Teste
+            </Button>
+            <Button 
+              onClick={() => router.push('/colaborador/resultados?saved=1')}
               className="flex-1"
             >
               Ver Todos os Resultados

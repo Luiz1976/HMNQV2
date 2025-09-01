@@ -204,9 +204,9 @@ export default function HumaniqInsightIntroducaoPage() {
                 transition={{ delay: 1.4 + index * 0.1 }}
                 onMouseEnter={() => setHoveredBenefit(index)}
                 onMouseLeave={() => setHoveredBenefit(null)}
-                className="relative group cursor-pointer"
+                className="relative group cursor-pointer h-full"
               >
-                <div className={`${benefit.bgColor} rounded-2xl p-6 border border-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-2xl`}>
+                <div className={`${benefit.bgColor} h-full flex flex-col justify-between rounded-2xl p-6 border border-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-2xl`}>
                   <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${benefit.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
                     <Icon className="w-6 h-6 text-white" />
                   </div>

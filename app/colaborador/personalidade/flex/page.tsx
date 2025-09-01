@@ -1,13 +1,16 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, ArrowRight, Clock, CheckCircle, Brain, Zap, Target, Users, Award, Focus, TrendingUp, Shield } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Clock, CheckCircle, AlertCircle, BarChart3, Brain, Users, Target, Zap, TrendingUp, FileText, Printer, Download, RotateCcw, ArrowLeft, ArrowRight, Award, Focus, Shield } from 'lucide-react'
 import { LikertScale } from '@/components/ui/likert-scale'
+import { showResultStorageSuccess, showResultStorageError, showSavingProgress } from '@/lib/toast-utils'
+import html2canvas from 'html2canvas'
+import jsPDF from 'jspdf'
 
 interface Question {
   id: number
@@ -57,7 +60,7 @@ const questions: Question[] = [
   { id: 24, text: "Consigo equilibrar diferentes tarefas e demandas simultâneas.", dimension: "Flexibilidade comportamental", test: "FLEX" }
 ]
 
-export default function HumaniqFLEXTest() {
+export default function FlexTest() {
   const router = useRouter()
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<Record<number, number>>({})
@@ -65,6 +68,41 @@ export default function HumaniqFLEXTest() {
   const [showResults, setShowResults] = useState(false)
   const [results, setResults] = useState<TestResults | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  
+  // Análise profissional memorizada conforme classificação
+  const professionalAnalysis = useMemo(() => {
+    if (!results) return ''
+    const insights: Record<string, string> = {
+      "Adaptabilidade excepcional": "Você demonstra uma capacidade notável de se adaptar rapidamente a novas situações e desafios. Essa habilidade o torna um colaborador valioso em ambientes de mudança constante, permitindo-lhe liderar transformações e servir de exemplo para sua equipe.",
+      "Alta adaptabilidade": "Sua alta adaptabilidade indica que você lida bem com mudanças e é capaz de manter a produtividade diante de cenários incertos. Continue desenvolvendo essa competência para assumir papéis que exijam flexibilidade e pensamento estratégico.",
+      "Adaptabilidade moderada": "Você possui um nível adequado de adaptabilidade, mas ainda pode fortalecer esta competência. Busque exposições controladas a novas experiências e feedbacks frequentes para evoluir.",
+      "Baixa adaptabilidade": "É recomendável investir em técnicas de gestão de mudança e resiliência para aprimorar sua adaptabilidade. Comece com pequenos desafios fora da zona de conforto e pratique o aprendizado contínuo."
+    }
+    return insights[results.classification] || ''
+  }, [results])
+
+  // Funções de impressão e download de PDF
+  const handlePrint = () => {
+    window.print()
+  }
+
+  const handleDownload = async () => {
+    if (typeof window === 'undefined') return
+    const html2canvas = (await import('html2canvas')).default
+    const { jsPDF } = await import('jspdf')
+
+    const element = document.getElementById('flex-results')
+    if (!element) return
+
+    const canvas = await html2canvas(element)
+    const imgData = canvas.toDataURL('image/png')
+    const pdf = new jsPDF('p', 'mm', 'a4')
+    const imgProps = pdf.getImageProperties(imgData)
+    const pdfWidth = pdf.internal.pageSize.getWidth()
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
+    pdf.save('humaniq-flex-resultados.pdf')
+  }
 
   const answeredQuestions = Object.keys(answers).length
   const progress = ((currentQuestion + 1) / questions.length) * 100
@@ -211,94 +249,118 @@ export default function HumaniqFLEXTest() {
     }
   }
 
-  const completeTest = async (testResults: TestResults) => {
+  // Função para gerar ID exclusivo
+  const generateUniqueId = () => {
+    const timestamp = Date.now().toString(36)
+    const randomStr = Math.random().toString(36).substring(2, 15)
+    return `flex_result_${timestamp}_${randomStr}`
+  }
+
+  const completeTest = async (testResults: TestResults, retryCount = 0) => {
+    const maxRetries = 3
     setIsSubmitting(true)
     
     try {
-      // 1. Criar sessão de teste
-      const sessionResponse = await fetch('/api/tests/sessions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          testId: 'flex-test-id' // ID específico do teste FLEX
-        })
-      })
-
-      if (!sessionResponse.ok) {
-        throw new Error('Falha ao criar sessão de teste')
-      }
-
-      const sessionData = await sessionResponse.json()
-      const sessionId = sessionData.sessionId
-
-      // 2. Preparar dados para submissão
-      const submissionData = {
-        testId: 'flex-test-id',
-        sessionId: sessionId,
-        answers: Object.entries(answers).map(([questionId, answer]) => {
-          const question = questions.find(q => q.id === parseInt(questionId))
-          return {
-            questionId: parseInt(questionId),
-            selectedOption: answer.toString(),
-            dimension: question?.dimension || '',
-            test: question?.test || ''
-          }
-        }),
-        results: {
+      // Mostrar mensagem de progresso
+      showSavingProgress('HumaniQ FLEX – Avaliação de Adaptabilidade')
+      
+      // Preparar dados para a nova API de resultados
+      const resultData = {
+        tipoTeste: 'FLEX',
+        respostasCriptografadas: {
           overallScore: testResults.overallScore,
           classification: testResults.classification,
           dimensionScores: testResults.dimensionScores,
-          testScores: testResults.testScores
+          testScores: testResults.testScores,
+          answers: Object.entries(answers).map(([questionId, answer]) => {
+            const question = questions.find(q => q.id === parseInt(questionId))
+            return {
+              questionId: parseInt(questionId),
+              selectedOption: answer.toString(),
+              dimension: question?.dimension || '',
+              test: question?.test || ''
+            }
+          })
         },
-        duration: timeElapsed,
         metadata: {
           testName: 'HumaniQ FLEX – Avaliação de Adaptabilidade',
           totalQuestions: questions.length,
-          completedAt: new Date().toISOString()
+          duration: timeElapsed,
+          completedAt: new Date().toISOString(),
+          version: '2.0'
         }
       }
 
-      // 3. Submeter resultados
-      const submitResponse = await fetch('/api/tests/submit', {
+      // Submeter para a nova API segura
+      const response = await fetch('/api/colaborador/resultados', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(submissionData)
+        credentials: 'include',
+        body: JSON.stringify(resultData)
       })
 
-      if (!submitResponse.ok) {
-        throw new Error('Falha ao submeter resultados')
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || `Erro ${response.status}`)
       }
 
-      const submitData = await submitResponse.json()
+      const responseData = await response.json()
       
-      // 4. Exibir resultados localmente
-      setResults(testResults)
-      setShowResults(true)
+      // Mostrar mensagem de sucesso
+      showResultStorageSuccess('HumaniQ FLEX – Avaliação de Adaptabilidade')
       
-      // 5. Redirecionar para página de resultados após um delay
+      // Aguardar um pouco para o usuário ver a mensagem
       setTimeout(() => {
-        window.location.href = '/colaborador/resultados'
-      }, 3000)
+        // Redirecionar para página de resultados
+        router.push(`/colaborador/personalidade/flex/resultado?id=${responseData.data.idResultado}`)
+      }, 2000)
       
     } catch (error) {
-      console.error('Erro ao completar teste:', error)
-      // Em caso de erro, ainda mostra os resultados localmente
+      console.error(`Erro ao completar teste (tentativa ${retryCount + 1}):`, error)
+      
+      // Implementar retry automático
+      if (retryCount < maxRetries) {
+        console.log(`Tentando novamente em 2 segundos... (${retryCount + 1}/${maxRetries})`)
+        setTimeout(() => {
+          completeTest(testResults, retryCount + 1)
+        }, 2000)
+        return
+      }
+      
+      // Se todas as tentativas falharam, mostrar erro e resultados localmente
+      showResultStorageError(error instanceof Error ? error.message : 'Erro desconhecido')
       setResults(testResults)
       setShowResults(true)
-    } finally {
       setIsSubmitting(false)
     }
+  }
+
+  // Renderizar tela de carregamento durante submissão
+  if (isSubmitting) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-6">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto mb-6"></div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Salvando seus resultados...</h2>
+          <p className="text-gray-600 mb-4">Aguarde enquanto processamos e arquivamos suas respostas de forma segura.</p>
+          <div className="bg-white rounded-lg p-4 shadow-lg">
+            <div className="flex items-center justify-center space-x-2 text-blue-600">
+              <CheckCircle className="h-5 w-5" />
+              <span className="text-sm font-medium">Garantindo que seus dados sejam salvos corretamente</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   if (showResults && results) {
     const answeredQuestions = Object.keys(answers).length
     
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-100 p-4">
+      <div id="flex-results" className="min-h-screen bg-gradient-to-br from-orange-50 to-red-100 p-4">
         <div className="max-w-6xl mx-auto">
           <div className="mb-6">
             <Button
@@ -319,9 +381,14 @@ export default function HumaniqFLEXTest() {
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 Resultados do HumaniQ FLEX
               </h1>
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-600 mb-2">
                 Avaliação de Adaptabilidade
               </p>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-2 mb-4 inline-block">
+                <p className="text-sm text-blue-700">
+                  <span className="font-medium">Teste:</span> HumaniQ FLEX
+                </p>
+              </div>
               
               <div className="flex items-center justify-center gap-6 text-sm text-gray-600">
                 <div className="flex items-center gap-2">
@@ -402,6 +469,21 @@ export default function HumaniqFLEXTest() {
             </CardContent>
           </Card>
 
+          {/* Análise Profissional Detalhada */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Brain className="w-5 h-5 text-orange-600" />
+                Análise Profissional Detalhada
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-700 whitespace-pre-line">
+                {professionalAnalysis}
+              </p>
+            </CardContent>
+          </Card>
+
           {/* Informações Importantes */}
           <Card className="mb-6">
             <CardHeader>
@@ -424,7 +506,7 @@ export default function HumaniqFLEXTest() {
             </CardContent>
           </Card>
 
-          <div className="flex gap-4 justify-center">
+          <div className="flex gap-4 justify-center flex-wrap">
             <Button
               variant="outline"
               onClick={() => router.push('/colaborador/personalidade')}
@@ -432,11 +514,28 @@ export default function HumaniqFLEXTest() {
             >
               Voltar aos Testes
             </Button>
-            
+
+            <Button
+              variant="outline"
+              onClick={handlePrint}
+              size="lg"
+            >
+              <Printer className="w-4 h-4 mr-2" />
+              Imprimir
+            </Button>
+
+            <Button
+              onClick={handleDownload}
+              size="lg"
+              className="bg-orange-600 hover:bg-orange-700 text-white"
+            >
+              Baixar PDF
+            </Button>
+
             <Button
               onClick={() => window.location.reload()}
               size="lg"
-              className="bg-orange-600 hover:bg-orange-700"
+              className="bg-gray-200 hover:bg-gray-300 text-gray-800"
             >
               Refazer Teste
             </Button>

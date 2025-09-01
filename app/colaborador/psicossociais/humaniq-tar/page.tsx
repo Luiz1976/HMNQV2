@@ -1,14 +1,16 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
-import { Brain, Clock, Target, CheckCircle, X, ArrowRight, ArrowLeft, RotateCcw } from 'lucide-react'
+import { Brain, Clock, Target, CheckCircle, X, ArrowRight, ArrowLeft, RotateCcw, Printer, Download } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
+import html2canvas from 'html2canvas'
+import jsPDF from 'jspdf'
 
 // Tipos para o teste TAR
 interface TARQuestion {
@@ -243,6 +245,31 @@ export default function HumaniqTAR() {
   const [isCompleted, setIsCompleted] = useState(false)
   const [scores, setScores] = useState<TARScores | null>(null)
   const [testStarted, setTestStarted] = useState(false)
+
+  const professionalAnalysis = useMemo(() => {
+    if (!scores) return ''
+    if (scores.pontuacaoGeral >= 80) {
+      return 'Seu desempenho excepcional sugere alta capacidade de atenção, raciocínio e controle inibitório, indicando potencial para posições que exigem análise complexa e decisões rápidas sob pressão.'
+    } else if (scores.pontuacaoGeral >= 60) {
+      return 'Você demonstra bom nível de desempenho cognitivo, capaz de lidar com múltiplas tarefas e manter foco consistente, sendo indicado para funções que equilibram análise e execução.'
+    } else if (scores.pontuacaoGeral >= 40) {
+      return 'Seu resultado indica desempenho moderado. Treinos de atenção e exercícios de raciocínio podem elevar seu potencial para papéis com maior demanda cognitiva.'
+    }
+    return 'Os resultados sugerem necessidade de desenvolvimento adicional em atenção e raciocínio. Programas de treinamento cognitivo podem ajudar a melhorar seu desempenho profissional.'
+  }, [scores])
+
+  const handlePrint = () => window.print()
+  const handleDownload = async () => {
+    const element = document.getElementById('tar-results')
+    if (!element) return
+    const canvas = await html2canvas(element)
+    const imgData = canvas.toDataURL('image/png')
+    const pdf = new jsPDF('p', 'mm', 'a4')
+    const width = pdf.internal.pageSize.getWidth()
+    const height = (canvas.height * width) / canvas.width
+    pdf.addImage(imgData, 'PNG', 0, 0, width, height)
+    pdf.save('humaniq-tar-resultado.pdf')
+  }
 
   // Verificar se passou pela introdução
   useEffect(() => {
@@ -510,7 +537,7 @@ export default function HumaniqTAR() {
   if (isCompleted && scores) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-        <div className="container mx-auto px-4 py-8">
+        <div id="tar-results" className="container mx-auto px-4 py-8">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -607,11 +634,38 @@ export default function HumaniqTAR() {
               </Card>
             </div>
 
+            {/* Análise Profissional Detalhada */}
+            <Card className="mb-8 border-0 bg-white/70 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle>Análise Profissional Detalhada</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
+                  {professionalAnalysis}
+                </p>
+              </CardContent>
+            </Card>
+
             {/* Ações */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center">
+              <Button
+                onClick={handlePrint}
+                variant="outline"
+                className="px-8 py-3"
+              >
+                <Printer className="mr-2 h-4 w-4" />
+                Imprimir
+              </Button>
+              <Button
+                onClick={handleDownload}
+                className="px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Baixar PDF
+              </Button>
               <Button
                 variant="outline"
-                onClick={() => router.push('/colaborador/resultados')}
+                onClick={() => router.push('/colaborador/resultados?saved=1')}
                 className="px-8 py-3"
               >
                 Ver Todos os Resultados

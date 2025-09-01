@@ -164,11 +164,11 @@ export default function ColaboradorPage() {
     if (session?.user?.firstName) {
       return `${session.user.firstName} ${session.user.lastName || ''}`.trim()
     }
-    return session?.user?.userType === 'EMPLOYEE' ? 'Colaborador' : 'Candidato'
+    return session?.user?.userType === 'CANDIDATE' ? 'Candidato' : 'Colaborador'
   }
 
   const getUserType = () => {
-    return session?.user?.userType === 'EMPLOYEE' ? 'Colaborador' : 'Candidato'
+    return session?.user?.userType === 'CANDIDATE' ? 'Candidato' : 'Colaborador'
   }
 
   return (
@@ -235,11 +235,20 @@ export default function ColaboradorPage() {
                   <Button 
                     size="lg" 
                     variant="outline" 
-                    className="border-white/30 text-white hover:bg-white/10"
+                    className="border-white text-white hover:bg-white/10"
                     onClick={() => router.push('/colaborador/resultados')}
                   >
                     <TrendingUp className="mr-2 h-5 w-5" />
                     Ver Resultados
+                  </Button>
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="border-white text-white hover:bg-white/10"
+                    onClick={() => router.push('/resultados')}
+                  >
+                    <BarChart3 className="mr-2 h-5 w-5" />
+                    Meus Resultados
                   </Button>
                 </div>
               </div>

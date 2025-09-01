@@ -1,0 +1,10 @@
+# Netlify redirects file
+# API routes
+/api/* /.netlify/functions/nextjs/:splat 200
+
+# Correções de rotas específicas
+/colaborador/grafologico /colaborador/grafologia 301
+/colaborador/grafologico/* /colaborador/grafologia/:splat 301
+
+# SPA fallback - deve ser a última regra
+/* /index

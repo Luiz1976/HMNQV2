@@ -1,0 +1,121 @@
+[27/08/2025, 23:57:09] === SISTEMA DE MONITORAMENTO INICIADO ===
+[27/08/2025, 23:57:09] Horário de início: 27/08/2025, 23:57:09
+[27/08/2025, 23:57:09] Aguardando teste HumaniQ Flex...
+[27/08/2025, 23:57:09] 🔍 Iniciando monitoramento contínuo...
+[27/08/2025, 23:57:09] Contagem inicial: TestResults=0, Sessions=0, Answers=0, AIAnalysis=0
+[27/08/2025, 23:57:09] 📁 Iniciando monitoramento de arquivos JSON...
+[27/08/2025, 23:57:09] Monitorando diretório: C:\Users\ALICEBELLA\Desktop\HMNQV2\app\archives\results
+[27/08/2025, 23:57:09] ✅ Sistema de monitoramento ativo!
+[27/08/2025, 23:57:09] Aguardando o teste HumaniQ Flex...
+[28/08/2025, 06:55:17] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-28T09:55:17.224Z"}
+[28/08/2025, 10:52:24] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-28T13:52:24.160Z"}
+[28/08/2025, 10:52:24] 🔍 MONITOR: Teste sem questões cadastradas - pulando salvamento de respostas - {"testId":"cmehdpsq4000w8wc0aypzlum1"}
+[28/08/2025, 10:52:24] 🔍 MONITOR: 🚨 RESULTADO SALVO NO BANCO DE DADOS! - {"resultId":"cmevgqxc900038wykkgrox4y9","testId":"cmehdpsq4000w8wc0aypzlum1","userId":"cmehdprxt00068wc0rz0enici","sessionId":"cmevgqvlo00018wykqn3a0g0c","overallScore":0,"createdAt":"2025-08-28T13:52:24.393Z","location":"SQLite Database - TestResult table"}
+[28/08/2025, 10:52:24] 🔍 MONITOR: Iniciando arquivamento de resultado - {"resultId":"cmevgqxc900038wykkgrox4y9","testType":"PERSONALITY"}
+[28/08/2025, 10:52:24] 🔍 MONITOR: ❌ ERRO NO ARQUIVAMENTO JSON - {"error":"Cannot read properties of undefined (reading 'tests')","resultId":"cmevgqxc900038wykkgrox4y9"}
+[28/08/2025, 10:52:24] 🔍 MONITOR: 🚨 SESSÃO ATUALIZADA NO BANCO DE DADOS! - {"sessionId":"cmevgqvlo00018wykqn3a0g0c","status":"COMPLETED","completedAt":"2025-08-28T13:52:24.448Z","location":"SQLite Database - TestSession table"}
+[28/08/2025, 11:59:31] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-28T14:59:31.512Z"}
+[28/08/2025, 11:59:31] 🔍 MONITOR: Teste sem questões cadastradas - pulando salvamento de respostas - {"testId":"cmehdpsq4000w8wc0aypzlum1"}
+[28/08/2025, 11:59:31] 🔍 MONITOR: 🚨 RESULTADO SALVO NO BANCO DE DADOS! - {"resultId":"cmevj58rg00038wm4zfpl7dau","testId":"cmehdpsq4000w8wc0aypzlum1","userId":"cmehdprxt00068wc0rz0enici","sessionId":"cmevj57pc00018wm4u8gu0b59","overallScore":0,"createdAt":"2025-08-28T14:59:31.612Z","location":"SQLite Database - TestResult table"}
+[28/08/2025, 11:59:31] 🔍 MONITOR: Iniciando arquivamento de resultado - {"resultId":"cmevj58rg00038wm4zfpl7dau","testType":"PERSONALITY"}
+[28/08/2025, 11:59:31] 🔍 MONITOR: ❌ ERRO NO ARQUIVAMENTO JSON - {"error":"Cannot read properties of undefined (reading 'tests')","resultId":"cmevj58rg00038wm4zfpl7dau"}
+[28/08/2025, 11:59:31] 🔍 MONITOR: 🚨 SESSÃO ATUALIZADA NO BANCO DE DADOS! - {"sessionId":"cmevj57pc00018wm4u8gu0b59","status":"COMPLETED","completedAt":"2025-08-28T14:59:31.695Z","location":"SQLite Database - TestSession table"}
+[28/08/2025, 12:20:02] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-28T15:20:02.218Z"}
+[28/08/2025, 12:20:02] 🔍 MONITOR: Teste sem questões cadastradas - pulando salvamento de respostas - {"testId":"cmehdpsq4000w8wc0aypzlum1"}
+[28/08/2025, 12:20:02] 🔍 MONITOR: 🚨 RESULTADO SALVO NO BANCO DE DADOS! - {"resultId":"cmevjvmd000078wm4f2wyyhe2","testId":"cmehdpsq4000w8wc0aypzlum1","userId":"cmehdprxt00068wc0rz0enici","sessionId":"cmevjvlce00058wm4dak6hzn1","overallScore":0,"createdAt":"2025-08-28T15:20:02.292Z","location":"SQLite Database - TestResult table"}
+[28/08/2025, 12:20:02] 🔍 MONITOR: Iniciando arquivamento de resultado - {"resultId":"cmevjvmd000078wm4f2wyyhe2","testType":"PERSONALITY"}
+[28/08/2025, 12:20:02] 🔍 MONITOR: ❌ ERRO NO ARQUIVAMENTO JSON - {"error":"Cannot read properties of undefined (reading 'tests')","resultId":"cmevjvmd000078wm4f2wyyhe2"}
+[28/08/2025, 12:20:02] 🔍 MONITOR: 🚨 SESSÃO ATUALIZADA NO BANCO DE DADOS! - {"sessionId":"cmevjvlce00058wm4dak6hzn1","status":"COMPLETED","completedAt":"2025-08-28T15:20:02.358Z","location":"SQLite Database - TestSession table"}
+[28/08/2025, 13:11:00] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-28T16:11:00.672Z"}
+[28/08/2025, 13:11:00] 🔍 MONITOR: Teste sem questões cadastradas - pulando salvamento de respostas - {"testId":"cmehdpsq4000w8wc0aypzlum1"}
+[28/08/2025, 13:11:00] 🔍 MONITOR: 🚨 RESULTADO SALVO NO BANCO DE DADOS! - {"resultId":"cmevlp6cv00038w50d558evi1","testId":"cmehdpsq4000w8wc0aypzlum1","userId":"cmehdprxt00068wc0rz0enici","sessionId":"cmevlp5va00018w507bqug7dc","overallScore":0,"createdAt":"2025-08-28T16:11:00.847Z","location":"SQLite Database - TestResult table"}
+[28/08/2025, 13:11:00] 🔍 MONITOR: Iniciando arquivamento de resultado - {"resultId":"cmevlp6cv00038w50d558evi1","testType":"PERSONALITY"}
+[28/08/2025, 13:11:00] 🔍 MONITOR: ❌ ERRO NO ARQUIVAMENTO JSON - {"error":"Cannot read properties of undefined (reading 'tests')","resultId":"cmevlp6cv00038w50d558evi1"}
+[28/08/2025, 13:11:00] 🔍 MONITOR: 🚨 SESSÃO ATUALIZADA NO BANCO DE DADOS! - {"sessionId":"cmevlp5va00018w507bqug7dc","status":"COMPLETED","completedAt":"2025-08-28T16:11:00.897Z","location":"SQLite Database - TestSession table"}
+[28/08/2025, 13:28:31] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-28T16:28:31.202Z"}
+[28/08/2025, 13:28:31] 🔍 MONITOR: Teste sem questões cadastradas - pulando salvamento de respostas - {"testId":"cmehdpsq4000w8wc0aypzlum1"}
+[28/08/2025, 13:28:31] 🔍 MONITOR: 🚨 RESULTADO SALVO NO BANCO DE DADOS! - {"resultId":"cmevmbov800078w505us305z2","testId":"cmehdpsq4000w8wc0aypzlum1","userId":"cmehdprxt00068wc0rz0enici","sessionId":"cmevmbo7u00058w503u0rbpdm","overallScore":0,"createdAt":"2025-08-28T16:28:31.268Z","location":"SQLite Database - TestResult table"}
+[28/08/2025, 13:28:31] 🔍 MONITOR: Iniciando arquivamento de resultado - {"resultId":"cmevmbov800078w505us305z2","testType":"PERSONALITY"}
+[28/08/2025, 13:28:31] 🔍 MONITOR: ❌ ERRO NO ARQUIVAMENTO JSON - {"error":"Cannot read properties of undefined (reading 'tests')","resultId":"cmevmbov800078w505us305z2"}
+[28/08/2025, 13:28:31] 🔍 MONITOR: 🚨 SESSÃO ATUALIZADA NO BANCO DE DADOS! - {"sessionId":"cmevmbo7u00058w503u0rbpdm","status":"COMPLETED","completedAt":"2025-08-28T16:28:31.325Z","location":"SQLite Database - TestSession table"}
+[28/08/2025, 14:10:22] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-28T17:10:22.704Z"}
+[28/08/2025, 14:10:22] 🔍 MONITOR: Teste sem questões cadastradas - pulando salvamento de respostas - {"testId":"cmehdpsq4000w8wc0aypzlum1"}
+[28/08/2025, 14:10:22] 🔍 MONITOR: 🚨 RESULTADO SALVO NO BANCO DE DADOS! - {"resultId":"cmevntiqs00038wxc6z5vtm0p","testId":"cmehdpsq4000w8wc0aypzlum1","userId":"cmehdprxt00068wc0rz0enici","sessionId":"cmevnti7200018wxctrsdp9er","overallScore":0,"createdAt":"2025-08-28T17:10:22.756Z","location":"SQLite Database - TestResult table"}
+[28/08/2025, 14:10:22] 🔍 MONITOR: Iniciando arquivamento de resultado - {"resultId":"cmevntiqs00038wxc6z5vtm0p","testType":"PERSONALITY"}
+[28/08/2025, 14:10:22] 🔍 MONITOR: ❌ ERRO NO ARQUIVAMENTO JSON - {"error":"Cannot read properties of undefined (reading 'tests')","resultId":"cmevntiqs00038wxc6z5vtm0p"}
+[28/08/2025, 14:10:22] 🔍 MONITOR: 🚨 SESSÃO ATUALIZADA NO BANCO DE DADOS! - {"sessionId":"cmevnti7200018wxctrsdp9er","status":"COMPLETED","completedAt":"2025-08-28T17:10:22.793Z","location":"SQLite Database - TestSession table"}
+[28/08/2025, 14:11:44] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-28T17:11:44.696Z"}
+[28/08/2025, 14:11:44] 🔍 MONITOR: Teste sem questões cadastradas - pulando salvamento de respostas - {"testId":"cmehdpsox000o8wc0yuai0swa"}
+[28/08/2025, 14:11:44] 🔍 MONITOR: 🚨 RESULTADO SALVO NO BANCO DE DADOS! - {"resultId":"cmevnv9zp00078wxcc9abh2mj","testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici","sessionId":"cmevnv9wc00058wxca6ht4m4z","overallScore":0,"createdAt":"2025-08-28T17:11:44.725Z","location":"SQLite Database - TestResult table"}
+[28/08/2025, 14:11:44] 🔍 MONITOR: Iniciando arquivamento de resultado - {"resultId":"cmevnv9zp00078wxcc9abh2mj","testType":"PERSONALITY"}
+[28/08/2025, 14:11:44] 🔍 MONITOR: ❌ ERRO NO ARQUIVAMENTO JSON - {"error":"Cannot read properties of undefined (reading 'tests')","resultId":"cmevnv9zp00078wxcc9abh2mj"}
+[28/08/2025, 14:11:44] 🔍 MONITOR: 🚨 SESSÃO ATUALIZADA NO BANCO DE DADOS! - {"sessionId":"cmevnv9wc00058wxca6ht4m4z","status":"COMPLETED","completedAt":"2025-08-28T17:11:44.762Z","location":"SQLite Database - TestSession table"}
+[28/08/2025, 14:21:59] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-28T17:21:59.844Z"}
+[28/08/2025, 14:21:59] 🔍 MONITOR: Teste sem questões cadastradas - pulando salvamento de respostas - {"testId":"cmehdpsox000o8wc0yuai0swa"}
+[28/08/2025, 14:21:59] 🔍 MONITOR: 🚨 RESULTADO SALVO NO BANCO DE DADOS! - {"resultId":"cmevo8gn3000b8wxc66kpjfut","testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici","sessionId":"cmevo8fp100098wxc6ztay3v1","overallScore":0,"createdAt":"2025-08-28T17:21:59.871Z","location":"SQLite Database - TestResult table"}
+[28/08/2025, 14:21:59] 🔍 MONITOR: Iniciando arquivamento de resultado - {"resultId":"cmevo8gn3000b8wxc66kpjfut","testType":"PERSONALITY"}
+[28/08/2025, 14:21:59] 🔍 MONITOR: ❌ ERRO NO ARQUIVAMENTO JSON - {"error":"Cannot read properties of undefined (reading 'tests')","resultId":"cmevo8gn3000b8wxc66kpjfut"}
+[28/08/2025, 14:21:59] 🔍 MONITOR: 🚨 SESSÃO ATUALIZADA NO BANCO DE DADOS! - {"sessionId":"cmevo8fp100098wxc6ztay3v1","status":"COMPLETED","completedAt":"2025-08-28T17:21:59.901Z","location":"SQLite Database - TestSession table"}
+[28/08/2025, 16:30:36] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-28T19:30:36.533Z"}
+[28/08/2025, 16:30:36] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":35,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[28/08/2025, 17:34:49] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-28T20:34:49.390Z"}
+[28/08/2025, 17:34:49] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":41,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[28/08/2025, 18:03:53] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-28T21:03:53.986Z"}
+[28/08/2025, 18:03:54] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":39,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdpr5h00008wc0xy4udkic"}
+[28/08/2025, 20:23:20] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-28T23:23:20.386Z"}
+[28/08/2025, 20:23:20] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":38,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[28/08/2025, 20:48:08] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-28T23:48:08.554Z"}
+[28/08/2025, 20:48:08] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":36,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[28/08/2025, 23:58:51] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-29T02:58:51.102Z"}
+[29/08/2025, 00:08:27] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-29T03:08:27.563Z"}
+[29/08/2025, 00:15:20] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-29T03:15:20.039Z"}
+[29/08/2025, 00:19:08] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-29T03:19:08.750Z"}
+[29/08/2025, 08:56:00] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-29T11:56:00.058Z"}
+[29/08/2025, 09:00:34] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-29T12:00:34.229Z"}
+[29/08/2025, 14:29:32] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-29T17:29:32.124Z"}
+[29/08/2025, 14:29:32] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":35,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[29/08/2025, 20:38:59] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-29T23:38:59.370Z"}
+[29/08/2025, 20:38:59] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":35,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[29/08/2025, 20:40:04] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-29T23:40:04.564Z"}
+[29/08/2025, 20:40:04] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":39,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[29/08/2025, 21:10:20] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-30T00:10:20.118Z"}
+[29/08/2025, 21:10:20] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":35,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[29/08/2025, 21:56:49] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-30T00:56:49.521Z"}
+[29/08/2025, 21:56:49] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":37,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[29/08/2025, 23:19:53] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-30T02:19:53.980Z"}
+[30/08/2025, 10:16:11] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-30T13:16:11.588Z"}
+[30/08/2025, 10:16:11] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":39,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[30/08/2025, 20:09:06] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-30T23:09:06.509Z"}
+[30/08/2025, 20:09:06] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":38,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[30/08/2025, 21:46:14] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-31T00:46:14.084Z"}
+[30/08/2025, 21:46:14] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":39,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[30/08/2025, 22:01:11] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-31T01:01:11.752Z"}
+[30/08/2025, 22:01:11] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":39,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[30/08/2025, 22:01:51] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-31T01:01:51.118Z"}
+[30/08/2025, 22:01:51] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":36,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[31/08/2025, 09:56:13] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-31T12:56:13.346Z"}
+[31/08/2025, 09:56:13] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":35,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[31/08/2025, 10:52:09] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-31T13:52:09.398Z"}
+[31/08/2025, 10:52:09] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":34,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[31/08/2025, 10:59:25] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-31T13:59:25.365Z"}
+[31/08/2025, 10:59:25] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":34,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[31/08/2025, 11:33:02] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-31T14:33:02.909Z"}
+[31/08/2025, 11:33:02] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":33,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[31/08/2025, 14:25:12] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-31T17:25:12.035Z"}
+[31/08/2025, 14:25:12] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":38,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[31/08/2025, 15:16:45] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-31T18:16:45.920Z"}
+[31/08/2025, 15:16:45] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":36,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[31/08/2025, 16:40:20] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-31T19:40:20.227Z"}
+[31/08/2025, 16:40:20] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":37,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[31/08/2025, 16:58:29] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-31T19:58:29.923Z"}
+[31/08/2025, 16:58:29] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":37,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[31/08/2025, 17:05:34] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-08-31T20:05:34.499Z"}
+[31/08/2025, 17:05:34] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":33,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[01/09/2025, 11:43:41] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-09-01T14:43:41.257Z"}
+[01/09/2025, 11:43:41] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":33,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[01/09/2025, 12:10:47] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-09-01T15:10:47.342Z"}
+[01/09/2025, 12:10:47] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":32,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[01/09/2025, 12:44:15] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-09-01T15:44:15.497Z"}
+[01/09/2025, 12:44:15] 🔍 MONITOR: INÍCIO DA SUBMISSÃO DE TESTE - {"timestamp":"2025-09-01T15:44:15.532Z"}
+[01/09/2025, 12:44:15] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":27,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}
+[01/09/2025, 12:44:15] 🔍 MONITOR: Salvando respostas no banco de dados - {"answersCount":27,"testId":"cmehdpsox000o8wc0yuai0swa","userId":"cmehdprxt00068wc0rz0enici"}

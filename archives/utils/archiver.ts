@@ -94,6 +94,8 @@ class TestResultArchiver {
 
   /**
    * Gera o caminho do arquivo baseado no resultado do teste
+   * Resultados do HumaniQ BOLIE são armazenados em 'personalidade';
+   * os demais seguem o diretório correspondente a testResult.testType
    */
   private async generateFilePath(testResult: Omit<TestResult, 'filePath'>): Promise<string> {
     const date = new Date(testResult.completedAt);
@@ -104,11 +106,14 @@ class TestResultArchiver {
     const timestamp = date.toISOString().replace(/[:.]/g, '-').replace('T', '_').split('.')[0];
     const fileName = `${testResult.userId}_${testResult.testType}_${testResult.testId}_${timestamp}.json`;
     
+    // Determina o subdiretório: se for BOLIE armazena em "personalidade", caso contrário usa o tipo do teste
+    const archiveSubDir = testResult.testType?.toLowerCase().includes('bolie') ? 'personalidade' : testResult.testType;
+
     return path.join(
       this.resultsPath,
       year,
       month,
-      testResult.testType,
+      archiveSubDir,
       fileName
     );
   }

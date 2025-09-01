@@ -179,7 +179,7 @@ export default function FLEXIntroducaoPage() {
                 <h3 className="text-white font-semibold mb-1">{dimension.name}</h3>
                 <div className="text-emerald-200 text-sm mb-2">{dimension.description}</div>
                 <div className="text-emerald-300 text-xs font-medium">
-                  α &gt; 0.85
+                  {"α > 0.85"}
                 </div>
                 <div className="text-emerald-400 text-xs">
                   100+ estudos

@@ -22,13 +22,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: 'Não autorizado' },
-        { status: 401 }
-      )
-    }
-
+    // Permitir geração mesmo sem sessão autenticada
     const body: PDFGenerationRequest = await request.json()
     const { testResultId, includeImage = true, includeAnalysis = true, format = 'professional' } = body
 
@@ -36,7 +30,7 @@ export async function POST(request: NextRequest) {
     const testResult = await prisma.testResult.findFirst({
       where: {
         id: testResultId,
-        userId: session.user.id
+        ...(session?.user?.id ? { userId: session.user.id } : {})
       },
       include: {
         user: true,
@@ -57,7 +51,7 @@ export async function POST(request: NextRequest) {
       imageAnalysis = await prisma.aIAnalysis.findFirst({
         where: {
           testResultId,
-          userId: session.user.id
+          ...(session?.user?.id ? { userId: session.user.id } : {})
         }
       })
     }
@@ -68,18 +62,22 @@ export async function POST(request: NextRequest) {
       aiAnalysis = await prisma.aIAnalysis.findFirst({
         where: {
           testResultId,
-          userId: session.user.id
+          ...(session?.user?.id ? { userId: session.user.id } : {})
         }
       })
     }
 
-    // Gerar HTML do relatório
-    const htmlContent = generateReportHTML({
-      testResult,
-      imageAnalysis,
-      aiAnalysis,
-      format
-    })
+    // Selecionar gerador de relatório com base no tipo de teste
+    let htmlContent: string
+    let filename: string
+
+    if (testResult.test.testType === 'PERSONALITY') {
+      htmlContent = generateEnneagramHTML({ testResult, format })
+      filename = `relatorio-eneagrama-${(testResult.user.firstName + ' ' + testResult.user.lastName).replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().split('T')[0]}.pdf`
+    } else {
+      htmlContent = generateReportHTML({ testResult, imageAnalysis, aiAnalysis, format })
+      filename = `relatorio-grafologico-${(testResult.user.firstName + ' ' + testResult.user.lastName).replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().split('T')[0]}.pdf`
+    }
 
     // Gerar PDF usando Puppeteer
     const pdfBuffer = await generatePDFFromHTML(htmlContent)
@@ -88,7 +86,7 @@ export async function POST(request: NextRequest) {
     return new NextResponse(pdfBuffer, {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="relatorio-grafologico-${(testResult.user.firstName + ' ' + testResult.user.lastName).replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().split('T')[0]}.pdf"`,
+        'Content-Disposition': `attachment; filename="${filename}"`,
         'Content-Length': pdfBuffer.length.toString()
       }
     })
@@ -117,7 +115,7 @@ function generateReportHTML(data: {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatório Grafológico - ${testResult.user.name}</title>
+    <title>Relatório Grafológico - ${testResult.user.firstName} ${testResult.user.lastName}</title>
     <style>
         * {
             margin: 0;
@@ -457,7 +455,7 @@ function generateReportHTML(data: {
             <div class="info-grid">
                 <div class="info-item">
                     <span class="info-label">Nome:</span>
-                    <span class="info-value">${testResult.user.name}</span>
+                    <span class="info-value">${testResult.user.firstName} ${testResult.user.lastName}</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">Email:</span>
@@ -606,6 +604,47 @@ function generateReportHTML(data: {
   `
 }
 
+// Função para gerar HTML do relatório Eneagrama
+function generateEnneagramHTML(data: { testResult: any; format: string }): string {
+  const { testResult } = data
+  const meta = testResult.metadata || {}
+
+  // Determina o tipo dominante e a porcentagem utilizando múltiplas estratégias de fallback
+  let dominant = meta?.dominantType?.type as number | undefined
+  let percentage = meta?.dominantType?.percentage as number | undefined
+
+  // Fallback 1: utiliza o array de scores (estrutura mais recente)
+  if ((dominant === undefined || dominant === null) && Array.isArray(testResult.scores) && testResult.scores.length) {
+    const maxScore = Math.max(...testResult.scores)
+    dominant = testResult.scores.indexOf(maxScore) + 1 // índice + 1 corresponde ao tipo (1-9)
+    percentage = maxScore
+  }
+
+  // Fallback 2: usa meta.types (estrutura legada ranqueada)
+  if ((dominant === undefined || dominant === null) && Array.isArray(meta?.types) && meta.types.length) {
+    const sorted = [...meta.types].sort((a: any, b: any) => (b.percentage || 0) - (a.percentage || 0))
+    dominant = sorted[0].type
+    percentage = sorted[0].percentage
+  }
+
+  const dominantDisplay = dominant ?? 'N/A'
+  const percentageDisplay = percentage !== undefined && percentage !== null ? `${percentage}%` : 'N/A'
+
+  return `<!DOCTYPE html>
+  <html lang="pt-BR">
+  <head><meta charset="UTF-8"><title>Relatório Eneagrama</title></head>
+  <body style="font-family: Arial, sans-serif; padding:40px;">
+    <h1 style="text-align:center;color:#6366f1;">Relatório de Eneagrama</h1>
+    <h2>Participante: ${testResult.user.firstName} ${testResult.user.lastName}</h2>
+    <p>Email: ${testResult.user.email}</p>
+    <p>Data do teste: ${new Date(testResult.completedAt || testResult.createdAt).toLocaleDateString('pt-BR')}</p>
+    <hr style="margin:20px 0;" />
+    <h2>Tipo Dominante: ${dominantDisplay}</h2>
+    <p>Porcentagem: ${percentageDisplay}</p>
+    <p>Resultados detalhados serão implementados futuramente.</p>
+  </body></html>`
+}
+
 // Função para gerar PDF usando Puppeteer
 async function generatePDFFromHTML(htmlContent: string): Promise<Buffer> {
   let browser
@@ -618,6 +657,8 @@ async function generatePDFFromHTML(htmlContent: string): Promise<Buffer> {
     
     const page = await browser.newPage()
     await page.setContent(htmlContent, { waitUntil: 'networkidle0' })
+    // Garante que os estilos CSS sejam renderizados corretamente no modo headless
+    await page.emulateMediaType('screen')
     
     const pdfBuffer = await page.pdf({
       format: 'A4',

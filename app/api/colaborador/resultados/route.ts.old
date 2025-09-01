@@ -1,0 +1,341 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+import { encryptForDatabase, decryptFromDatabase } from '@/lib/crypto';
+import { 
+  auditMiddleware, 
+  AcaoAuditoria, 
+  logResultStorage,
+  logResultQuery 
+} from '@/lib/audit';
+import { z } from 'zod';
+
+// Schema de validação para armazenamento de resultado
+const storeResultSchema = z.object({
+  tipoTeste: z.enum(['DISC', 'COMPETENCIAS', 'LIDERANCA', 'VENDAS', 'ATENDIMENTO']),
+  dadosResultado: z.object({
+    respostas: z.array(z.any()),
+    pontuacao: z.record(z.number()),
+    perfil: z.string(),
+    recomendacoes: z.array(z.string()).optional(),
+    graficos: z.any().optional(),
+    relatorio: z.string().optional()
+  }),
+  metadados: z.object({
+    versaoTeste: z.string(),
+    tempoResposta: z.number(),
+    dispositivo: z.string().optional(),
+    navegador: z.string().optional()
+  }).optional()
+});
+
+// Schema de validação para consulta de resultados
+const queryResultsSchema = z.object({
+  tipoTeste: z.enum(['DISC', 'COMPETENCIAS', 'LIDERANCA', 'VENDAS', 'ATENDIMENTO']).optional(),
+  dataInicio: z.string().optional(),
+  dataFim: z.string().optional(),
+  page: z.string().optional(),
+  limit: z.string().optional()
+});
+
+/**
+ * POST /api/colaborador/resultados
+ * Armazena um novo resultado de teste de forma segura
+ */
+export async function POST(request: NextRequest) {
+  let auditLog: any;
+  
+  try {
+    // Inicializa auditoria
+    auditLog = await auditMiddleware(
+      request, 
+      AcaoAuditoria.ARMAZENAMENTO_RESULTADO
+    );
+    
+    const body = await request.json();
+    
+    // Valida dados de entrada
+    const validatedData = storeResultSchema.parse(body);
+    
+    // Criptografa dados sensíveis
+    const dadosResultadoCriptografados = await encryptForDatabase(
+      JSON.stringify(validatedData.dadosResultado)
+    );
+    
+    const metadadosCriptografados = validatedData.metadados 
+      ? await encryptForDatabase(JSON.stringify(validatedData.metadados))
+      : null;
+    
+    // Armazena no banco de dados
+    const resultado = await prisma.humaniqResultados.create({
+      data: {
+        idUsuario: auditLog.userId,
+        tipoTeste: validatedData.tipoTeste,
+        dadosResultado: dadosResultadoCriptografados,
+        metadados: metadadosCriptografados,
+        hashIntegridade: await import('crypto').then(crypto => 
+          crypto.createHash('sha256')
+            .update(dadosResultadoCriptografados + auditLog.userId + validatedData.tipoTeste)
+            .digest('hex')
+        )
+      }
+    });
+    
+    // Registra log específico de armazenamento
+    await logResultStorage(
+      request,
+      auditLog.userId,
+      resultado.idResultado,
+      validatedData.tipoTeste
+    );
+    
+    // Finaliza auditoria com sucesso
+    await auditLog.finishLog(true, { idResultado: resultado.idResultado });
+    
+    return NextResponse.json({
+      success: true,
+      message: 'Resultado armazenado com sucesso',
+      data: {
+        idResultado: resultado.idResultado,
+        tipoTeste: resultado.tipoTeste,
+        dataCriacao: resultado.dataCriacao,
+        dataAtualizacao: resultado.dataAtualizacao
+      }
+    }, { status: 201 });
+    
+  } catch (error) {
+    console.error('❌ Erro ao armazenar resultado:', error);
+    
+    // Finaliza auditoria com erro
+    if (auditLog) {
+      await auditLog.finishLog(false, null, error as Error);
+    }
+    
+    if (error instanceof z.ZodError) {
+      return NextResponse.json({
+        success: false,
+        message: 'Dados inválidos',
+        errors: error.errors
+      }, { status: 400 });
+    }
+    
+    return NextResponse.json({
+      success: false,
+      message: 'Erro interno do servidor'
+    }, { status: 500 });
+  }
+}
+
+/**
+ * GET /api/colaborador/resultados
+ * Consulta resultados do usuário com filtros e paginação
+ */
+export async function GET(request: NextRequest) {
+  let auditLog: any;
+  
+  try {
+    // Inicializa auditoria
+    auditLog = await auditMiddleware(
+      request, 
+      AcaoAuditoria.CONSULTA_RESULTADO
+    );
+    
+    const { searchParams } = new URL(request.url);
+    
+    // Valida parâmetros de consulta
+    const queryParams = {
+      tipoTeste: searchParams.get('tipoTeste'),
+      dataInicio: searchParams.get('dataInicio'),
+      dataFim: searchParams.get('dataFim'),
+      page: searchParams.get('page') || '1',
+      limit: searchParams.get('limit') || '10'
+    };
+    
+    const validatedParams = queryResultsSchema.parse(queryParams);
+    
+    // Constrói filtros de busca
+    const where: any = {
+      idUsuario: auditLog.userId // Isolamento de dados por usuário
+    };
+    
+    if (validatedParams.tipoTeste) {
+      where.tipoTeste = validatedParams.tipoTeste;
+    }
+    
+    if (validatedParams.dataInicio || validatedParams.dataFim) {
+      where.dataCriacao = {};
+      if (validatedParams.dataInicio) {
+        where.dataCriacao.gte = new Date(validatedParams.dataInicio);
+      }
+      if (validatedParams.dataFim) {
+        where.dataCriacao.lte = new Date(validatedParams.dataFim);
+      }
+    }
+    
+    const page = parseInt(validatedParams.page || '1');
+    const limit = Math.min(parseInt(validatedParams.limit || '10'), 50); // Máximo 50 por página
+    
+    // Busca resultados com paginação
+    const [resultados, total] = await Promise.all([
+      prisma.humaniqResultados.findMany({
+        where,
+        select: {
+          idResultado: true,
+          tipoTeste: true,
+          dataCriacao: true,
+          dataAtualizacao: true,
+          dadosResultado: true,
+          metadados: true
+        },
+        orderBy: { dataCriacao: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit
+      }),
+      prisma.humaniqResultados.count({ where })
+    ]);
+    
+    // Descriptografa dados para retorno
+    const resultadosDescriptografados = await Promise.all(
+      resultados.map(async (resultado) => {
+        try {
+          const dadosDescriptografados = await decryptFromDatabase(resultado.dadosResultado);
+          const metadadosDescriptografados = resultado.metadados 
+            ? await decryptFromDatabase(resultado.metadados)
+            : null;
+          
+          return {
+            idResultado: resultado.idResultado,
+            tipoTeste: resultado.tipoTeste,
+            dataCriacao: resultado.dataCriacao,
+            dataAtualizacao: resultado.dataAtualizacao,
+            dadosResultado: JSON.parse(dadosDescriptografados),
+            metadados: metadadosDescriptografados ? JSON.parse(metadadosDescriptografados) : null
+          };
+        } catch (error) {
+          console.error(`❌ Erro ao descriptografar resultado ${resultado.idResultado}:`, error);
+          return {
+            idResultado: resultado.idResultado,
+            tipoTeste: resultado.tipoTeste,
+            dataCriacao: resultado.dataCriacao,
+            dataAtualizacao: resultado.dataAtualizacao,
+            dadosResultado: null,
+            metadados: null,
+            erro: 'Erro na descriptografia'
+          };
+        }
+      })
+    );
+    
+    // Registra log específico de consulta
+    await logResultQuery(
+      request,
+      auditLog.userId,
+      validatedParams
+    );
+    
+    // Finaliza auditoria com sucesso
+    await auditLog.finishLog(true, { resultCount: resultados.length });
+    
+    return NextResponse.json({
+      success: true,
+      data: {
+        resultados: resultadosDescriptografados,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit)
+        }
+      }
+    });
+    
+  } catch (error) {
+    console.error('❌ Erro ao consultar resultados:', error);
+    
+    // Finaliza auditoria com erro
+    if (auditLog) {
+      await auditLog.finishLog(false, null, error as Error);
+    }
+    
+    if (error instanceof z.ZodError) {
+      return NextResponse.json({
+        success: false,
+        message: 'Parâmetros inválidos',
+        errors: error.errors
+      }, { status: 400 });
+    }
+    
+    return NextResponse.json({
+      success: false,
+      message: 'Erro interno do servidor'
+    }, { status: 500 });
+  }
+}
+
+/**
+ * DELETE /api/colaborador/resultados/[id]
+ * Remove um resultado específico (com auditoria)
+ */
+export async function DELETE(request: NextRequest) {
+  let auditLog: any;
+  
+  try {
+    // Inicializa auditoria
+    auditLog = await auditMiddleware(
+      request, 
+      AcaoAuditoria.EXCLUSAO_DADOS
+    );
+    
+    const { searchParams } = new URL(request.url);
+    const idResultado = searchParams.get('id');
+    
+    if (!idResultado) {
+      return NextResponse.json({
+        success: false,
+        message: 'ID do resultado é obrigatório'
+      }, { status: 400 });
+    }
+    
+    // Verifica se o resultado pertence ao usuário
+    const resultado = await prisma.humaniqResultados.findFirst({
+      where: {
+        idResultado,
+        idUsuario: auditLog.userId
+      }
+    });
+    
+    if (!resultado) {
+      return NextResponse.json({
+        success: false,
+        message: 'Resultado não encontrado ou acesso negado'
+      }, { status: 404 });
+    }
+    
+    // Remove o resultado
+    await prisma.humaniqResultados.delete({
+      where: { idResultado }
+    });
+    
+    // Finaliza auditoria com sucesso
+    await auditLog.finishLog(true, { idResultado });
+    
+    return NextResponse.json({
+      success: true,
+      message: 'Resultado removido com sucesso'
+    });
+    
+  } catch (error) {
+    console.error('❌ Erro ao remover resultado:', error);
+    
+    // Finaliza auditoria com erro
+    if (auditLog) {
+      await auditLog.finishLog(false, null, error as Error);
+    }
+    
+    return NextResponse.json({
+      success: false,
+      message: 'Erro interno do servidor'
+    }, { status: 500 });
+  }
+}

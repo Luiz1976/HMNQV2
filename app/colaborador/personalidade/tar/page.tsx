@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft, Clock, User } from 'lucide-react'
 
@@ -173,6 +173,18 @@ export default function TARTest() {
 
       router.push('/colaborador/personalidade/tar/introducao')
     }
+    
+    // Carregar respostas salvas do localStorage
+    const savedAnswers = localStorage.getItem('tarAnswers')
+    if (savedAnswers) {
+      try {
+        const parsedAnswers = JSON.parse(savedAnswers)
+        setAnswers(parsedAnswers)
+        console.log('Respostas carregadas do localStorage:', Object.keys(parsedAnswers).length)
+      } catch (error) {
+        console.error('Erro ao carregar respostas do localStorage:', error)
+      }
+    }
   }, [searchParams, router])
 
 
@@ -193,6 +205,10 @@ export default function TARTest() {
   }
 
   const calculateResults = (): Results => {
+    // Usar as respostas do localStorage para garantir que estão atualizadas
+    const savedAnswers = JSON.parse(localStorage.getItem('tarAnswers') || '{}')
+    console.log('calculateResults - usando respostas do localStorage:', Object.keys(savedAnswers).length)
+    
     const factorScores: { [key: string]: number[] } = {
       atencao_sustentada: [],
       velocidade_processamento: [],
@@ -203,7 +219,7 @@ export default function TARTest() {
     const facetScores: { [key: string]: number[] } = {}
 
     questions.forEach(question => {
-      const answer = answers[question.id]
+      const answer = savedAnswers[question.id]
       if (answer !== undefined) {
         const score = question.reverse ? 6 - answer : answer
         factorScores[question.factor].push(score)
@@ -233,17 +249,39 @@ export default function TARTest() {
   }
 
   const handleAnswerChange = (value: number) => {
-    setAnswers(prev => ({ ...prev, [questions[currentQuestion].id]: value }))
-    
-
-    setTimeout(() => {
-      if (currentQuestion < questions.length - 1) {
-        setCurrentQuestion(prev => prev + 1)
-      } else {
-
-        handleSubmit()
-      }
-    }, 500)
+    setAnswers(prevAnswers => {
+      const newAnswers = { ...prevAnswers, [questions[currentQuestion].id]: value }
+      
+      console.log('Resposta adicionada:', {
+        questionId: questions[currentQuestion].id,
+        value,
+        totalAnswers: Object.keys(newAnswers).length,
+        currentQuestion: currentQuestion + 1
+      })
+      
+      // Salvar no localStorage imediatamente
+      localStorage.setItem('tarAnswers', JSON.stringify(newAnswers))
+      
+      setTimeout(() => {
+        setCurrentQuestion(prev => {
+          if (prev < questions.length - 1) {
+            return prev + 1
+          } else {
+            console.log('Última questão - iniciando submit com', Object.keys(newAnswers).length, 'respostas')
+            // Usar as respostas do localStorage para garantir que estão atualizadas
+            const savedAnswers = JSON.parse(localStorage.getItem('tarAnswers') || '{}')
+            console.log('Respostas do localStorage:', Object.keys(savedAnswers).length)
+            // Chamar handleSubmit após um pequeno delay para garantir que o estado foi atualizado
+            setTimeout(() => {
+              handleSubmit()
+            }, 100)
+            return prev
+          }
+        })
+      }, 500)
+      
+      return newAnswers
+    })
   }
 
   const handleNext = () => {
@@ -259,18 +297,32 @@ export default function TARTest() {
   }
 
   const handleSubmit = async () => {
+    console.log('handleSubmit iniciado - respostas atuais:', Object.keys(answers).length)
     setIsSubmitting(true)
+    
+    // Usar as respostas do localStorage para garantir que estão atualizadas
+    const savedAnswers = JSON.parse(localStorage.getItem('tarAnswers') || '{}')
+    console.log('Respostas do localStorage:', Object.keys(savedAnswers).length)
+    
+    // Aguardar um pouco para garantir que o estado foi atualizado
+    await new Promise(resolve => setTimeout(resolve, 100))
+    
+    console.log('Após delay - respostas:', Object.keys(savedAnswers).length)
+    
     const calculatedResults = calculateResults()
     setResults(calculatedResults)
     
-
+    // Corrigir contagem exibida:
+    const finalAnsweredCount = Object.keys(savedAnswers).length
+    console.log('Final answered count:', finalAnsweredCount)
+    
     const resultData = {
       testType: 'TAR',
       testName: 'Teste de Atenção e Raciocínio',
       completedAt: new Date().toISOString(),
       timeElapsed: timeElapsed,
       totalQuestions: questions.length,
-      answeredQuestions: Object.keys(answers).length,
+      answeredQuestions: finalAnsweredCount,
       results: calculatedResults,
       factors: {
         'Atenção Sustentada': calculatedResults.atencao_sustentada,
@@ -280,6 +332,7 @@ export default function TARTest() {
       }
     }
     
+    console.log('Dados salvos no localStorage:', resultData)
     localStorage.setItem('tarTestResults', JSON.stringify(resultData))
     
     setShowResults(true)
@@ -313,6 +366,30 @@ export default function TARTest() {
   const progress = (answeredCount / questions.length) * 100
   const currentAnswer = answers[questions[currentQuestion]?.id]
   const canProceed = currentAnswer !== undefined
+  // Helper para obter a contagem correta de respostas mesmo após recarregar a página
+  const getDisplayAnsweredCount = () => {
+    if (typeof window !== "undefined") {
+      try {
+        const savedAnswers = JSON.parse(localStorage.getItem("tarAnswers") || "{}")
+        const savedCount = Object.keys(savedAnswers).length
+        return savedCount > answeredCount ? savedCount : answeredCount
+      } catch (error) {
+        console.warn("Erro ao ler tarAnswers do localStorage:", error)
+      }
+    }
+    return answeredCount
+  }
+  
+  // Corrigir contagem exibida:
+  // ... existing code ...
+  // Identificar fatores mais forte e mais fraco para a análise detalhada
+  const factorEntries = results ? (Object.entries(results).filter(([key]) => key !== 'facets') as [string, number][]) : []
+  const topFactorEntry = factorEntries.length > 0 ? factorEntries.reduce((prev, curr) => (curr[1] > prev[1] ? curr : prev)) : ['', 0]
+  const bottomFactorEntry = factorEntries.length > 0 ? factorEntries.reduce((prev, curr) => (curr[1] < prev[1] ? curr : prev)) : ['', 0]
+  const topFactor = topFactorEntry[0] as string
+  const topScore = topFactorEntry[1] as number
+  const bottomFactor = bottomFactorEntry[0] as string
+  const bottomScore = bottomFactorEntry[1] as number
 
   if (!isValidated) {
     return (
@@ -352,11 +429,11 @@ export default function TARTest() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="text-sm text-gray-600">Questões Respondidas</p>
-                <p className="text-2xl font-bold text-emerald-600">{answeredCount}/{questions.length}</p>
+                <p className="text-2xl font-bold text-emerald-600">{getDisplayAnsweredCount()}/{questions.length}</p>
               </div>
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="text-sm text-gray-600">Taxa de Conclusão</p>
-                <p className="text-2xl font-bold text-emerald-600">{Math.round((answeredCount / questions.length) * 100)}%</p>
+                <p className="text-2xl font-bold text-emerald-600">{Math.round((getDisplayAnsweredCount() / questions.length) * 100)}%</p>
               </div>
             </div>
           </div>
@@ -384,6 +461,35 @@ export default function TARTest() {
                 </div>
               )
             })}
+          </div>
+
+          {/* Detailed summary section */}
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <h3 className="text-lg font-semibold mb-3">Análise Personalizada Detalhada</h3>
+            <p className="text-gray-700 leading-relaxed">
+              Parabéns por concluir o Teste de Atenção e Raciocínio! Você alcançou uma taxa de conclusão de
+              <span className="font-semibold text-emerald-600"> {Math.round((getDisplayAnsweredCount() / questions.length) * 100)}%</span>,
+              respondendo a todas as <span className="font-semibold">{questions.length}</span> questões propostas. Este resultado demonstra
+              não apenas disciplina, mas também um elevado nível de comprometimento com o seu desenvolvimento cognitivo.
+            </p>
+            <ul className="list-disc list-inside text-gray-700 mt-4 space-y-2">
+              <li>
+                <span className="font-semibold">Ponto Forte&nbsp;({getFactorName(topFactor)} – {topScore}%)</span>: este foi o fator mais elevado no seu perfil.
+                Ele indica um domínio expressivo dessa habilidade, que pode ser alavancada em atividades que exigem alto desempenho nesse aspecto específico.
+              </li>
+              <li>
+                <span className="font-semibold">Oportunidade de Crescimento&nbsp;({getFactorName(bottomFactor)} – {bottomScore}%)</span>: esta foi a pontuação mais baixa.
+                Enxergue-a como uma área de potencial aprimoramento. Dedicar-se a exercícios direcionados pode elevar esse índice e trazer equilíbrio ao seu conjunto de competências.
+              </li>
+            </ul>
+            <p className="text-gray-700 leading-relaxed mt-4">
+              Para transformar esses insights em ações, defina um plano com metas mensuráveis. Por exemplo, utilize técnicas de <span className="italic">mindfulness</span> para fortalecer o foco,
+              pratique atividades de raciocínio lógico (como quebra-cabeças) para aprimorar a velocidade de processamento e adote rotinas que desafiem o seu <span className="italic">controle inibitório</span>,
+              como alternar tarefas sob pressão de tempo.
+            </p>
+            <p className="text-gray-700 leading-relaxed mt-4">
+              Lembre-se: o desenvolvimento cognitivo é contínuo. Refaça o teste periodicamente para acompanhar sua evolução e ajustar estratégias. Continue investindo em si e colha os frutos de uma mente cada vez mais afiada.
+            </p>
           </div>
 
           <div className="mt-8 flex justify-center space-x-4">
@@ -503,10 +609,6 @@ export default function TARTest() {
               })}
             </div>
 
-            {/* Instruction */}
-            <p className="text-center text-gray-500 text-sm">
-              {canProceed ? 'Resposta selecionada' : 'Selecione uma resposta para continuar'}
-            </p>
           </div>
 
           {/* Navigation Buttons */}

@@ -201,7 +201,7 @@ export default function HumaniqEneagramaIntroducaoPage() {
             HumaniQ Eneagrama
           </h1>
           <p className="text-green-100 text-lg mb-6">
-            Sistema de 9 Tipos de Personalidade
+            Sistema de 9 Tipos de Personalidade – analisa o seu tipo entre os 9 existentes e também os subtipos (instintos)
           </p>
           <p className="text-green-100/90 text-sm max-w-3xl mx-auto mb-8">
             Instrumento psicométrico baseado em décadas de pesquisa científica para identificar motivações profundas, medos inconscientes e padrões comportamentais fundamentais que orientam a personalidade humana.

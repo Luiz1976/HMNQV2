@@ -168,6 +168,20 @@ export function AdminSidebar() {
             <LogOut className="h-5 w-5" />
             {!isCollapsed && <span className="ml-3">Sair do Sistema</span>}
           </Button>
+          
+          {/* São Bento Medal and Blessing */}
+          {!isCollapsed && (
+            <div className="flex flex-col items-center mt-4 pt-4 border-t border-gray-200 px-2">
+              <img 
+                src="/medalha-sao-bento.svg" 
+                alt="Medalha de São Bento" 
+                className="w-14 h-14 mb-2 max-w-full"
+              />
+              <p className="text-sm text-gray-600 text-center font-medium px-1">
+                Abençoado por São Bento
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </>

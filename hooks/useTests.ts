@@ -36,7 +36,7 @@ export function useTests(): UseTestsReturn {
       setLoading(true)
       setError(null)
       
-      const response = await fetch('/api/tests', {
+      const response = await fetch('/api/tests?limit=999', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
